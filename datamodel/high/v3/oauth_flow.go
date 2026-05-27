@@ -4,8 +4,6 @@
 package v3
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
-	"github.com/pb33f/libopenapi/datamodel/low"
 	lowv3 "github.com/pb33f/libopenapi/datamodel/low/v3"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -23,34 +21,29 @@ type OAuthFlow struct {
 }
 
 // NewOAuthFlow creates a new high-level OAuthFlow instance from a low-level one.
-func NewOAuthFlow(flow *lowv3.OAuthFlow) *OAuthFlow {
-	o := new(OAuthFlow)
-	o.low = flow
-	o.TokenUrl = flow.TokenUrl.Value
-	o.AuthorizationUrl = flow.AuthorizationUrl.Value
-	o.RefreshUrl = flow.RefreshUrl.Value
-	o.Scopes = low.FromReferenceMap(flow.Scopes.Value)
-	o.Extensions = high.ExtractExtensions(flow.Extensions)
-	return o
-}
+func NewOAuthFlow(flow *lowv3.OAuthFlow) *OAuthFlow { _ = "STUB: not implemented"; return nil }
 
 // GoLow returns the low-level OAuthFlow instance used to create the high-level one.
 func (o *OAuthFlow) GoLow() *lowv3.OAuthFlow {
-	return o.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level Discriminator instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level Discriminator instance that was used to create the high-level one, with no type
 func (o *OAuthFlow) GoLowUntyped() any {
-	return o.low
+	_ = "STUB: not implemented"
+
+	// Render will return a YAML representation of the OAuthFlow object as a byte slice.
+	return *new(any)
 }
 
-// Render will return a YAML representation of the OAuthFlow object as a byte slice.
 func (o *OAuthFlow) Render() ([]byte, error) {
-	return yaml.Marshal(o)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML will create a ready to render YAML representation of the OAuthFlow object.
+		nil
 }
 
-// MarshalYAML will create a ready to render YAML representation of the OAuthFlow object.
-func (o *OAuthFlow) MarshalYAML() (interface{}, error) {
-	nb := high.NewNodeBuilder(o, o.low)
-	return nb.Render(), nil
-}
+func (o *OAuthFlow) MarshalYAML() (interface{}, error) { _ = "STUB: not implemented"; return nil, nil }

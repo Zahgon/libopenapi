@@ -4,7 +4,6 @@
 package base
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/base"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -30,53 +29,29 @@ type Info struct {
 }
 
 // NewInfo will create a new high-level Info instance from a low-level one.
-func NewInfo(info *low.Info) *Info {
-	i := new(Info)
-	i.low = info
-	if !info.Title.IsEmpty() {
-		i.Title = info.Title.Value
-	}
-	if !info.Summary.IsEmpty() {
-		i.Summary = info.Summary.Value
-	}
-	if !info.Description.IsEmpty() {
-		i.Description = info.Description.Value
-	}
-	if !info.TermsOfService.IsEmpty() {
-		i.TermsOfService = info.TermsOfService.Value
-	}
-	if !info.Contact.IsEmpty() {
-		i.Contact = NewContact(info.Contact.Value)
-	}
-	if !info.License.IsEmpty() {
-		i.License = NewLicense(info.License.Value)
-	}
-	if !info.Version.IsEmpty() {
-		i.Version = info.Version.Value
-	}
-	if orderedmap.Len(info.Extensions) > 0 {
-		i.Extensions = high.ExtractExtensions(info.Extensions)
-	}
-	return i
-}
+func NewInfo(info *low.Info) *Info { _ = "STUB: not implemented"; return nil }
 
 // GoLow will return the low-level Info instance that was used to create the high-level one.
 func (i *Info) GoLow() *low.Info {
-	return i.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level Info instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level Info instance that was used to create the high-level one, with no type
 func (i *Info) GoLowUntyped() any {
-	return i.low
+	_ = "STUB: not implemented"
+
+	// Render will return a YAML representation of the Info object as a byte slice.
+	return *new(any)
 }
 
-// Render will return a YAML representation of the Info object as a byte slice.
 func (i *Info) Render() ([]byte, error) {
-	return yaml.Marshal(i)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML will create a ready to render YAML representation of the Info object.
+		nil
 }
 
-// MarshalYAML will create a ready to render YAML representation of the Info object.
-func (i *Info) MarshalYAML() (interface{}, error) {
-	nb := high.NewNodeBuilder(i, i.low)
-	return nb.Render(), nil
-}
+func (i *Info) MarshalYAML() (interface{}, error) { _ = "STUB: not implemented"; return nil, nil }

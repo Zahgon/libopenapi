@@ -5,11 +5,9 @@ package v3
 
 import (
 	"context"
-	"hash/maphash"
 	"sync"
 
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
@@ -38,81 +36,50 @@ type Callback struct {
 
 // GetIndex returns the index.SpecIndex instance attached to the Callback object
 func (cb *Callback) GetIndex() *index.SpecIndex {
-	return cb.index
+	_ = "STUB: not implemented"
+
+	// GetContext returns the context.Context instance used when building the Callback object
+	return nil
 }
 
-// GetContext returns the context.Context instance used when building the Callback object
 func (cb *Callback) GetContext() context.Context {
-	return cb.context
+	_ = "STUB: not implemented"
+
+	// GetExtensions returns all Callback extensions and satisfies the low.HasExtensions interface.
+	return *new(context.Context)
 }
 
-// GetExtensions returns all Callback extensions and satisfies the low.HasExtensions interface.
 func (cb *Callback) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return cb.Extensions
+	_ = "STUB: not implemented"
+	return nil
+
+	// GetRootNode returns the root yaml node of the Callback object
 }
 
-// GetRootNode returns the root yaml node of the Callback object
 func (cb *Callback) GetRootNode() *yaml.Node {
-	return cb.RootNode
+	_ = "STUB: not implemented"
+
+	// GetKeyNode returns the key yaml node of the Callback object
+	return nil
 }
 
-// GetKeyNode returns the key yaml node of the Callback object
 func (cb *Callback) GetKeyNode() *yaml.Node {
-	return cb.KeyNode
+	_ = "STUB: not implemented"
+
+	// FindExpression will locate a string expression and return a ValueReference containing the located PathItem
+	return nil
 }
 
-// FindExpression will locate a string expression and return a ValueReference containing the located PathItem
 func (cb *Callback) FindExpression(exp string) *low.ValueReference[*PathItem] {
-	return low.FindItemInOrderedMap(exp, cb.Expression)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Build will extract extensions, expressions and PathItem objects for Callback
 func (cb *Callback) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
-	cb.KeyNode = keyNode
-	cb.reference = low.Reference{}
-	cb.Reference = &cb.reference
-	if ok, _, ref := utils.IsNodeRefValue(root); ok {
-		cb.SetReference(ref, root)
-	}
-	root = utils.NodeAlias(root)
-	cb.RootNode = root
-	utils.CheckForMergeNodes(root)
-	cb.nodeStore = sync.Map{}
-	cb.Nodes = &cb.nodeStore
-	if len(root.Content) > 0 {
-		cb.NodeMap.ExtractNodes(root, false)
-	} else {
-		cb.AddNode(root.Line, root)
-	}
-	cb.Extensions = low.ExtractExtensions(root)
-	cb.context = ctx
-	cb.index = idx
-
-	low.ExtractExtensionNodes(ctx, cb.Extensions, cb.Nodes)
-
-	expressions, err := extractPathItemsMap(ctx, root, idx)
-	if err != nil {
-		return err
-	}
-	cb.Expression = expressions
-	for k := range expressions.KeysFromOldest() {
-		cb.Nodes.Store(k.KeyNode.Line, k.KeyNode)
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // Hash will return a consistent Hash of the Callback object
-func (cb *Callback) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		for v := range orderedmap.SortAlpha(cb.Expression).ValuesFromOldest() {
-			h.WriteString(low.GenerateHashString(v.Value))
-			h.WriteByte(low.HASH_PIPE)
-		}
-
-		for _, ext := range low.HashExtensions(cb.Extensions) {
-			h.WriteString(ext)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		return h.Sum64()
-	})
-}
+func (cb *Callback) Hash() uint64 { _ = "STUB: not implemented"; return 0 }

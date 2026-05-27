@@ -9,24 +9,8 @@ import (
 )
 
 // validateOverlay checks that the overlay has all required fields.
-func validateOverlay(overlay *highoverlay.Overlay) error {
-	if overlay.Overlay == "" {
-		return ErrMissingOverlayField
-	}
-	if overlay.Info == nil {
-		return ErrMissingInfo
-	}
-	if len(overlay.Actions) == 0 {
-		return ErrEmptyActions
-	}
-	return nil
-}
+func validateOverlay(overlay *highoverlay.Overlay) error { _ = "STUB: not implemented"; return nil }
 
 // validateTarget checks that a target node is a valid target (object or array).
 // Per the Overlay Spec, primitive/null targets are invalid.
-func validateTarget(node *yaml.Node) error {
-	if node.Kind == yaml.ScalarNode {
-		return ErrPrimitiveTarget
-	}
-	return nil
-}
+func validateTarget(node *yaml.Node) error { _ = "STUB: not implemented"; return nil }

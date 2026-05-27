@@ -5,7 +5,6 @@ package arazzo
 
 import (
 	"context"
-	"hash/maphash"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
@@ -31,61 +30,50 @@ type PayloadReplacement struct {
 // For Arazzo low models this is typically nil, because Arazzo parsing does not build a SpecIndex.
 // The index parameter is still required to satisfy the shared low.Buildable interface and generic extractors.
 func (p *PayloadReplacement) GetIndex() *index.SpecIndex {
-	return p.index
+	_ = "STUB: not implemented"
+
+	// GetContext returns the context.Context instance used when building the PayloadReplacement object.
+	return nil
 }
 
-// GetContext returns the context.Context instance used when building the PayloadReplacement object.
 func (p *PayloadReplacement) GetContext() context.Context {
-	return p.context
+	_ = "STUB: not implemented"
+
+	// FindExtension returns a ValueReference containing the extension value, if found.
+	return *new(context.Context)
 }
 
-// FindExtension returns a ValueReference containing the extension value, if found.
 func (p *PayloadReplacement) FindExtension(ext string) *low.ValueReference[*yaml.Node] {
-	return low.FindItemInOrderedMap(ext, p.Extensions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetRootNode returns the root yaml node of the PayloadReplacement object.
 func (p *PayloadReplacement) GetRootNode() *yaml.Node {
-	return p.RootNode
+	_ = "STUB: not implemented"
+
+	// GetKeyNode returns the key yaml node of the PayloadReplacement object.
+	return nil
 }
 
-// GetKeyNode returns the key yaml node of the PayloadReplacement object.
 func (p *PayloadReplacement) GetKeyNode() *yaml.Node {
-	return p.KeyNode
+	_ = "STUB: not implemented"
+
+	// Build will extract all properties of the PayloadReplacement object.
+	return nil
 }
 
-// Build will extract all properties of the PayloadReplacement object.
 func (p *PayloadReplacement) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
-	root = initBuild(&arazzoBase{
-		KeyNode:    &p.KeyNode,
-		RootNode:   &p.RootNode,
-		Reference:  &p.Reference,
-		NodeMap:    &p.NodeMap,
-		Extensions: &p.Extensions,
-		Index:      &p.index,
-		Context:    &p.context,
-	}, ctx, keyNode, root, idx)
-
-	p.Value = extractRawNode(ValueLabel, root)
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // GetExtensions returns all PayloadReplacement extensions and satisfies the low.HasExtensions interface.
 func (p *PayloadReplacement) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return p.Extensions
+	_ = "STUB: not implemented"
+	return nil
+
+	// Hash will return a consistent hash of the PayloadReplacement object.
 }
 
-// Hash will return a consistent hash of the PayloadReplacement object.
-func (p *PayloadReplacement) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if !p.Target.IsEmpty() {
-			h.WriteString(p.Target.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !p.Value.IsEmpty() {
-			hashYAMLNode(h, p.Value.Value)
-		}
-		hashExtensionsInto(h, p.Extensions)
-		return h.Sum64()
-	})
-}
+func (p *PayloadReplacement) Hash() uint64 { _ = "STUB: not implemented"; return 0 }

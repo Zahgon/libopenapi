@@ -3,6 +3,4 @@
 
 package utils
 
-func pathPartEqual(a, b string) bool {
-	return a == b
-}
+func pathPartEqual(a, b string) bool { _ = "STUB: not implemented"; return false }

@@ -4,7 +4,6 @@
 package arazzo
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/arazzo"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -21,42 +20,34 @@ type PayloadReplacement struct {
 
 // NewPayloadReplacement creates a new high-level PayloadReplacement instance from a low-level one.
 func NewPayloadReplacement(pr *low.PayloadReplacement) *PayloadReplacement {
-	p := new(PayloadReplacement)
-	p.low = pr
-	if !pr.Target.IsEmpty() {
-		p.Target = pr.Target.Value
-	}
-	if !pr.Value.IsEmpty() {
-		p.Value = pr.Value.Value
-	}
-	p.Extensions = high.ExtractExtensions(pr.Extensions)
-	return p
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GoLow returns the low-level PayloadReplacement instance used to create the high-level one.
 func (p *PayloadReplacement) GoLow() *low.PayloadReplacement {
-	return p.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped returns the low-level PayloadReplacement instance with no type.
+	return nil
 }
 
-// GoLowUntyped returns the low-level PayloadReplacement instance with no type.
 func (p *PayloadReplacement) GoLowUntyped() any {
-	return p.low
+	_ = "STUB: not implemented"
+
+	// Render returns a YAML representation of the PayloadReplacement object as a byte slice.
+	return *new(any)
 }
 
-// Render returns a YAML representation of the PayloadReplacement object as a byte slice.
 func (p *PayloadReplacement) Render() ([]byte, error) {
-	return yaml.Marshal(p)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML creates a ready to render YAML representation of the PayloadReplacement object.
+		nil
 }
 
-// MarshalYAML creates a ready to render YAML representation of the PayloadReplacement object.
 func (p *PayloadReplacement) MarshalYAML() (any, error) {
-	m := orderedmap.New[string, any]()
-	if p.Target != "" {
-		m.Set(low.TargetLabel, p.Target)
-	}
-	if p.Value != nil {
-		m.Set(low.ValueLabel, p.Value)
-	}
-	marshalExtensions(m, p.Extensions)
-	return m, nil
+	_ = "STUB: not implemented"
+	return *new(any), nil
 }

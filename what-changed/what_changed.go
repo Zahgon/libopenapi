@@ -16,8 +16,8 @@
 package what_changed
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/low/v2"
-	"github.com/pb33f/libopenapi/datamodel/low/v3"
+	v2 "github.com/pb33f/libopenapi/datamodel/low/v2"
+	v3 "github.com/pb33f/libopenapi/datamodel/low/v3"
 	"github.com/pb33f/libopenapi/what-changed/model"
 )
 
@@ -25,12 +25,14 @@ import (
 // made across the entire specification. The report outlines every property changed, everything that was added,
 // or removed and which of those changes were breaking.
 func CompareOpenAPIDocuments(original, updated *v3.Document) *model.DocumentChanges {
-	return model.CompareDocuments(original, updated)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // CompareSwaggerDocuments will compare left (original) and a right (updated) Swagger documents and extract every change
 // made across the entire specification. The report outlines every property changes, everything that was added,
 // or removed and which of those changes were breaking.
 func CompareSwaggerDocuments(original, updated *v2.Swagger) *model.DocumentChanges {
-	return model.CompareDocuments(original, updated)
+	_ = "STUB: not implemented"
+	return nil
 }

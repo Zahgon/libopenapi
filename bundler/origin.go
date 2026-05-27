@@ -51,33 +51,19 @@ type BundleResult struct {
 }
 
 // NewBundleResult creates a new BundleResult with initialized maps.
-func NewBundleResult() *BundleResult {
-	return &BundleResult{
-		Origins: make(ComponentOriginMap),
-	}
-}
+func NewBundleResult() *BundleResult { _ = "STUB: not implemented"; return nil }
 
 // AddOrigin adds a component origin to the result.
 func (r *BundleResult) AddOrigin(bundledRef string, origin *ComponentOrigin) {
-	if r.Origins == nil {
-		r.Origins = make(ComponentOriginMap)
-	}
-	origin.BundledRef = bundledRef
-	r.Origins[bundledRef] = origin
+	_ = "STUB: not implemented"
+	return
 }
 
 // GetOrigin retrieves the origin for a bundled reference.
 func (r *BundleResult) GetOrigin(bundledRef string) *ComponentOrigin {
-	if r.Origins == nil {
-		return nil
-	}
-	return r.Origins[bundledRef]
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // OriginCount returns the number of tracked origins.
-func (r *BundleResult) OriginCount() int {
-	if r.Origins == nil {
-		return 0
-	}
-	return len(r.Origins)
-}
+func (r *BundleResult) OriginCount() int { _ = "STUB: not implemented"; return 0 }

@@ -10,14 +10,9 @@
 package v3
 
 import (
-	"bytes"
-
-	"github.com/pb33f/libopenapi/datamodel/high"
 	"github.com/pb33f/libopenapi/datamodel/high/base"
-	"github.com/pb33f/libopenapi/datamodel/low"
 	lowv3 "github.com/pb33f/libopenapi/datamodel/low/v3"
 	"github.com/pb33f/libopenapi/index"
-	"github.com/pb33f/libopenapi/json"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
 )
@@ -103,110 +98,48 @@ type Document struct {
 }
 
 // NewDocument will create a new high-level Document from a low-level one.
-func NewDocument(document *lowv3.Document) *Document {
-	d := new(Document)
-	d.low = document
-	d.Index = document.Index
-	if !document.Info.IsEmpty() {
-		d.Info = base.NewInfo(document.Info.Value)
-	}
-	if !document.Version.IsEmpty() {
-		d.Version = document.Version.Value
-	}
-	var servers []*Server
-	for _, ser := range document.Servers.Value {
-		servers = append(servers, NewServer(ser.Value))
-	}
-	d.Servers = servers
-	var tags []*base.Tag
-	for _, tag := range document.Tags.Value {
-		tags = append(tags, base.NewTag(tag.Value))
-	}
-	d.Tags = tags
-	if !document.ExternalDocs.IsEmpty() {
-		d.ExternalDocs = base.NewExternalDoc(document.ExternalDocs.Value)
-	}
-	if orderedmap.Len(document.Extensions) > 0 {
-		d.Extensions = high.ExtractExtensions(document.Extensions)
-	}
-	if !document.Components.IsEmpty() {
-		d.Components = NewComponents(document.Components.Value)
-	}
-	if !document.Paths.IsEmpty() {
-		d.Paths = NewPaths(document.Paths.Value)
-	}
-	if !document.JsonSchemaDialect.IsEmpty() {
-		d.JsonSchemaDialect = document.JsonSchemaDialect.Value
-	}
-	if !document.Self.IsEmpty() {
-		d.Self = document.Self.Value
-	}
-	if !document.Webhooks.IsEmpty() {
-		d.Webhooks = low.FromReferenceMapWithFunc(document.Webhooks.Value, NewPathItem)
-	}
-	if !document.Security.IsEmpty() {
-		var security []*base.SecurityRequirement
-		for s := range document.Security.Value {
-			security = append(security, base.NewSecurityRequirement(document.Security.Value[s].Value))
-		}
-		d.Security = security
-	}
-	return d
-}
+func NewDocument(document *lowv3.Document) *Document { _ = "STUB: not implemented"; return nil }
 
 // GoLow returns the low-level Document that was used to create the high level one.
 func (d *Document) GoLow() *lowv3.Document {
-	return d.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped returns the low-level Document that was used to create the high level one, however, it's untyped.
+	return nil
 }
 
-// GoLowUntyped returns the low-level Document that was used to create the high level one, however, it's untyped.
 func (d *Document) GoLowUntyped() any {
-	return d.low
+	_ = "STUB: not implemented"
+
+	// Render will return a YAML representation of the Document object as a byte slice.
+	return *new(any)
 }
 
-// Render will return a YAML representation of the Document object as a byte slice.
 func (d *Document) Render() ([]byte, error) {
-	return yaml.Marshal(d)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// RenderWithIndention will return a YAML representation of the Document object as a byte slice.
+		// the rendering will use the original indention of the document.
+		nil
 }
 
-// RenderWithIndention will return a YAML representation of the Document object as a byte slice.
-// the rendering will use the original indention of the document.
-func (d *Document) RenderWithIndention(indent int) []byte {
-	var buf bytes.Buffer
-	yamlEncoder := yaml.NewEncoder(&buf)
-	yamlEncoder.SetIndent(indent)
-	_ = yamlEncoder.Encode(d)
-	return buf.Bytes()
-}
+func (d *Document) RenderWithIndention(indent int) []byte { _ = "STUB: not implemented"; return nil }
 
 // RenderJSON will return a JSON representation of the Document object as a byte slice.
 func (d *Document) RenderJSON(indention string) ([]byte, error) {
-	nb := high.NewNodeBuilder(d, d.low)
-
-	dat, err := json.YAMLNodeToJSON(nb.Render(), indention)
-	if err != nil {
-		return dat, err
-	}
-	return dat, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func (d *Document) RenderInline() ([]byte, error) {
-	di, _ := d.MarshalYAMLInline()
-	return yaml.Marshal(di)
-}
+func (d *Document) RenderInline() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // MarshalYAML will create a ready to render YAML representation of the Document object.
-func (d *Document) MarshalYAML() (interface{}, error) {
-	nb := high.NewNodeBuilder(d, d.low)
-	return nb.Render(), nil
-}
+func (d *Document) MarshalYAML() (interface{}, error) { _ = "STUB: not implemented"; return nil, nil }
 
 func (d *Document) MarshalYAMLInline() (interface{}, error) {
-	nb := high.NewNodeBuilder(d, d.low)
-	nb.Resolve = true
-	return nb.Render(), nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func (d *Document) GetIndex() *index.SpecIndex {
-	return d.Index
-}
+func (d *Document) GetIndex() *index.SpecIndex { _ = "STUB: not implemented"; return nil }

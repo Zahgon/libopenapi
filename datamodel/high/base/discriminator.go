@@ -4,11 +4,8 @@
 package base
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
-	"github.com/pb33f/libopenapi/datamodel/low"
 	lowBase "github.com/pb33f/libopenapi/datamodel/low/base"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"go.yaml.in/yaml/v4"
 )
 
 // Discriminator is only used by OpenAPI 3+ documents, it represents a polymorphic discriminator used for schemas
@@ -29,31 +26,34 @@ type Discriminator struct {
 
 // NewDiscriminator will create a new high-level Discriminator from a low-level one.
 func NewDiscriminator(disc *lowBase.Discriminator) *Discriminator {
-	d := new(Discriminator)
-	d.low = disc
-	d.PropertyName = disc.PropertyName.Value
-	d.Mapping = low.FromReferenceMap(disc.Mapping.Value)
-	d.DefaultMapping = disc.DefaultMapping.Value
-	return d
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GoLow returns the low-level Discriminator used to build the high-level one.
 func (d *Discriminator) GoLow() *lowBase.Discriminator {
-	return d.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level Discriminator instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level Discriminator instance that was used to create the high-level one, with no type
 func (d *Discriminator) GoLowUntyped() any {
-	return d.low
+	_ = "STUB: not implemented"
+
+	// Render will return a YAML representation of the Discriminator object as a byte slice.
+	return *new(any)
 }
 
-// Render will return a YAML representation of the Discriminator object as a byte slice.
 func (d *Discriminator) Render() ([]byte, error) {
-	return yaml.Marshal(d)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML will create a ready to render YAML representation of the Discriminator object.
+		nil
 }
 
-// MarshalYAML will create a ready to render YAML representation of the Discriminator object.
 func (d *Discriminator) MarshalYAML() (interface{}, error) {
-	nb := high.NewNodeBuilder(d, d.low)
-	return nb.Render(), nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

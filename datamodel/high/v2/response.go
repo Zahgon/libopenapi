@@ -4,9 +4,7 @@
 package v2
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	"github.com/pb33f/libopenapi/datamodel/high/base"
-	"github.com/pb33f/libopenapi/datamodel/low"
 	lowv2 "github.com/pb33f/libopenapi/datamodel/low/v2"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -25,26 +23,7 @@ type Response struct {
 }
 
 // NewResponse creates a new high-level instance of Response from a low level one.
-func NewResponse(response *lowv2.Response) *Response {
-	r := new(Response)
-	r.low = response
-	r.Extensions = high.ExtractExtensions(response.Extensions)
-	if !response.Description.IsEmpty() {
-		r.Description = response.Description.Value
-	}
-	if !response.Schema.IsEmpty() {
-		r.Schema = base.NewSchemaProxy(&response.Schema)
-	}
-	if !response.Headers.IsEmpty() {
-		r.Headers = low.FromReferenceMapWithFunc(response.Headers.Value, NewHeader)
-	}
-	if !response.Examples.IsEmpty() {
-		r.Examples = NewExample(response.Examples.Value)
-	}
-	return r
-}
+func NewResponse(response *lowv2.Response) *Response { _ = "STUB: not implemented"; return nil }
 
 // GoLow will return the low-level Response instance used to create the high level one.
-func (r *Response) GoLow() *lowv2.Response {
-	return r.low
-}
+func (r *Response) GoLow() *lowv2.Response { _ = "STUB: not implemented"; return nil }

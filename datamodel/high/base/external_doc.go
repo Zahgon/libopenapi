@@ -4,7 +4,6 @@
 package base
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/base"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -24,40 +23,34 @@ type ExternalDoc struct {
 }
 
 // NewExternalDoc will create a new high-level External Documentation object from a low-level one.
-func NewExternalDoc(extDoc *low.ExternalDoc) *ExternalDoc {
-	d := new(ExternalDoc)
-	d.low = extDoc
-	if !extDoc.Description.IsEmpty() {
-		d.Description = extDoc.Description.Value
-	}
-	if !extDoc.URL.IsEmpty() {
-		d.URL = extDoc.URL.Value
-	}
-	d.Extensions = high.ExtractExtensions(extDoc.Extensions)
-	return d
-}
+func NewExternalDoc(extDoc *low.ExternalDoc) *ExternalDoc { _ = "STUB: not implemented"; return nil }
 
 // GoLow returns the low-level ExternalDoc instance used to create the high-level one.
 func (e *ExternalDoc) GoLow() *low.ExternalDoc {
-	return e.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level ExternalDoc instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level ExternalDoc instance that was used to create the high-level one, with no type
-func (e *ExternalDoc) GoLowUntyped() any {
-	return e.low
-}
+func (e *ExternalDoc) GoLowUntyped() any { _ = "STUB: not implemented"; return *new(any) }
 
 func (e *ExternalDoc) GetExtensions() *orderedmap.Map[string, *yaml.Node] {
-	return e.Extensions
+	_ = "STUB: not implemented"
+	return nil
+
+	// Render will return a YAML representation of the ExternalDoc object as a byte slice.
 }
 
-// Render will return a YAML representation of the ExternalDoc object as a byte slice.
 func (e *ExternalDoc) Render() ([]byte, error) {
-	return yaml.Marshal(e)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML will create a ready to render YAML representation of the ExternalDoc object.
+		nil
 }
 
-// MarshalYAML will create a ready to render YAML representation of the ExternalDoc object.
 func (e *ExternalDoc) MarshalYAML() (interface{}, error) {
-	nb := high.NewNodeBuilder(e, e.low)
-	return nb.Render(), nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

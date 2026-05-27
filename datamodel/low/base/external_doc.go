@@ -5,13 +5,11 @@ package base
 
 import (
 	"context"
-	"hash/maphash"
 	"sync"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -37,74 +35,47 @@ type ExternalDoc struct {
 
 // FindExtension returns a ValueReference containing the extension value, if found.
 func (ex *ExternalDoc) FindExtension(ext string) *low.ValueReference[*yaml.Node] {
-	return low.FindItemInOrderedMap[*yaml.Node](ext, ex.Extensions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetRootNode will return the root yaml node of the ExternalDoc object
 func (ex *ExternalDoc) GetRootNode() *yaml.Node {
-	return ex.RootNode
+	_ = "STUB: not implemented"
+
+	// GetKeyNode will return the key yaml node of the ExternalDoc object
+	return nil
 }
 
-// GetKeyNode will return the key yaml node of the ExternalDoc object
 func (ex *ExternalDoc) GetKeyNode() *yaml.Node {
-	return ex.KeyNode
+	_ = "STUB: not implemented"
+
+	// Build will extract extensions from the ExternalDoc instance.
+	return nil
 }
 
-// Build will extract extensions from the ExternalDoc instance.
 func (ex *ExternalDoc) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
-	ex.KeyNode = keyNode
-	ex.reference = low.Reference{}
-	ex.Reference = &ex.reference
-	ex.nodeStore = sync.Map{}
-	ex.Nodes = &ex.nodeStore
-	ex.context = ctx
-	ex.index = idx
-	if root == nil {
-		ex.RootNode = nil
-		ex.Extensions = nil
-		return nil
-	}
-	root = utils.NodeAlias(root)
-	ex.RootNode = root
-	utils.CheckForMergeNodes(root)
-	if len(root.Content) > 0 {
-		ex.NodeMap.ExtractNodes(root, false)
-	} else {
-		ex.AddNode(root.Line, root)
-	}
-	ex.Extensions = low.ExtractExtensions(root)
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // GetExtensions returns all ExternalDoc extensions and satisfies the low.HasExtensions interface.
 func (ex *ExternalDoc) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return ex.Extensions
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (ex *ExternalDoc) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if ex.Description.Value != "" {
-			h.WriteString(ex.Description.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if ex.URL.Value != "" {
-			h.WriteString(ex.URL.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		for _, ext := range low.HashExtensions(ex.Extensions) {
-			h.WriteString(ext)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		return h.Sum64()
-	})
-}
+func (ex *ExternalDoc) Hash() uint64 { _ = "STUB: not implemented"; return 0 }
 
 // GetIndex returns the index.SpecIndex instance attached to the ExternalDoc object
 func (ex *ExternalDoc) GetIndex() *index.SpecIndex {
-	return ex.index
+	_ = "STUB: not implemented"
+
+	// GetContext returns the context.Context instance used when building the ExternalDoc object
+	return nil
 }
 
-// GetContext returns the context.Context instance used when building the ExternalDoc object
 func (ex *ExternalDoc) GetContext() context.Context {
-	return ex.context
+	_ = "STUB: not implemented"
+	return *new(context.Context)
 }

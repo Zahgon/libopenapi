@@ -3,8 +3,4 @@
 
 package utils
 
-import "strings"
-
-func pathPartEqual(a, b string) bool {
-	return strings.EqualFold(a, b)
-}
+func pathPartEqual(a, b string) bool { _ = "STUB: not implemented"; return false }

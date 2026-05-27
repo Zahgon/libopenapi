@@ -7,7 +7,6 @@ import (
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -30,23 +29,27 @@ type SchemaDynamicValue[A any, B any] struct {
 
 // IsA will return true if the 'A' or left value is set.
 func (s *SchemaDynamicValue[A, B]) IsA() bool {
-	return s.N == 0
+	_ = "STUB: not implemented"
+
+	// IsB will return true if the 'B' or right value is set.
+	return false
 }
 
-// IsB will return true if the 'B' or right value is set.
 func (s *SchemaDynamicValue[A, B]) IsB() bool {
-	return s.N == 1
+	_ = "STUB: not implemented"
+
+	// Schema represents a JSON Schema that support Swagger, OpenAPI 3 and OpenAPI 3.1
+	//
+	// Until 3.1 OpenAPI had a strange relationship with JSON Schema. It's been a super-set/sub-set
+	// mix, which has been confusing. So, instead of building a bunch of different models, we have compressed
+	// all variations into a single model that makes it easy to support multiple spec types.
+	//
+	//   - v2 schema: https://swagger.io/specification/v2/#schemaObject
+	//   - v3 schema: https://swagger.io/specification/#schema-object
+	//   - v3.1 schema: https://spec.openapis.org/oas/v3.1.0#schema-object
+	return false
 }
 
-// Schema represents a JSON Schema that support Swagger, OpenAPI 3 and OpenAPI 3.1
-//
-// Until 3.1 OpenAPI had a strange relationship with JSON Schema. It's been a super-set/sub-set
-// mix, which has been confusing. So, instead of building a bunch of different models, we have compressed
-// all variations into a single model that makes it easy to support multiple spec types.
-//
-//   - v2 schema: https://swagger.io/specification/v2/#schemaObject
-//   - v3 schema: https://swagger.io/specification/#schema-object
-//   - v3.1 schema: https://spec.openapis.org/oas/v3.1.0#schema-object
 type Schema struct {
 	// Reference to the '$schema' dialect setting (3.1 only)
 	SchemaTypeRef low.NodeReference[string]
@@ -151,33 +154,11 @@ type Schema struct {
 // will specifically look for a key node named 'schema' and extract the value mapped to that key. If the operation
 // fails then no NodeReference is returned and an error is returned instead.
 func ExtractSchema(ctx context.Context, root *yaml.Node, idx *index.SpecIndex) (*low.NodeReference[*SchemaProxy], error) {
-	errStr := "schema build failed: reference '%s' cannot be found at line %d, col %d"
-
-	if rf, refLabel, _ := utils.IsNodeRefValue(root); rf {
-		return extractSchemaProxy(ctx, idx, refLabel, root, errStr)
-	}
-
-	_, schLabel, schNode := utils.FindKeyNodeFull(SchemaLabel, root.Content)
-	if schNode != nil {
-		return extractSchemaProxy(ctx, idx, schLabel, schNode, errStr)
-	}
+	_ = "STUB: not implemented"
 	return nil, nil
 }
 
 func extractSchemaProxy(ctx context.Context, idx *index.SpecIndex, keyNode, valueNode *yaml.Node, errFormat string) (*low.NodeReference[*SchemaProxy], error) {
-	resolved, err := resolveSchemaBuildInput(ctx, valueNode, idx, errFormat)
-	if err != nil {
-		return nil, err
-	}
-
-	built := buildSchemaProxy(resolved.ctx, resolved.idx, keyNode, resolved.valueNode, resolved.scopeNode, resolved.refNode, resolved.transformed, resolved.refLocation)
-	n := &low.NodeReference[*SchemaProxy]{
-		Value:     built.Value,
-		KeyNode:   keyNode,
-		ValueNode: built.ValueNode,
-	}
-	if resolved.refLocation != "" {
-		n.SetReference(resolved.refLocation, resolved.refNode)
-	}
-	return n, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

@@ -13,8 +13,6 @@ package v2
 
 import (
 	"context"
-	"errors"
-	"path/filepath"
 
 	"github.com/pb33f/libopenapi/datamodel"
 	"github.com/pb33f/libopenapi/datamodel/low"
@@ -120,256 +118,98 @@ type Swagger struct {
 
 // FindExtension locates an extension from the root of the Swagger document.
 func (s *Swagger) FindExtension(ext string) *low.ValueReference[*yaml.Node] {
-	return low.FindItemInOrderedMap(ext, s.Extensions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetExtensions returns all Swagger/Top level extensions and satisfies the low.HasExtensions interface.
 func (s *Swagger) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return s.Extensions
+	_ = "STUB: not implemented"
+	return nil
+
+	// CreateDocumentFromConfig will create a new Swagger document from the provided SpecInfo and DocumentConfiguration.
 }
 
-// CreateDocumentFromConfig will create a new Swagger document from the provided SpecInfo and DocumentConfiguration.
 func CreateDocumentFromConfig(info *datamodel.SpecInfo,
 	configuration *datamodel.DocumentConfiguration,
 ) (*Swagger, error) {
-	return createDocument(info, configuration)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func createDocument(info *datamodel.SpecInfo, config *datamodel.DocumentConfiguration) (*Swagger, error) {
-	doc := Swagger{Swagger: low.ValueReference[string]{Value: info.Version, ValueNode: info.RootNode}}
-	doc.Extensions = low.ExtractExtensions(info.RootNode.Content[0])
-
-	// create an index config and shadow the document configuration.
-	idxConfig := index.CreateClosedAPIIndexConfig()
-	idxConfig.SpecInfo = info
-	idxConfig.IgnoreArrayCircularReferences = config.IgnoreArrayCircularReferences
-	idxConfig.IgnorePolymorphicCircularReferences = config.IgnorePolymorphicCircularReferences
-	idxConfig.AllowUnknownExtensionContentDetection = config.AllowUnknownExtensionContentDetection
-	idxConfig.SkipExternalRefResolution = config.SkipExternalRefResolution
-	idxConfig.ResolveNestedRefsWithDocumentContext = config.ResolveNestedRefsWithDocumentContext
-	idxConfig.AvoidCircularReferenceCheck = true
-	idxConfig.BaseURL = config.BaseURL
-	idxConfig.BasePath = config.BasePath
-	idxConfig.Logger = config.Logger
-	idxConfig.ExcludeExtensionRefs = config.ExcludeExtensionRefs
-	rolodex := index.NewRolodex(idxConfig)
-	rolodex.SetRootNode(info.RootNode)
-	doc.Rolodex = rolodex
-
-	// If basePath is provided, add a local filesystem to the rolodex.
-	if idxConfig.BasePath != "" {
-		var cwd string
-		cwd, _ = filepath.Abs(config.BasePath)
-		// if a supplied local filesystem is provided, add it to the rolodex.
-		if config.LocalFS != nil {
-			var localFS index.RolodexFS
-			if fs, ok := config.LocalFS.(index.RolodexFS); ok {
-				localFS = fs
-			} else {
-				// wrap a plain fs.FS so it can be indexed.
-				localFSConf := index.LocalFSConfig{
-					BaseDirectory: cwd,
-					IndexConfig:   idxConfig,
-					FileFilters:   config.FileFilter,
-					DirFS:         config.LocalFS,
-				}
-
-				localFS, _ = index.NewLocalFSWithConfig(&localFSConf)
-				idxConfig.AllowFileLookup = true
-			}
-
-			rolodex.AddLocalFS(cwd, localFS)
-		} else {
-
-			// create a local filesystem
-			localFSConf := index.LocalFSConfig{
-				BaseDirectory: cwd,
-				IndexConfig:   idxConfig,
-				FileFilters:   config.FileFilter,
-			}
-			fileFS, _ := index.NewLocalFSWithConfig(&localFSConf)
-			idxConfig.AllowFileLookup = true
-
-			// add the filesystem to the rolodex
-			rolodex.AddLocalFS(cwd, fileFS)
-		}
-	}
-
-	// Only create a remote filesystem when the caller explicitly allows remote references.
-	if config.AllowRemoteReferences {
-
-		// create a remote filesystem
-		remoteFS, _ := index.NewRemoteFSWithConfig(idxConfig)
-		if config.RemoteURLHandler != nil {
-			remoteFS.RemoteHandlerFunc = config.RemoteURLHandler
-		}
-		idxConfig.AllowRemoteLookup = true
-
-		// add to the rolodex
-		u := "default"
-		if config.BaseURL != nil {
-			u = config.BaseURL.String()
-		}
-		rolodex.AddRemoteFS(u, remoteFS)
-
-	}
-
-	doc.Rolodex = rolodex
-
-	var errs []error
-
-	// index all the things!
-	_ = rolodex.IndexTheRolodex(context.Background())
-
-	// check for circular references
-	if !config.SkipCircularReferenceCheck {
-		rolodex.CheckForCircularReferences()
-	}
-
-	// extract errors
-	roloErrs := rolodex.GetCaughtErrors()
-	if roloErrs != nil {
-		errs = append(errs, roloErrs...)
-	}
-
-	// set the index on the document.
-	doc.Index = rolodex.GetRootIndex()
-	doc.SpecInfo = info
-
-	// build out swagger scalar variables.
-	_ = low.BuildModel(info.RootNode.Content[0], &doc)
-
-	ctx := context.Background()
-
-	// extract externalDocs
-	extDocs, err := low.ExtractObject[*base.ExternalDoc](ctx, base.ExternalDocsLabel, info.RootNode, rolodex.GetRootIndex())
-	if err != nil {
-		errs = append(errs, err)
-	}
-
-	doc.ExternalDocs = extDocs
-
-	extractionFuncs := []documentFunction{
-		extractInfo,
-		extractPaths,
-		extractDefinitions,
-		extractParamDefinitions,
-		extractResponsesDefinitions,
-		extractSecurityDefinitions,
-		extractTags,
-		extractSecurity,
-	}
-	doneChan := make(chan struct{})
-	errChan := make(chan error)
-	for i := range extractionFuncs {
-		go extractionFuncs[i](ctx, info.RootNode.Content[0], &doc, rolodex.GetRootIndex(), doneChan, errChan)
-	}
-	completedExtractions := 0
-	for completedExtractions < len(extractionFuncs) {
-		select {
-		case <-doneChan:
-			completedExtractions++
-		case e := <-errChan:
-			completedExtractions++
-			errs = append(errs, e)
-		}
-	}
-
-	return &doc, errors.Join(errs...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func (s *Swagger) GetExternalDocs() *low.NodeReference[any] {
-	return &low.NodeReference[any]{
-		KeyNode:   s.ExternalDocs.KeyNode,
-		ValueNode: s.ExternalDocs.ValueNode,
-		Value:     s.ExternalDocs.Value,
-	}
-}
+// create an index config and shadow the document configuration.
+
+// If basePath is provided, add a local filesystem to the rolodex.
+
+// if a supplied local filesystem is provided, add it to the rolodex.
+
+// wrap a plain fs.FS so it can be indexed.
+
+// create a local filesystem
+
+// add the filesystem to the rolodex
+
+// Only create a remote filesystem when the caller explicitly allows remote references.
+
+// create a remote filesystem
+
+// add to the rolodex
+
+// index all the things!
+
+// check for circular references
+
+// extract errors
+
+// set the index on the document.
+
+// build out swagger scalar variables.
+
+// extract externalDocs
+
+func (s *Swagger) GetExternalDocs() *low.NodeReference[any] { _ = "STUB: not implemented"; return nil }
 
 func extractInfo(ctx context.Context, root *yaml.Node, doc *Swagger, idx *index.SpecIndex, c chan<- struct{}, e chan<- error) {
-	info, err := low.ExtractObject[*base.Info](ctx, base.InfoLabel, root, idx)
-	if err != nil {
-		e <- err
-		return
-	}
-	doc.Info = info
-	c <- struct{}{}
+	_ = "STUB: not implemented"
+	return
 }
 
 func extractPaths(ctx context.Context, root *yaml.Node, doc *Swagger, idx *index.SpecIndex, c chan<- struct{}, e chan<- error) {
-	paths, err := low.ExtractObject[*Paths](ctx, PathsLabel, root, idx)
-	if err != nil {
-		e <- err
-		return
-	}
-	doc.Paths = paths
-	c <- struct{}{}
+	_ = "STUB: not implemented"
+	return
 }
 
 func extractDefinitions(ctx context.Context, root *yaml.Node, doc *Swagger, idx *index.SpecIndex, c chan<- struct{}, e chan<- error) {
-	def, err := low.ExtractObject[*Definitions](ctx, DefinitionsLabel, root, idx)
-	if err != nil {
-		e <- err
-		return
-	}
-	doc.Definitions = def
-	c <- struct{}{}
+	_ = "STUB: not implemented"
+	return
 }
 
 func extractParamDefinitions(ctx context.Context, root *yaml.Node, doc *Swagger, idx *index.SpecIndex, c chan<- struct{}, e chan<- error) {
-	param, err := low.ExtractObject[*ParameterDefinitions](ctx, ParametersLabel, root, idx)
-	if err != nil {
-		e <- err
-		return
-	}
-	doc.Parameters = param
-	c <- struct{}{}
+	_ = "STUB: not implemented"
+	return
 }
 
 func extractResponsesDefinitions(ctx context.Context, root *yaml.Node, doc *Swagger, idx *index.SpecIndex, c chan<- struct{}, e chan<- error) {
-	resp, err := low.ExtractObject[*ResponsesDefinitions](ctx, ResponsesLabel, root, idx)
-	if err != nil {
-		e <- err
-		return
-	}
-	doc.Responses = resp
-	c <- struct{}{}
+	_ = "STUB: not implemented"
+	return
 }
 
 func extractSecurityDefinitions(ctx context.Context, root *yaml.Node, doc *Swagger, idx *index.SpecIndex, c chan<- struct{}, e chan<- error) {
-	sec, err := low.ExtractObject[*SecurityDefinitions](ctx, SecurityDefinitionsLabel, root, idx)
-	if err != nil {
-		e <- err
-		return
-	}
-	doc.SecurityDefinitions = sec
-	c <- struct{}{}
+	_ = "STUB: not implemented"
+	return
 }
 
 func extractTags(ctx context.Context, root *yaml.Node, doc *Swagger, idx *index.SpecIndex, c chan<- struct{}, e chan<- error) {
-	tags, ln, vn, err := low.ExtractArray[*base.Tag](ctx, base.TagsLabel, root, idx)
-	if err != nil {
-		e <- err
-		return
-	}
-	doc.Tags = low.NodeReference[[]low.ValueReference[*base.Tag]]{
-		Value:     tags,
-		KeyNode:   ln,
-		ValueNode: vn,
-	}
-	c <- struct{}{}
+	_ = "STUB: not implemented"
+	return
 }
 
 func extractSecurity(ctx context.Context, root *yaml.Node, doc *Swagger, idx *index.SpecIndex, c chan<- struct{}, e chan<- error) {
-	sec, ln, vn, err := low.ExtractArray[*base.SecurityRequirement](ctx, SecurityLabel, root, idx)
-	if err != nil {
-		e <- err
-		return
-	}
-	doc.Security = low.NodeReference[[]low.ValueReference[*base.SecurityRequirement]]{
-		Value:     sec,
-		KeyNode:   ln,
-		ValueNode: vn,
-	}
-	c <- struct{}{}
+	_ = "STUB: not implemented"
+	return
 }

@@ -4,7 +4,6 @@
 package base
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/base"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -29,60 +28,34 @@ type Tag struct {
 }
 
 // NewTag creates a new high-level Tag instance that is backed by a low-level one.
-func NewTag(tag *low.Tag) *Tag {
-	t := new(Tag)
-	t.low = tag
-	if !tag.Name.IsEmpty() {
-		t.Name = tag.Name.Value
-	}
-	if !tag.Summary.IsEmpty() {
-		t.Summary = tag.Summary.Value
-	}
-	if !tag.Description.IsEmpty() {
-		t.Description = tag.Description.Value
-	}
-	if !tag.ExternalDocs.IsEmpty() {
-		t.ExternalDocs = NewExternalDoc(tag.ExternalDocs.Value)
-	}
-	if !tag.Parent.IsEmpty() {
-		t.Parent = tag.Parent.Value
-	}
-	if !tag.Kind.IsEmpty() {
-		t.Kind = tag.Kind.Value
-	}
-	t.Extensions = high.ExtractExtensions(tag.Extensions)
-	return t
-}
+func NewTag(tag *low.Tag) *Tag { _ = "STUB: not implemented"; return nil }
 
 // GoLow returns the low-level Tag instance used to create the high-level one.
 func (t *Tag) GoLow() *low.Tag {
-	return t.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level Tag instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level Tag instance that was used to create the high-level one, with no type
 func (t *Tag) GoLowUntyped() any {
-	return t.low
+	_ = "STUB: not implemented"
+
+	// Render will return a YAML representation of the Info object as a byte slice.
+	return *new(any)
 }
 
-// Render will return a YAML representation of the Info object as a byte slice.
 func (t *Tag) Render() ([]byte, error) {
-	return yaml.Marshal(t)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// Render will return a YAML representation of the Info object as a byte slice.
+		nil
 }
 
-// Render will return a YAML representation of the Info object as a byte slice.
-func (t *Tag) RenderInline() ([]byte, error) {
-	d, _ := t.MarshalYAMLInline()
-	return yaml.Marshal(d)
-}
+func (t *Tag) RenderInline() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // MarshalYAML will create a ready to render YAML representation of the Info object.
-func (t *Tag) MarshalYAML() (interface{}, error) {
-	nb := high.NewNodeBuilder(t, t.low)
-	return nb.Render(), nil
-}
+func (t *Tag) MarshalYAML() (interface{}, error) { _ = "STUB: not implemented"; return nil, nil }
 
-func (t *Tag) MarshalYAMLInline() (interface{}, error) {
-	nb := high.NewNodeBuilder(t, t.low)
-	nb.Resolve = true
-	return nb.Render(), nil
-}
+func (t *Tag) MarshalYAMLInline() (interface{}, error) { _ = "STUB: not implemented"; return nil, nil }

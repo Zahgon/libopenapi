@@ -5,11 +5,9 @@ package base
 
 import (
 	"context"
-	"hash/maphash"
 	"sync"
 
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
@@ -44,103 +42,54 @@ type Info struct {
 
 // FindExtension attempts to locate an extension with the supplied key
 func (i *Info) FindExtension(ext string) *low.ValueReference[*yaml.Node] {
-	return low.FindItemInOrderedMap(ext, i.Extensions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetRootNode will return the root yaml node of the Info object
 func (i *Info) GetRootNode() *yaml.Node {
-	return i.RootNode
-}
+	_ = "STUB: not implemented"
 
-// GetKeyNode will return the key yaml node of the Info object
-func (i *Info) GetKeyNode() *yaml.Node {
-	return i.KeyNode
-}
-
-// GetExtensions returns all extensions for Info
-func (i *Info) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return i.Extensions
-}
-
-// Build will extract out the Contact and Info objects from the supplied root node.
-func (i *Info) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
-	i.KeyNode = keyNode
-	i.reference = low.Reference{}
-	i.Reference = &i.reference
-	i.nodeStore = sync.Map{}
-	i.Nodes = &i.nodeStore
-	i.index = idx
-	i.context = ctx
-	if root == nil {
-		i.RootNode = nil
-		i.Extensions = nil
-		return nil
-	}
-	root = utils.NodeAlias(root)
-	i.RootNode = root
-	utils.CheckForMergeNodes(root)
-	if len(root.Content) > 0 {
-		i.NodeMap.ExtractNodes(root, false)
-	} else {
-		i.AddNode(root.Line, root)
-	}
-	i.Extensions = low.ExtractExtensions(root)
-
-	// extract contact
-	contact, _ := low.ExtractObject[*Contact](ctx, ContactLabel, root, idx)
-	i.Contact = contact
-
-	// extract license
-	lic, _ := low.ExtractObject[*License](ctx, LicenseLabel, root, idx)
-	i.License = lic
+	// GetKeyNode will return the key yaml node of the Info object
 	return nil
 }
 
+func (i *Info) GetKeyNode() *yaml.Node {
+	_ = "STUB: not implemented"
+
+	// GetExtensions returns all extensions for Info
+	return nil
+}
+
+func (i *Info) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
+	_ = "STUB: not implemented"
+	return nil
+
+	// Build will extract out the Contact and Info objects from the supplied root node.
+}
+
+func (i *Info) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
+	_ = "STUB: not implemented"
+	return nil
+}
+
+// extract contact
+
+// extract license
+
 // GetIndex will return the index.SpecIndex instance attached to the Info object
 func (i *Info) GetIndex() *index.SpecIndex {
-	return i.index
+	_ = "STUB: not implemented"
+
+	// GetContext will return the context.Context instance used when building the Info object
+	return nil
 }
 
-// GetContext will return the context.Context instance used when building the Info object
 func (i *Info) GetContext() context.Context {
-	return i.context
+	_ = "STUB: not implemented"
+
+	// Hash will return a consistent hash of the Info object
+	return *new(context.Context)
 }
 
-// Hash will return a consistent hash of the Info object
-func (i *Info) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if !i.Title.IsEmpty() {
-			h.WriteString(i.Title.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !i.Summary.IsEmpty() {
-			h.WriteString(i.Summary.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !i.Description.IsEmpty() {
-			h.WriteString(i.Description.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !i.TermsOfService.IsEmpty() {
-			h.WriteString(i.TermsOfService.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !i.Contact.IsEmpty() {
-			h.WriteString(low.GenerateHashString(i.Contact.Value))
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !i.License.IsEmpty() {
-			h.WriteString(low.GenerateHashString(i.License.Value))
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !i.Version.IsEmpty() {
-			h.WriteString(i.Version.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		for _, ext := range low.HashExtensions(i.Extensions) {
-			h.WriteString(ext)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		return h.Sum64()
-	})
-}
+func (i *Info) Hash() uint64 { _ = "STUB: not implemented"; return 0 }

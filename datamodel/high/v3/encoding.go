@@ -4,12 +4,9 @@
 package v3
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
-	"github.com/pb33f/libopenapi/datamodel/low"
 	lowmodel "github.com/pb33f/libopenapi/datamodel/low"
 	lowv3 "github.com/pb33f/libopenapi/datamodel/low/v3"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"go.yaml.in/yaml/v4"
 )
 
 // Encoding represents an OpenAPI 3+ Encoding object
@@ -24,44 +21,38 @@ type Encoding struct {
 }
 
 // NewEncoding creates a new instance of Encoding from a low-level one.
-func NewEncoding(encoding *lowv3.Encoding) *Encoding {
-	e := new(Encoding)
-	e.low = encoding
-	e.ContentType = encoding.ContentType.Value
-	e.Style = encoding.Style.Value
-	if !encoding.Explode.IsEmpty() {
-		e.Explode = &encoding.Explode.Value
-	}
-	e.AllowReserved = encoding.AllowReserved.Value
-	e.Headers = ExtractHeaders(encoding.Headers.Value)
-	return e
-}
+func NewEncoding(encoding *lowv3.Encoding) *Encoding { _ = "STUB: not implemented"; return nil }
 
 // GoLow returns the low-level Encoding instance used to create the high-level one.
 func (e *Encoding) GoLow() *lowv3.Encoding {
-	return e.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level Encoding instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level Encoding instance that was used to create the high-level one, with no type
 func (e *Encoding) GoLowUntyped() any {
-	return e.low
+	_ = "STUB: not implemented"
+
+	// Render will return a YAML representation of the Encoding object as a byte slice.
+	return *new(any)
 }
 
-// Render will return a YAML representation of the Encoding object as a byte slice.
 func (e *Encoding) Render() ([]byte, error) {
-	return yaml.Marshal(e)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML will create a ready to render YAML representation of the Encoding object.
+		nil
 }
 
-// MarshalYAML will create a ready to render YAML representation of the Encoding object.
-func (e *Encoding) MarshalYAML() (interface{}, error) {
-	nb := high.NewNodeBuilder(e, e.low)
-	return nb.Render(), nil
-}
+func (e *Encoding) MarshalYAML() (interface{}, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // MarshalYAMLInline will create a ready to render YAML representation of the Encoding object,
 // with all references resolved inline.
 func (e *Encoding) MarshalYAMLInline() (interface{}, error) {
-	return high.RenderInline(e, e.low)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // MarshalYAMLInlineWithContext will create a ready to render YAML representation of the Encoding object,
@@ -69,10 +60,12 @@ func (e *Encoding) MarshalYAMLInline() (interface{}, error) {
 // The ctx parameter should be *base.InlineRenderContext but is typed as any to satisfy the
 // high.RenderableInlineWithContext interface without import cycles.
 func (e *Encoding) MarshalYAMLInlineWithContext(ctx any) (interface{}, error) {
-	return high.RenderInlineWithContext(e, e.low, ctx)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // ExtractEncoding converts hard to navigate low-level plumbing Encoding definitions, into a high-level simple map
 func ExtractEncoding(elements *orderedmap.Map[lowmodel.KeyReference[string], lowmodel.ValueReference[*lowv3.Encoding]]) *orderedmap.Map[string, *Encoding] {
-	return low.FromReferenceMapWithFunc(elements, NewEncoding)
+	_ = "STUB: not implemented"
+	return nil
 }

@@ -16,15 +16,4 @@ type ModelContext struct {
 
 // GetModelContext will return the ModelContext from a context.Context object
 // if it is available, otherwise it will return nil.
-func GetModelContext(ctx context.Context) *ModelContext {
-	if ctx == nil {
-		return nil
-	}
-	if ctx.Value("modelCtx") == nil {
-		return nil
-	}
-	if c, ok := ctx.Value("modelCtx").(*ModelContext); ok {
-		return c
-	}
-	return nil
-}
+func GetModelContext(ctx context.Context) *ModelContext { _ = "STUB: not implemented"; return nil }

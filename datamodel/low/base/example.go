@@ -5,13 +5,11 @@ package base
 
 import (
 	"context"
-	"hash/maphash"
 	"sync"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -38,124 +36,53 @@ type Example struct {
 
 // FindExtension returns a ValueReference containing the extension value, if found.
 func (ex *Example) FindExtension(ext string) *low.ValueReference[*yaml.Node] {
-	return low.FindItemInOrderedMap[*yaml.Node](ext, ex.Extensions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetRootNode will return the root yaml node of the Example object
 func (ex *Example) GetRootNode() *yaml.Node {
-	return ex.RootNode
-}
+	_ = "STUB: not implemented"
 
-// GetKeyNode will return the key yaml node of the Example object
-func (ex *Example) GetKeyNode() *yaml.Node {
-	return ex.KeyNode
-}
-
-// Hash will return a consistent hash of the Example object
-func (ex *Example) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if ex.Summary.Value != "" {
-			h.WriteString(ex.Summary.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if ex.Description.Value != "" {
-			h.WriteString(ex.Description.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if ex.Value.Value != nil && !ex.Value.Value.IsZero() {
-			h.WriteString(low.GenerateHashString(ex.Value.Value))
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if ex.ExternalValue.Value != "" {
-			h.WriteString(ex.ExternalValue.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if ex.DataValue.Value != nil && !ex.DataValue.Value.IsZero() {
-			h.WriteString(low.GenerateHashString(ex.DataValue.Value))
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if ex.SerializedValue.Value != "" {
-			h.WriteString(ex.SerializedValue.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		for _, ext := range low.HashExtensions(ex.Extensions) {
-			h.WriteString(ext)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		return h.Sum64()
-	})
-}
-
-// Build extracts extensions and example value
-func (ex *Example) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
-	ex.KeyNode = keyNode
-	ex.reference = low.Reference{}
-	ex.Reference = &ex.reference
-	if ok, _, ref := utils.IsNodeRefValue(root); ok {
-		ex.SetReference(ref, root)
-	}
-	root = utils.NodeAlias(root)
-	ex.RootNode = root
-	utils.CheckForMergeNodes(root)
-	ex.nodeStore = sync.Map{}
-	ex.Nodes = &ex.nodeStore
-	if len(root.Content) > 0 {
-		ex.NodeMap.ExtractNodes(root, false)
-	} else {
-		ex.AddNode(root.Line, root)
-	}
-	ex.Extensions = low.ExtractExtensions(root)
-	ex.context = ctx
-	ex.index = idx
-
-	_, ln, vn := utils.FindKeyNodeFull(ValueLabel, root.Content)
-	_, dataLn, dataVn := utils.FindKeyNodeFull(DataValueLabel, root.Content)
-	_, serializedLn, serializedVn := utils.FindKeyNodeFull(SerializedValueLabel, root.Content)
-
-	if vn != nil {
-		ex.Value = low.NodeReference[*yaml.Node]{
-			Value:     vn,
-			KeyNode:   ln,
-			ValueNode: vn,
-		}
-
-		low.MergeRecursiveNodesIfLineAbsent(ex.Nodes, vn)
-	}
-
-	// OpenAPI 3.2+ dataValue field
-	if dataVn != nil {
-		ex.DataValue = low.NodeReference[*yaml.Node]{
-			Value:     dataVn,
-			KeyNode:   dataLn,
-			ValueNode: dataVn,
-		}
-
-		low.MergeRecursiveNodesIfLineAbsent(ex.Nodes, dataVn)
-	}
-
-	// OpenAPI 3.2+ serializedValue field
-	if serializedVn != nil {
-		ex.SerializedValue = low.NodeReference[string]{
-			Value:     serializedVn.Value,
-			KeyNode:   serializedLn,
-			ValueNode: serializedVn,
-		}
-	}
-
+	// GetKeyNode will return the key yaml node of the Example object
 	return nil
 }
 
+func (ex *Example) GetKeyNode() *yaml.Node {
+	_ = "STUB: not implemented"
+
+	// Hash will return a consistent hash of the Example object
+	return nil
+}
+
+func (ex *Example) Hash() uint64 { _ = "STUB: not implemented"; return 0 }
+
+// Build extracts extensions and example value
+func (ex *Example) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
+	_ = "STUB: not implemented"
+	return nil
+}
+
+// OpenAPI 3.2+ dataValue field
+
+// OpenAPI 3.2+ serializedValue field
+
 // GetExtensions will return Example extensions to satisfy the HasExtensions interface.
 func (ex *Example) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return ex.Extensions
+	_ = "STUB: not implemented"
+	return nil
+
+	// GetIndex will return the index.SpecIndex instance attached to the Example object
 }
 
-// GetIndex will return the index.SpecIndex instance attached to the Example object
 func (ex *Example) GetIndex() *index.SpecIndex {
-	return ex.index
+	_ = "STUB: not implemented"
+
+	// GetContext will return the context.Context instance used when building the Example object
+	return nil
 }
 
-// GetContext will return the context.Context instance used when building the Example object
 func (ex *Example) GetContext() context.Context {
-	return ex.context
+	_ = "STUB: not implemented"
+	return *new(context.Context)
 }

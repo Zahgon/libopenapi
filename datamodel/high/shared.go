@@ -14,9 +14,6 @@
 package high
 
 import (
-	"context"
-	"fmt"
-
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
@@ -42,25 +39,20 @@ type GoesLowUntyped interface {
 // ExtractExtensions is a convenience method for converting low-level extension definitions, to a high level *orderedmap.Map[string, *yaml.Node]
 // definition that is easier to consume in applications.
 func ExtractExtensions(extensions *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]]) *orderedmap.Map[string, *yaml.Node] {
-	return low.FromReferenceMap(extensions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // RenderInline creates an inline YAML representation of a high-level object with all references resolved.
 // This is a shared helper used by MarshalYAMLInline implementations across high-level types.
-func RenderInline(high, low any) (interface{}, error) {
-	nb := NewNodeBuilder(high, low)
-	nb.Resolve = true
-	return nb.Render(), nil
-}
+func RenderInline(high, low any) (interface{}, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // RenderInlineWithContext creates an inline YAML representation of a high-level object with all references resolved.
 // Uses the provided context for cycle detection during inline rendering.
 // The ctx parameter should be *base.InlineRenderContext but is typed as any to avoid import cycles.
 func RenderInlineWithContext(high, low, ctx any) (interface{}, error) {
-	nb := NewNodeBuilder(high, low)
-	nb.Resolve = true
-	nb.RenderContext = ctx
-	return nb.Render(), nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // UnpackExtensions is a convenience function that makes it easy and simple to unpack an objects extensions
@@ -80,18 +72,8 @@ func RenderInlineWithContext(high, low, ctx any) (interface{}, error) {
 //	schema := schemaProxy.Schema() // any high-level object that has
 //	extensions, err := UnpackExtensions[MyComplexType, low.Schema](schema)
 func UnpackExtensions[T any, R low.HasExtensions[T]](low GoesLow[R]) (*orderedmap.Map[string, *T], error) {
-	m := orderedmap.New[string, *T]()
-	ext := low.GoLow().GetExtensions()
-	for ext, value := range ext.FromOldest() {
-		g := new(T)
-		valueNode := value.ValueNode
-		err := valueNode.Decode(g)
-		if err != nil {
-			return nil, err
-		}
-		m.Set(ext.Value, g)
-	}
-	return m, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // ExternalRefResolver is an interface for low-level objects that can be external references.
@@ -135,38 +117,15 @@ func ResolveExternalRef[H any, L any](
 	buildLow ExternalRefBuildFunc[L],
 	buildHigh func(L) H,
 ) (ExternalRefResult[H, L], error) {
-	var result ExternalRefResult[H, L]
-
-	// not a reference, nothing to resolve
-	if lowObj == nil || !lowObj.IsReference() {
-		return result, nil
-	}
-
-	idx := lowObj.GetIndex()
-	if idx == nil {
-		return result, nil
-	}
-
-	ref := lowObj.GetReference()
-	resolved := idx.FindComponent(context.Background(), ref)
-	if resolved == nil || resolved.Node == nil {
-		return result, nil
-	}
-
-	// build the low-level object from the resolved node
-	lowResolved, err := buildLow(resolved.Node, resolved.Index)
-	if err != nil {
-		return result, fmt.Errorf("failed to build resolved external reference '%s': %w", ref, err)
-	}
-
-	// build the high-level object from the resolved low-level object
-	highResolved := buildHigh(lowResolved)
-
-	result.High = highResolved
-	result.Low = lowResolved
-	result.Resolved = true
-	return result, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// not a reference, nothing to resolve
+
+// build the low-level object from the resolved node
+
+// build the high-level object from the resolved low-level object
 
 // RenderExternalRef is a convenience function that resolves an external reference and renders it inline.
 // This combines ResolveExternalRef with RenderInline for the common case where you want to
@@ -181,11 +140,8 @@ func RenderExternalRef[H any, L any](
 	buildLow ExternalRefBuildFunc[L],
 	buildHigh func(L) H,
 ) (interface{}, error) {
-	result, err := ResolveExternalRef(lowObj, buildLow, buildHigh)
-	if err != nil || !result.Resolved {
-		return nil, err
-	}
-	return RenderInline(result.High, result.Low)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // RenderExternalRefWithContext is like RenderExternalRef but passes a context for cycle detection.
@@ -195,9 +151,6 @@ func RenderExternalRefWithContext[H any, L any](
 	buildHigh func(L) H,
 	ctx any,
 ) (interface{}, error) {
-	result, err := ResolveExternalRef(lowObj, buildLow, buildHigh)
-	if err != nil || !result.Resolved {
-		return nil, err
-	}
-	return RenderInlineWithContext(result.High, result.Low, ctx)
+	_ = "STUB: not implemented"
+	return nil, nil
 }

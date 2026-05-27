@@ -10,10 +10,6 @@ import (
 
 // marshalExtensions appends extension key-value pairs from ext into the ordered map m.
 func marshalExtensions(m *orderedmap.Map[string, any], ext *orderedmap.Map[string, *yaml.Node]) {
-	if ext == nil {
-		return
-	}
-	for pair := ext.First(); pair != nil; pair = pair.Next() {
-		m.Set(pair.Key(), pair.Value())
-	}
+	_ = "STUB: not implemented"
+	return
 }

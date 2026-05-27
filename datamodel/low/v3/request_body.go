@@ -5,13 +5,11 @@ package v3
 
 import (
 	"context"
-	"hash/maphash"
 	"sync"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -34,101 +32,58 @@ type RequestBody struct {
 
 // GetIndex returns the index.SpecIndex instance attached to the RequestBody object.
 func (rb *RequestBody) GetIndex() *index.SpecIndex {
-	return rb.index
+	_ = "STUB: not implemented"
+
+	// GetContext returns the context.Context instance used when building the RequestBody object.
+	return nil
 }
 
-// GetContext returns the context.Context instance used when building the RequestBody object.
 func (rb *RequestBody) GetContext() context.Context {
-	return rb.context
+	_ = "STUB: not implemented"
+
+	// GetRootNode returns the root yaml node of the RequestBody object.
+	return *new(context.Context)
 }
 
-// GetRootNode returns the root yaml node of the RequestBody object.
 func (rb *RequestBody) GetRootNode() *yaml.Node {
-	return rb.RootNode
+	_ = "STUB: not implemented"
+
+	// GetKeyNode returns the key yaml node of the RequestBody object.
+	return nil
 }
 
-// GetKeyNode returns the key yaml node of the RequestBody object.
 func (rb *RequestBody) GetKeyNode() *yaml.Node {
-	return rb.KeyNode
+	_ = "STUB: not implemented"
+
+	// FindExtension attempts to locate an extension using the provided name.
+	return nil
 }
 
-// FindExtension attempts to locate an extension using the provided name.
 func (rb *RequestBody) FindExtension(ext string) *low.ValueReference[*yaml.Node] {
-	return low.FindItemInOrderedMap(ext, rb.Extensions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetExtensions returns all RequestBody extensions and satisfies the low.HasExtensions interface.
 func (rb *RequestBody) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return rb.Extensions
+	_ = "STUB: not implemented"
+	return nil
+
+	// FindContent attempts to find content/MediaType defined using a specified name.
 }
 
-// FindContent attempts to find content/MediaType defined using a specified name.
 func (rb *RequestBody) FindContent(cType string) *low.ValueReference[*MediaType] {
-	return low.FindItemInOrderedMap[*MediaType](cType, rb.Content.Value)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Build will extract extensions and MediaType objects from the node.
 func (rb *RequestBody) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
-	rb.KeyNode = keyNode
-	rb.reference = low.Reference{}
-	rb.Reference = &rb.reference
-	if ok, _, ref := utils.IsNodeRefValue(root); ok {
-		rb.SetReference(ref, root)
-	}
-	root = utils.NodeAlias(root)
-	rb.RootNode = root
-	utils.CheckForMergeNodes(root)
-	rb.nodeStore = sync.Map{}
-	rb.Nodes = &rb.nodeStore
-	if len(root.Content) > 0 {
-		rb.NodeMap.ExtractNodes(root, false)
-	} else {
-		rb.AddNode(root.Line, root)
-	}
-	rb.Extensions = low.ExtractExtensions(root)
-	rb.index = idx
-	rb.context = ctx
-
-	low.ExtractExtensionNodes(ctx, rb.Extensions, rb.Nodes)
-
-	// handle content, if set.
-	con, cL, cN, cErr := low.ExtractMap[*MediaType](ctx, ContentLabel, root, idx)
-	if cErr != nil {
-		return cErr
-	}
-	if con != nil {
-		rb.Content = low.NodeReference[*orderedmap.Map[low.KeyReference[string], low.ValueReference[*MediaType]]]{
-			Value:     con,
-			KeyNode:   cL,
-			ValueNode: cN,
-		}
-		rb.Nodes.Store(cL.Line, cL)
-		for k, v := range con.FromOldest() {
-			v.Value.Nodes.Store(k.KeyNode.Line, k.KeyNode)
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
+// handle content, if set.
+
 // Hash will return a consistent Hash of the RequestBody object
-func (rb *RequestBody) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if rb.Description.Value != "" {
-			h.WriteString(rb.Description.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !rb.Required.IsEmpty() {
-			low.HashBool(h, rb.Required.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		for v := range orderedmap.SortAlpha(rb.Content.Value).ValuesFromOldest() {
-			h.WriteString(low.GenerateHashString(v.Value))
-			h.WriteByte(low.HASH_PIPE)
-		}
-		for _, ext := range low.HashExtensions(rb.Extensions) {
-			h.WriteString(ext)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		return h.Sum64()
-	})
-}
+func (rb *RequestBody) Hash() uint64 { _ = "STUB: not implemented"; return 0 }

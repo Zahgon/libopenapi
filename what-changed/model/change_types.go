@@ -4,8 +4,6 @@
 package model
 
 import (
-	"encoding/json"
-
 	"go.yaml.in/yaml/v4"
 )
 
@@ -54,21 +52,15 @@ type ChangeIsReferenced interface {
 //
 // It's worth noting that there is no guarantee to the positions of anything in either left or right, so
 // considering these values as 'changes' is going to add a considerable amount of noise to results.
-func (c *ChangeContext) HasChanged() bool {
-	if c.NewLine != nil && c.OriginalLine != nil && *c.NewLine != *c.OriginalLine {
-		return true
-	}
-	//if c.NewColumn != nil && c.OriginalColumn != nil && *c.NewColumn != *c.OriginalColumn {
-	//    return true
-	//}
-	if (c.NewLine == nil && c.OriginalLine != nil) || (c.NewLine != nil && c.OriginalLine == nil) {
-		return true
-	}
-	//if (c.NewColumn == nil && c.OriginalColumn != nil) || (c.NewColumn != nil && c.OriginalColumn == nil) {
-	//    return true
-	//}
-	return false
-}
+func (c *ChangeContext) HasChanged() bool { _ = "STUB: not implemented"; return false }
+
+//if c.NewColumn != nil && c.OriginalColumn != nil && *c.NewColumn != *c.OriginalColumn {
+//    return true
+//}
+
+//if (c.NewColumn == nil && c.OriginalColumn != nil) || (c.NewColumn != nil && c.OriginalColumn == nil) {
+//    return true
+//}
 
 // Change represents a change between two different elements inside an OpenAPI specification.
 type Change struct {
@@ -117,54 +109,7 @@ type Change struct {
 }
 
 // MarshalJSON is a custom JSON marshaller for the Change object.
-func (c *Change) MarshalJSON() ([]byte, error) {
-	changeType := ""
-	switch c.ChangeType {
-	case Modified:
-		changeType = "modified"
-	case PropertyAdded:
-		changeType = "property_added"
-	case ObjectAdded:
-		changeType = "object_added"
-	case ObjectRemoved:
-		changeType = "object_removed"
-	case PropertyRemoved:
-		changeType = "property_removed"
-	}
-	data := map[string]interface{}{
-		"change":     c.ChangeType,
-		"changeText": changeType,
-		"property":   c.Property,
-		"breaking":   c.Breaking,
-	}
-
-	if c.Original != "" {
-		data["original"] = c.Original
-	}
-
-	if c.New != "" {
-		data["new"] = c.New
-	}
-
-	if c.OriginalEncoded != "" {
-		data["originalEncoded"] = c.OriginalEncoded
-	}
-
-	if c.NewEncoded != "" {
-		data["newEncoded"] = c.NewEncoded
-	}
-
-	if c.Context != nil {
-		data["context"] = c.Context
-	}
-	if c.Type != "" {
-		data["type"] = c.Type
-	}
-	if c.Path != "" {
-		data["path"] = c.Path
-	}
-	return json.Marshal(data)
-}
+func (c *Change) MarshalJSON() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // PropertyChanges holds a slice of Change pointers
 type PropertyChanges struct {
@@ -173,40 +118,23 @@ type PropertyChanges struct {
 	Changes              []*Change `json:"changes,omitempty" yaml:"changes,omitempty"`
 }
 
-func (p *PropertyChanges) SetChangeReference(ref string) {
-	p.ChangeReference = ref
-}
+func (p *PropertyChanges) SetChangeReference(ref string) { _ = "STUB: not implemented"; return }
 
-func (p *PropertyChanges) GetChangeReference() string {
-	return p.ChangeReference
-}
+func (p *PropertyChanges) GetChangeReference() string { _ = "STUB: not implemented"; return "" }
 
 // TotalChanges returns the total number of property changes made.
-func (p *PropertyChanges) TotalChanges() int {
-	if p == nil {
-		return 0
-	}
-	return len(p.Changes)
-}
+func (p *PropertyChanges) TotalChanges() int { _ = "STUB: not implemented"; return 0 }
 
 // TotalBreakingChanges returns the total number of property breaking changes made.
-func (p *PropertyChanges) TotalBreakingChanges() int {
-	return CountBreakingChanges(p.Changes)
-}
+func (p *PropertyChanges) TotalBreakingChanges() int { _ = "STUB: not implemented"; return 0 }
 
 // PropertiesOnly will set the change object to only render properties, not the timeline.
-func (p *PropertyChanges) PropertiesOnly() {
-	p.RenderPropertiesOnly = true
-}
+func (p *PropertyChanges) PropertiesOnly() { _ = "STUB: not implemented"; return }
 
 // GetPropertyChanges will return just the property changes
-func (p *PropertyChanges) GetPropertyChanges() []*Change {
-	return p.Changes
-}
+func (p *PropertyChanges) GetPropertyChanges() []*Change { _ = "STUB: not implemented"; return nil }
 
-func NewPropertyChanges(changes []*Change) *PropertyChanges {
-	return &PropertyChanges{Changes: changes}
-}
+func NewPropertyChanges(changes []*Change) *PropertyChanges { _ = "STUB: not implemented"; return nil }
 
 // PropertyCheck is used by functions to check the state of left and right values.
 type PropertyCheck struct {
@@ -272,15 +200,8 @@ func NewPropertyCheck(
 	changes *[]*Change,
 	original, new any,
 ) *PropertyCheck {
-	return &PropertyCheck{
-		LeftNode:  leftNode,
-		RightNode: rightNode,
-		Label:     label,
-		Changes:   changes,
-		Breaking:  BreakingModified(component, property), // fallback for legacy code paths
-		Component: component,
-		Property:  property,
-		Original:  original,
-		New:       new,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// fallback for legacy code paths

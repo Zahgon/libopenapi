@@ -4,7 +4,6 @@
 package arazzo
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/arazzo"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -25,73 +24,35 @@ type SuccessAction struct {
 }
 
 // IsReusable returns true if this success action is a Reusable Object (has a reference field).
-func (s *SuccessAction) IsReusable() bool {
-	return s.Reference != ""
-}
+func (s *SuccessAction) IsReusable() bool { _ = "STUB: not implemented"; return false }
 
 // NewSuccessAction creates a new high-level SuccessAction instance from a low-level one.
-func NewSuccessAction(sa *low.SuccessAction) *SuccessAction {
-	s := new(SuccessAction)
-	s.low = sa
-	if !sa.Name.IsEmpty() {
-		s.Name = sa.Name.Value
-	}
-	if !sa.Type.IsEmpty() {
-		s.Type = sa.Type.Value
-	}
-	if !sa.WorkflowId.IsEmpty() {
-		s.WorkflowId = sa.WorkflowId.Value
-	}
-	if !sa.StepId.IsEmpty() {
-		s.StepId = sa.StepId.Value
-	}
-	if !sa.ComponentRef.IsEmpty() {
-		s.Reference = sa.ComponentRef.Value
-	}
-	if !sa.Criteria.IsEmpty() {
-		s.Criteria = buildSlice(sa.Criteria.Value, NewCriterion)
-	}
-	s.Extensions = high.ExtractExtensions(sa.Extensions)
-	return s
-}
+func NewSuccessAction(sa *low.SuccessAction) *SuccessAction { _ = "STUB: not implemented"; return nil }
 
 // GoLow returns the low-level SuccessAction instance used to create the high-level one.
 func (s *SuccessAction) GoLow() *low.SuccessAction {
-	return s.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped returns the low-level SuccessAction instance with no type.
+	return nil
 }
 
-// GoLowUntyped returns the low-level SuccessAction instance with no type.
 func (s *SuccessAction) GoLowUntyped() any {
-	return s.low
+	_ = "STUB: not implemented"
+
+	// Render returns a YAML representation of the SuccessAction object as a byte slice.
+	return *new(any)
 }
 
-// Render returns a YAML representation of the SuccessAction object as a byte slice.
 func (s *SuccessAction) Render() ([]byte, error) {
-	return yaml.Marshal(s)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML creates a ready to render YAML representation of the SuccessAction object.
+		nil
 }
 
-// MarshalYAML creates a ready to render YAML representation of the SuccessAction object.
 func (s *SuccessAction) MarshalYAML() (any, error) {
-	m := orderedmap.New[string, any]()
-	if s.Reference != "" {
-		m.Set(low.ReferenceLabel, s.Reference)
-		return m, nil
-	}
-	if s.Name != "" {
-		m.Set(low.NameLabel, s.Name)
-	}
-	if s.Type != "" {
-		m.Set(low.TypeLabel, s.Type)
-	}
-	if s.WorkflowId != "" {
-		m.Set(low.WorkflowIdLabel, s.WorkflowId)
-	}
-	if s.StepId != "" {
-		m.Set(low.StepIdLabel, s.StepId)
-	}
-	if len(s.Criteria) > 0 {
-		m.Set(low.CriteriaLabel, s.Criteria)
-	}
-	marshalExtensions(m, s.Extensions)
-	return m, nil
+	_ = "STUB: not implemented"
+	return *new(any), nil
 }

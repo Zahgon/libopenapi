@@ -5,13 +5,11 @@ package v3
 
 import (
 	"context"
-	"hash/maphash"
 	"sync"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -49,115 +47,50 @@ type SecurityScheme struct {
 
 // GetIndex returns the index.SpecIndex instance attached to the SecurityScheme object.
 func (ss *SecurityScheme) GetIndex() *index.SpecIndex {
-	return ss.index
+	_ = "STUB: not implemented"
+
+	// GetContext returns the context.Context instance used when building the SecurityScheme object.
+	return nil
 }
 
-// GetContext returns the context.Context instance used when building the SecurityScheme object.
 func (ss *SecurityScheme) GetContext() context.Context {
-	return ss.context
+	_ = "STUB: not implemented"
+
+	// GetRootNode returns the root yaml node of the SecurityScheme object.
+	return *new(context.Context)
 }
 
-// GetRootNode returns the root yaml node of the SecurityScheme object.
 func (ss *SecurityScheme) GetRootNode() *yaml.Node {
-	return ss.RootNode
+	_ = "STUB: not implemented"
+
+	// GetKeyNode returns the key yaml node of the SecurityScheme object.
+	return nil
 }
 
-// GetKeyNode returns the key yaml node of the SecurityScheme object.
 func (ss *SecurityScheme) GetKeyNode() *yaml.Node {
-	return ss.KeyNode
+	_ = "STUB: not implemented"
+
+	// FindExtension attempts to locate an extension using the supplied key.
+	return nil
 }
 
-// FindExtension attempts to locate an extension using the supplied key.
 func (ss *SecurityScheme) FindExtension(ext string) *low.ValueReference[*yaml.Node] {
-	return low.FindItemInOrderedMap(ext, ss.Extensions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetExtensions returns all SecurityScheme extensions and satisfies the low.HasExtensions interface.
 func (ss *SecurityScheme) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return ss.Extensions
+	_ = "STUB: not implemented"
+	return nil
+
+	// Build will extract OAuthFlows and extensions from the node.
 }
 
-// Build will extract OAuthFlows and extensions from the node.
 func (ss *SecurityScheme) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
-	ss.KeyNode = keyNode
-	ss.reference = low.Reference{}
-	ss.Reference = &ss.reference
-	if ok, _, ref := utils.IsNodeRefValue(root); ok {
-		ss.SetReference(ref, root)
-	}
-	root = utils.NodeAlias(root)
-	ss.RootNode = root
-	utils.CheckForMergeNodes(root)
-	ss.nodeStore = sync.Map{}
-	ss.Nodes = &ss.nodeStore
-	if len(root.Content) > 0 {
-		ss.NodeMap.ExtractNodes(root, false)
-	} else {
-		ss.AddNode(root.Line, root)
-	}
-	ss.Extensions = low.ExtractExtensions(root)
-	ss.index = idx
-	ss.context = ctx
-
-	low.ExtractExtensionNodes(ctx, ss.Extensions, ss.Nodes)
-
-	oa, oaErr := low.ExtractObject[*OAuthFlows](ctx, OAuthFlowsLabel, root, idx)
-	if oaErr != nil {
-		return oaErr
-	}
-	if oa.Value != nil {
-		ss.Flows = oa
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // Hash will return a consistent Hash of the SecurityScheme object
-func (ss *SecurityScheme) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if !ss.Type.IsEmpty() {
-			h.WriteString(ss.Type.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !ss.Description.IsEmpty() {
-			h.WriteString(ss.Description.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !ss.Name.IsEmpty() {
-			h.WriteString(ss.Name.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !ss.In.IsEmpty() {
-			h.WriteString(ss.In.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !ss.Scheme.IsEmpty() {
-			h.WriteString(ss.Scheme.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !ss.BearerFormat.IsEmpty() {
-			h.WriteString(ss.BearerFormat.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !ss.Flows.IsEmpty() {
-			h.WriteString(low.GenerateHashString(ss.Flows.Value))
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !ss.OpenIdConnectUrl.IsEmpty() {
-			h.WriteString(ss.OpenIdConnectUrl.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !ss.OAuth2MetadataUrl.IsEmpty() {
-			h.WriteString(ss.OAuth2MetadataUrl.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !ss.Deprecated.IsEmpty() {
-			low.HashBool(h, ss.Deprecated.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		for _, ext := range low.HashExtensions(ss.Extensions) {
-			h.WriteString(ext)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		return h.Sum64()
-	})
-}
+func (ss *SecurityScheme) Hash() uint64 { _ = "STUB: not implemented"; return 0 }

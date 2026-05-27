@@ -44,41 +44,16 @@ type NodeOrigin struct {
 // GetNode returns a node from the spec based on a line and column. The second return var bool is true
 // if the node was found, false if not.
 func (index *SpecIndex) GetNode(line int, column int) (*yaml.Node, bool) {
-	index.nodeMapLock.RLock()
-	defer index.nodeMapLock.RUnlock()
-	if index.nodeMap[line] == nil {
-		return nil, false
-	}
-	node := index.nodeMap[line][column]
-	return node, node != nil
+	_ = "STUB: not implemented"
+	return nil, false
 }
 
 // MapNodes maps all nodes in the document to a map of line/column to node.
 // Writes directly to index.nodeMap with lock protection (concurrent reads
 // may happen from ExtractRefs running in parallel).
-func (index *SpecIndex) MapNodes(rootNode *yaml.Node) {
-	mapNodesRecursive(rootNode, index, true)
-	index.nodeMapCompleted <- struct{}{}
-	close(index.nodeMapCompleted)
-}
+func (index *SpecIndex) MapNodes(rootNode *yaml.Node) { _ = "STUB: not implemented"; return }
 
 func mapNodesRecursive(node *yaml.Node, index *SpecIndex, root bool) {
-	if node.Kind == yaml.DocumentNode {
-		node = node.Content[0]
-	}
-	for _, child := range node.Content {
-		index.nodeMapLock.Lock()
-		if index.nodeMap[child.Line] == nil {
-			index.nodeMap[child.Line] = make(map[int]*yaml.Node)
-		}
-		index.nodeMap[child.Line][child.Column] = child
-		index.nodeMapLock.Unlock()
-		mapNodesRecursive(child, index, false)
-	}
-	index.nodeMapLock.Lock()
-	if index.nodeMap[node.Line] == nil {
-		index.nodeMap[node.Line] = make(map[int]*yaml.Node)
-	}
-	index.nodeMap[node.Line][node.Column] = node
-	index.nodeMapLock.Unlock()
+	_ = "STUB: not implemented"
+	return
 }

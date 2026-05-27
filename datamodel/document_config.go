@@ -7,7 +7,6 @@ import (
 	"io/fs"
 	"log/slog"
 	"net/url"
-	"os"
 
 	"github.com/pb33f/libopenapi/utils"
 )
@@ -211,13 +210,8 @@ type DocumentConfiguration struct {
 	ResolveNestedRefsWithDocumentContext bool
 }
 
-func NewDocumentConfiguration() *DocumentConfiguration {
-	return &DocumentConfiguration{
-		Logger: slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			Level: slog.LevelError,
-		})),
-		TransformSiblingRefs:      true,          // enable openapi 3.1 compliance by default
-		MergeReferencedProperties: true,          // enable enhanced resolution by default
-		PropertyMergeStrategy:     PreserveLocal, // local properties take precedence
-	}
-}
+func NewDocumentConfiguration() *DocumentConfiguration { _ = "STUB: not implemented"; return nil }
+
+// enable openapi 3.1 compliance by default
+// enable enhanced resolution by default
+// local properties take precedence

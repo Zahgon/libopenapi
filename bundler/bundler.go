@@ -5,334 +5,103 @@
 package bundler
 
 import (
-	"context"
 	"errors"
-	"fmt"
-	"os"
-	"path/filepath"
-	"slices"
-	"strings"
-	"sync"
 
 	"go.yaml.in/yaml/v4"
 
-	"github.com/pb33f/libopenapi"
 	"github.com/pb33f/libopenapi/datamodel"
-	highbase "github.com/pb33f/libopenapi/datamodel/high/base"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
-	lowbase "github.com/pb33f/libopenapi/datamodel/low/base"
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 )
 
 // ErrInvalidModel is returned when the model is not usable.
 var ErrInvalidModel = errors.New("invalid model")
 
 func renderBundledModel(model *v3.Document, rootIndex *index.SpecIndex) ([]byte, error) {
-	if rootIndex != nil && rootIndex.GetConfig() != nil && rootIndex.GetConfig().SpecInfo != nil {
-		specInfo := rootIndex.GetConfig().SpecInfo
-		if specInfo.SpecFileType == datamodel.YAMLFileType && specInfo.OriginalIndentation > 0 {
-			return model.RenderWithIndention(specInfo.OriginalIndentation), nil
-		}
-	}
-	return model.Render()
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func validateDiscriminatorMappings(rolodex *index.Rolodex) error {
-	if rolodex == nil {
-		return nil
-	}
-
-	if err := validateDiscriminatorMappingsFromIndex(rolodex.GetRootIndex()); err != nil {
-		return err
-	}
-	for _, idx := range rolodex.GetIndexes() {
-		if err := validateDiscriminatorMappingsFromIndex(idx); err != nil {
-			return err
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func validateDiscriminatorMappingsFromIndex(idx *index.SpecIndex) error {
-	if idx == nil {
-		return nil
-	}
-	return validateDiscriminatorMappingsFromNode(idx.GetRootNode())
-}
-
-func validateDiscriminatorMappingsFromNode(n *yaml.Node) error {
-	return validateDiscriminatorMappingsFromRootNode(n, make(map[*yaml.Node]struct{}))
-}
-
-func validateDiscriminatorMappingsFromRootNode(n *yaml.Node, seen map[*yaml.Node]struct{}) error {
-	n = discriminatorValidationNode(n)
-	if n == nil {
-		return nil
-	}
-
-	switch n.Kind {
-	case yaml.MappingNode:
-		if !isOpenAPIDocumentRoot(n) && isDiscriminatorValidationSchemaCandidate(n) {
-			return validateDiscriminatorMappingsFromSchemaNode(n, seen)
-		}
-		if err := validateDiscriminatorMappingsFromOpenAPIObject(n, seen, make(map[*yaml.Node]struct{}), nil); err != nil {
-			return err
-		}
-		if isDiscriminatorValidationSchemaCandidate(n) {
-			return validateDiscriminatorMappingsFromSchemaNode(n, seen)
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
-func isOpenAPIDocumentRoot(n *yaml.Node) bool {
-	n = discriminatorValidationNode(n)
-	if n == nil || n.Kind != yaml.MappingNode {
-		return false
-	}
-	for i := 0; i < len(n.Content); i += 2 {
-		keyNode := utils.NodeAlias(n.Content[i])
-		if keyNode == nil {
-			continue
-		}
-		if keyNode.Value == "openapi" || keyNode.Value == "swagger" {
-			return true
-		}
-	}
-	return false
+func validateDiscriminatorMappingsFromNode(n *yaml.Node) error {
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func discriminatorValidationNode(n *yaml.Node) *yaml.Node {
-	n = utils.NodeAlias(n)
-	if n != nil && n.Kind == yaml.DocumentNode && len(n.Content) > 0 {
-		n = utils.NodeAlias(n.Content[0])
-	}
-	return n
+func validateDiscriminatorMappingsFromRootNode(n *yaml.Node, seen map[*yaml.Node]struct{}) error {
+	_ = "STUB: not implemented"
+	return nil
 }
+
+func isOpenAPIDocumentRoot(n *yaml.Node) bool { _ = "STUB: not implemented"; return false }
+
+func discriminatorValidationNode(n *yaml.Node) *yaml.Node { _ = "STUB: not implemented"; return nil }
 
 func validateDiscriminatorMappingsFromOpenAPIObject(n *yaml.Node, schemaSeen, objectSeen map[*yaml.Node]struct{}, path []string) error {
-	n = discriminatorValidationNode(n)
-	if n == nil {
-		return nil
-	}
-	if _, ok := objectSeen[n]; ok {
-		return nil
-	}
-	objectSeen[n] = struct{}{}
-
-	switch n.Kind {
-	case yaml.SequenceNode:
-		for _, c := range n.Content {
-			if err := validateDiscriminatorMappingsFromOpenAPIObject(c, schemaSeen, objectSeen, path); err != nil {
-				return err
-			}
-		}
-	case yaml.MappingNode:
-		for i := 0; i < len(n.Content); i += 2 {
-			keyNode := utils.NodeAlias(n.Content[i])
-			valueNode := utils.NodeAlias(n.Content[i+1])
-			if keyNode == nil || valueNode == nil {
-				continue
-			}
-			key := keyNode.Value
-			if shouldSkipDiscriminatorValidationOpenAPIValue(key) {
-				continue
-			}
-
-			switch {
-			case key == lowbase.SchemaLabel:
-				if err := validateDiscriminatorMappingsFromSchemaNode(valueNode, schemaSeen); err != nil {
-					return err
-				}
-				continue
-			case key == "schemas" && (len(path) == 0 || path[len(path)-1] == "components"):
-				if err := validateDiscriminatorMappingsFromSchemaMap(valueNode, schemaSeen); err != nil {
-					return err
-				}
-				continue
-			case key == "definitions" && len(path) == 0:
-				if err := validateDiscriminatorMappingsFromSchemaMap(valueNode, schemaSeen); err != nil {
-					return err
-				}
-				continue
-			}
-
-			if valueNode.Kind == yaml.MappingNode || valueNode.Kind == yaml.SequenceNode {
-				if err := validateDiscriminatorMappingsFromOpenAPIObject(valueNode, schemaSeen, objectSeen, append(path, key)); err != nil {
-					return err
-				}
-			}
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func shouldSkipDiscriminatorValidationOpenAPIValue(key string) bool {
-	return key == lowbase.ExampleLabel ||
-		key == lowbase.ExamplesLabel ||
-		strings.HasPrefix(key, "x-")
+	_ = "STUB: not implemented"
+	return false
 }
 
 func validateDiscriminatorMappingsFromSchemaNode(n *yaml.Node, seen map[*yaml.Node]struct{}) error {
-	n = discriminatorValidationNode(n)
-	if n == nil || n.Kind != yaml.MappingNode {
-		return nil
-	}
-	if _, ok := seen[n]; ok {
-		return nil
-	}
-	seen[n] = struct{}{}
-
-	for i := 0; i < len(n.Content); i += 2 {
-		keyNode := utils.NodeAlias(n.Content[i])
-		valueNode := utils.NodeAlias(n.Content[i+1])
-		if keyNode == nil || valueNode == nil {
-			continue
-		}
-		key := keyNode.Value
-		switch {
-		case key == lowbase.DiscriminatorLabel:
-			if err := lowbase.ValidateDiscriminatorMappingValueNodes(valueNode); err != nil {
-				return err
-			}
-		case isDirectSchemaChildKey(key):
-			if err := validateDiscriminatorMappingsFromSchemaNode(valueNode, seen); err != nil {
-				return err
-			}
-		case isSchemaMapChildKey(key):
-			if err := validateDiscriminatorMappingsFromSchemaMap(valueNode, seen); err != nil {
-				return err
-			}
-		case isSchemaArrayChildKey(key):
-			if err := validateDiscriminatorMappingsFromSchemaArray(valueNode, seen); err != nil {
-				return err
-			}
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func validateDiscriminatorMappingsFromSchemaMap(n *yaml.Node, seen map[*yaml.Node]struct{}) error {
-	n = discriminatorValidationNode(n)
-	if n == nil || n.Kind != yaml.MappingNode {
-		return nil
-	}
-	for i := 1; i < len(n.Content); i += 2 {
-		if err := validateDiscriminatorMappingsFromSchemaNode(n.Content[i], seen); err != nil {
-			return err
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func validateDiscriminatorMappingsFromSchemaArray(n *yaml.Node, seen map[*yaml.Node]struct{}) error {
-	n = discriminatorValidationNode(n)
-	if n == nil || n.Kind != yaml.SequenceNode {
-		return nil
-	}
-	for _, c := range n.Content {
-		if err := validateDiscriminatorMappingsFromSchemaNode(c, seen); err != nil {
-			return err
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func isDiscriminatorValidationSchemaCandidate(n *yaml.Node) bool {
-	n = discriminatorValidationNode(n)
-	if n == nil || n.Kind != yaml.MappingNode {
-		return false
-	}
-	for i := 0; i < len(n.Content); i += 2 {
-		keyNode := utils.NodeAlias(n.Content[i])
-		if keyNode == nil {
-			continue
-		}
-		switch keyNode.Value {
-		case "$ref", lowbase.SchemaTypeLabel, lowbase.IdLabel, lowbase.TypeLabel,
-			lowbase.DiscriminatorLabel, lowbase.PropertiesLabel,
-			lowbase.PatternPropertiesLabel, lowbase.DependentSchemasLabel,
-			lowbase.AdditionalPropertiesLabel, lowbase.ItemsLabel,
-			lowbase.PrefixItemsLabel, lowbase.ContainsLabel, lowbase.AllOfLabel,
-			lowbase.AnyOfLabel, lowbase.OneOfLabel, lowbase.NotLabel,
-			lowbase.IfLabel, lowbase.ThenLabel, lowbase.ElseLabel,
-			lowbase.PropertyNamesLabel, lowbase.UnevaluatedItemsLabel,
-			lowbase.UnevaluatedPropertiesLabel, lowbase.ContentSchemaLabel,
-			"required", "enum", "const", "$defs", "definitions":
-			return true
-		}
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
-func isDirectSchemaChildKey(key string) bool {
-	switch key {
-	case lowbase.SchemaLabel, lowbase.ItemsLabel, lowbase.AdditionalPropertiesLabel,
-		lowbase.ContainsLabel, lowbase.NotLabel, lowbase.IfLabel, lowbase.ThenLabel,
-		lowbase.ElseLabel, lowbase.PropertyNamesLabel, lowbase.UnevaluatedItemsLabel,
-		lowbase.UnevaluatedPropertiesLabel, lowbase.ContentSchemaLabel:
-		return true
-	}
-	return false
-}
+func isDirectSchemaChildKey(key string) bool { _ = "STUB: not implemented"; return false }
 
-func isSchemaMapChildKey(key string) bool {
-	switch key {
-	case lowbase.PropertiesLabel, lowbase.PatternPropertiesLabel,
-		lowbase.DependentSchemasLabel, "$defs", "definitions":
-		return true
-	}
-	return false
-}
+func isSchemaMapChildKey(key string) bool { _ = "STUB: not implemented"; return false }
 
-func isSchemaArrayChildKey(key string) bool {
-	switch key {
-	case lowbase.AllOfLabel, lowbase.AnyOfLabel, lowbase.OneOfLabel, lowbase.PrefixItemsLabel:
-		return true
-	}
-	return false
-}
+func isSchemaArrayChildKey(key string) bool { _ = "STUB: not implemented"; return false }
 
 type invalidModelBuildError struct {
 	cause error
 }
 
-func (e *invalidModelBuildError) Error() string {
-	if e == nil || e.cause == nil {
-		return ErrInvalidModel.Error()
-	}
-	return e.cause.Error()
-}
+func (e *invalidModelBuildError) Error() string { _ = "STUB: not implemented"; return "" }
 
-func (e *invalidModelBuildError) Unwrap() error {
-	if e == nil {
-		return nil
-	}
-	return e.cause
-}
+func (e *invalidModelBuildError) Unwrap() error { _ = "STUB: not implemented"; return nil }
 
-func (e *invalidModelBuildError) Is(target error) bool {
-	return target == ErrInvalidModel
-}
+func (e *invalidModelBuildError) Is(target error) bool { _ = "STUB: not implemented"; return false }
 
 // buildV3ModelFromBytes is a helper that parses bytes and builds a v3 model.
 // Returns the model and any build errors. The model may be non-nil even when err is non-nil
 // (e.g., circular reference warnings), allowing bundling to proceed with warnings.
 func buildV3ModelFromBytes(bytes []byte, configuration *datamodel.DocumentConfiguration) (*v3.Document, error) {
-	doc, err := libopenapi.NewDocumentWithConfiguration(bytes, configuration)
-	if err != nil {
-		return nil, err
-	}
-
-	v3Doc, buildErr := doc.BuildV3Model()
-	if v3Doc == nil {
-		return nil, &invalidModelBuildError{cause: buildErr}
-	}
-	// Return both model and error - caller decides how to handle warnings/errors
-	return &v3Doc.Model, buildErr
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// Return both model and error - caller decides how to handle warnings/errors
 
 // BundleBytes will take a byte slice of an OpenAPI specification and return a bundled version of it.
 // This is useful for when you want to take a specification with external references, and you want to bundle it
@@ -343,13 +112,8 @@ func buildV3ModelFromBytes(bytes []byte, configuration *datamodel.DocumentConfig
 //
 // Circular references will not be resolved and will be skipped.
 func BundleBytes(bytes []byte, configuration *datamodel.DocumentConfiguration) ([]byte, error) {
-	model, err := buildV3ModelFromBytes(bytes, configuration)
-	if model == nil {
-		return nil, err
-	}
-
-	bundledBytes, e := bundleWithConfig(model, nil, configuration)
-	return bundledBytes, errors.Join(err, e)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // BundleBytesComposed will take a byte slice of an OpenAPI specification and return a composed bundled version of it.
@@ -358,35 +122,15 @@ func BundleBytes(bytes []byte, configuration *datamodel.DocumentConfiguration) (
 // Composed means that every external file will have references lifted out and added to the `components` section of the document.
 // Names will be preserved where possible, conflicts will dealt with by using a delimiter and appending a number.
 func BundleBytesComposed(bytes []byte, configuration *datamodel.DocumentConfiguration, compositionConfig *BundleCompositionConfig) ([]byte, error) {
-	doc, err := libopenapi.NewDocumentWithConfiguration(bytes, configuration)
-	if err != nil {
-		return nil, err
-	}
-
-	v3Doc, err := doc.BuildV3Model()
-	if err != nil {
-		return nil, &invalidModelBuildError{cause: err}
-	}
-
-	bundledBytes, e := compose(&v3Doc.Model, compositionConfig)
-	return bundledBytes, e
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // BundleBytesComposedWithOrigins returns a bundled spec with origin tracking for navigation.
 // This enables consumers to map bundled components back to their original file locations.
 func BundleBytesComposedWithOrigins(bytes []byte, configuration *datamodel.DocumentConfiguration, compositionConfig *BundleCompositionConfig) (*BundleResult, error) {
-	doc, err := libopenapi.NewDocumentWithConfiguration(bytes, configuration)
-	if err != nil {
-		return nil, err
-	}
-
-	v3Doc, err := doc.BuildV3Model()
-	if err != nil {
-		return nil, &invalidModelBuildError{cause: err}
-	}
-
-	result, e := composeWithOrigins(&v3Doc.Model, compositionConfig)
-	return result, e
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // BundleDocument will take a v3.Document and return a bundled version of it.
@@ -398,9 +142,7 @@ func BundleBytesComposedWithOrigins(bytes []byte, configuration *datamodel.Docum
 // document will be a valid OpenAPI specification, containing no references.
 //
 // Circular references will not be resolved and will be skipped.
-func BundleDocument(model *v3.Document) ([]byte, error) {
-	return bundleWithConfig(model, nil, nil)
-}
+func BundleDocument(model *v3.Document) ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // BundleBytesWithConfig will take a byte slice of an OpenAPI specification and return a bundled version of it,
 // with additional configuration options for inline bundling behavior.
@@ -408,13 +150,8 @@ func BundleDocument(model *v3.Document) ([]byte, error) {
 // Use the BundleInlineConfig to enable features like ResolveDiscriminatorExternalRefs which copies external
 // schemas referenced by discriminator mappings to the root document's components section.
 func BundleBytesWithConfig(bytes []byte, configuration *datamodel.DocumentConfiguration, bundleConfig *BundleInlineConfig) ([]byte, error) {
-	model, err := buildV3ModelFromBytes(bytes, configuration)
-	if model == nil {
-		return nil, err
-	}
-
-	bundledBytes, e := bundleWithConfig(model, bundleConfig, configuration)
-	return bundledBytes, errors.Join(err, e)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // BundleDocumentWithConfig will take a v3.Document and return a bundled version of it,
@@ -423,7 +160,8 @@ func BundleBytesWithConfig(bytes []byte, configuration *datamodel.DocumentConfig
 // Use the BundleInlineConfig to enable features like ResolveDiscriminatorExternalRefs which copies external
 // schemas referenced by discriminator mappings to the root document's components section.
 func BundleDocumentWithConfig(model *v3.Document, bundleConfig *BundleInlineConfig) ([]byte, error) {
-	return bundleWithConfig(model, bundleConfig, nil)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // BundleCompositionConfig is used to configure the composition of OpenAPI documents when using BundleDocumentComposed.
@@ -466,7 +204,8 @@ type BundleInlineConfig struct {
 //
 // Circular references will not be resolved and will be skipped.
 func BundleDocumentComposed(model *v3.Document, compositionConfig *BundleCompositionConfig) ([]byte, error) {
-	return compose(model, compositionConfig)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // BundleDocumentComposedWithOrigins will take a v3.Document and return a composed bundled version of it
@@ -475,356 +214,75 @@ func BundleDocumentComposed(model *v3.Document, compositionConfig *BundleComposi
 //
 // Circular references will not be resolved and will be skipped.
 func BundleDocumentComposedWithOrigins(model *v3.Document, compositionConfig *BundleCompositionConfig) (*BundleResult, error) {
-	return composeWithOrigins(model, compositionConfig)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // composeWithOrigins performs composed bundling and returns origin tracking information
 func composeWithOrigins(model *v3.Document, compositionConfig *BundleCompositionConfig) (*BundleResult, error) {
-	if compositionConfig == nil {
-		compositionConfig = &BundleCompositionConfig{
-			Delimiter: "__",
-		}
-	} else {
-		if compositionConfig.Delimiter == "" {
-			compositionConfig.Delimiter = "__"
-		}
-		if strings.Contains(compositionConfig.Delimiter, "#") ||
-			strings.Contains(compositionConfig.Delimiter, "/") {
-			return nil, errors.New("composition delimiter cannot contain '#' or '/' characters")
-		}
-		if strings.Contains(compositionConfig.Delimiter, " ") {
-			return nil, errors.New("composition delimiter cannot contain spaces")
-		}
-	}
-
-	if model == nil || model.Rolodex == nil {
-		return nil, errors.New("model or rolodex is nil")
-	}
-
-	rolodex := model.Rolodex
-	indexes := rolodex.GetIndexes()
-	rootIndex := rolodex.GetRootIndex()
-	if err := validateDiscriminatorMappings(rolodex); err != nil {
-		return nil, err
-	}
-
-	// Collect discriminator mappings before ref processing so mapping-only targets can be composed.
-	discriminatorMappings := collectDiscriminatorMappingNodesWithContext(rolodex)
-
-	cf := &handleIndexConfig{
-		idx:                   rootIndex,
-		rootIdx:               rootIndex,
-		model:                 model,
-		indexes:               indexes,
-		seen:                  sync.Map{},
-		refMap:                orderedmap.New[string, *processRef](),
-		compositionConfig:     compositionConfig,
-		discriminatorMappings: discriminatorMappings,
-		origins:               make(ComponentOriginMap),
-	}
-
-	// Enqueue mapping targets after cf exists; root-local #/ refs stay in place.
-	enqueueDiscriminatorMappingTargets(discriminatorMappings, cf, rootIndex)
-	// Refresh indexes in case mapping resolution loaded new ones.
-	cf.indexes = rolodex.GetIndexes()
-	if err := validateDiscriminatorMappings(rolodex); err != nil {
-		return nil, err
-	}
-
-	if err := handleIndex(cf); err != nil {
-		return nil, err
-	}
-	if err := handleDiscriminatorMappingIndexes(cf, rootIndex, rolodex); err != nil {
-		return nil, err
-	}
-	rewriteExtensionRefsForComposedBundle(rolodex)
-
-	processedNodes := orderedmap.New[string, *processRef]()
-	var errs []error
-	for _, ref := range cf.refMap.FromOldest() {
-		err := processReference(model, ref, cf)
-		errs = append(errs, err)
-		processedNodes.Set(ref.mapKey, ref)
-		if ref.ref != nil && ref.mapKey != ref.ref.FullDefinition {
-			processedNodes.Set(ref.ref.FullDefinition, ref)
-		}
-	}
-
-	slices.SortFunc(indexes, func(i, j *index.SpecIndex) int {
-		if i.GetSpecAbsolutePath() < j.GetSpecAbsolutePath() {
-			return 1
-		}
-		return 0
-	})
-
-	// Remap indexed refs.
-	remapIndex(rootIndex, processedNodes)
-
-	for _, idx := range indexes {
-		remapIndex(idx, processedNodes)
-	}
-
-	// Update discriminator mapping values after component names are final.
-	updateDiscriminatorMappingsComposed(discriminatorMappings, processedNodes, rolodex)
-
-	// Inline anything that could not be recomposed.
-	inlinedPaths := inlineRequiredRefs(cf.inlineRequired, rolodex)
-
-	// Rewrite any remaining unindexed refs after mapping resolution loads new indexes.
-	allLoadedIndexes := rolodex.GetIndexes()
-	rewriteAllRefs(rootIndex, processedNodes, rolodex)
-	for _, idx := range allLoadedIndexes {
-		rewriteAllRefs(idx, processedNodes, rolodex)
-	}
-
-	rewriteInlinedAbsoluteRefs(rolodex, allLoadedIndexes, inlinedPaths)
-
-	b, err := renderBundledModel(model, rootIndex)
-	errs = append(errs, err)
-
-	result := &BundleResult{
-		Bytes:   b,
-		Origins: cf.origins,
-	}
-
-	return result, errors.Join(errs...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// Collect discriminator mappings before ref processing so mapping-only targets can be composed.
+
+// Enqueue mapping targets after cf exists; root-local #/ refs stay in place.
+
+// Refresh indexes in case mapping resolution loaded new ones.
+
+// Remap indexed refs.
+
+// Update discriminator mapping values after component names are final.
+
+// Inline anything that could not be recomposed.
+
+// Rewrite any remaining unindexed refs after mapping resolution loads new indexes.
 
 func compose(model *v3.Document, compositionConfig *BundleCompositionConfig) ([]byte, error) {
-	if compositionConfig == nil {
-		compositionConfig = &BundleCompositionConfig{
-			Delimiter: "__",
-		}
-	} else {
-		if compositionConfig.Delimiter == "" {
-			compositionConfig.Delimiter = "__"
-		}
-		if strings.Contains(compositionConfig.Delimiter, "#") ||
-			strings.Contains(compositionConfig.Delimiter, "/") {
-			return nil, errors.New("composition delimiter cannot contain '#' or '/' characters")
-		}
-		if strings.Contains(compositionConfig.Delimiter, " ") {
-			return nil, errors.New("composition delimiter cannot contain spaces")
-		}
-	}
-
-	if model == nil || model.Rolodex == nil {
-		return nil, errors.New("model or rolodex is nil")
-	}
-
-	rolodex := model.Rolodex
-	indexes := rolodex.GetIndexes()
-	rootIndex := rolodex.GetRootIndex()
-	if err := validateDiscriminatorMappings(rolodex); err != nil {
-		return nil, err
-	}
-
-	// Collect discriminator mappings before ref processing so mapping-only targets can be composed.
-	discriminatorMappings := collectDiscriminatorMappingNodesWithContext(rolodex)
-
-	cf := &handleIndexConfig{
-		idx:                   rootIndex,
-		rootIdx:               rootIndex,
-		model:                 model,
-		indexes:               indexes,
-		seen:                  sync.Map{},
-		refMap:                orderedmap.New[string, *processRef](),
-		compositionConfig:     compositionConfig,
-		discriminatorMappings: discriminatorMappings,
-		origins:               make(ComponentOriginMap),
-	}
-
-	// Enqueue mapping targets after cf exists; root-local #/ refs stay in place.
-	enqueueDiscriminatorMappingTargets(discriminatorMappings, cf, rootIndex)
-	// Refresh indexes in case mapping resolution loaded new ones.
-	cf.indexes = rolodex.GetIndexes()
-	if err := validateDiscriminatorMappings(rolodex); err != nil {
-		return nil, err
-	}
-
-	if err := handleIndex(cf); err != nil {
-		return nil, err
-	}
-	if err := handleDiscriminatorMappingIndexes(cf, rootIndex, rolodex); err != nil {
-		return nil, err
-	}
-	rewriteExtensionRefsForComposedBundle(rolodex)
-
-	processedNodes := orderedmap.New[string, *processRef]()
-	var errs []error
-	for _, ref := range cf.refMap.FromOldest() {
-		err := processReference(model, ref, cf)
-		errs = append(errs, err)
-		processedNodes.Set(ref.mapKey, ref)
-		if ref.ref != nil && ref.mapKey != ref.ref.FullDefinition {
-			processedNodes.Set(ref.ref.FullDefinition, ref)
-		}
-	}
-
-	slices.SortFunc(indexes, func(i, j *index.SpecIndex) int {
-		if i.GetSpecAbsolutePath() < j.GetSpecAbsolutePath() {
-			return 1
-		}
-		return 0
-	})
-
-	// Remap indexed refs.
-	remapIndex(rootIndex, processedNodes)
-
-	for _, idx := range indexes {
-		remapIndex(idx, processedNodes)
-	}
-
-	// Update discriminator mapping values after component names are final.
-	updateDiscriminatorMappingsComposed(discriminatorMappings, processedNodes, rolodex)
-
-	// Inline anything that could not be recomposed.
-	inlinedPaths := inlineRequiredRefs(cf.inlineRequired, rolodex)
-
-	// Rewrite any remaining unindexed refs after mapping resolution loads new indexes.
-	allLoadedIndexes := rolodex.GetIndexes()
-	rewriteAllRefs(rootIndex, processedNodes, rolodex)
-	for _, idx := range allLoadedIndexes {
-		rewriteAllRefs(idx, processedNodes, rolodex)
-	}
-
-	rewriteInlinedAbsoluteRefs(rolodex, allLoadedIndexes, inlinedPaths)
-
-	b, err := renderBundledModel(model, rootIndex)
-	errs = append(errs, err)
-
-	return b, errors.Join(errs...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// Collect discriminator mappings before ref processing so mapping-only targets can be composed.
+
+// Enqueue mapping targets after cf exists; root-local #/ refs stay in place.
+
+// Refresh indexes in case mapping resolution loaded new ones.
+
+// Remap indexed refs.
+
+// Update discriminator mapping values after component names are final.
+
+// Inline anything that could not be recomposed.
+
+// Rewrite any remaining unindexed refs after mapping resolution loads new indexes.
 
 // rewriteInlinedAbsoluteRefs updates absolute $ref values that were resolved by
 // the inline fallback after the index's normal rewrite pass has already run.
 func rewriteInlinedAbsoluteRefs(rolodex *index.Rolodex, indexes []*index.SpecIndex, inlinedPaths map[string]*yaml.Node) {
-	if rolodex == nil || len(inlinedPaths) == 0 {
-		return
-	}
-
-	allIndexes := append([]*index.SpecIndex{}, indexes...)
-	allIndexes = append(allIndexes, rolodex.GetRootIndex())
-	seen := make(map[*index.SpecIndex]struct{}, len(allIndexes))
-
-	for _, idx := range allIndexes {
-		if idx == nil {
-			continue
-		}
-		if _, ok := seen[idx]; ok {
-			continue
-		}
-		seen[idx] = struct{}{}
-
-		for _, seqRef := range idx.GetRawReferencesSequenced() {
-			isRef, _, refVal := utils.IsNodeRefValue(seqRef.Node)
-			if !isRef || !filepath.IsAbs(refVal) {
-				continue
-			}
-			inlinedNode := inlinedPaths[refVal]
-			if inlinedNode == nil {
-				continue
-			}
-			seqRef.Node.Content = inlinedNode.Content
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 // inlineRequiredRefs inlines refs that cannot be represented as root components.
 func inlineRequiredRefs(required []*processRef, rolodex *index.Rolodex) map[string]*yaml.Node {
-	inlinedPaths := make(map[string]*yaml.Node)
-	if len(required) == 0 {
-		return inlinedPaths
-	}
-
-	refsByDefinition := sequencedRefsByFullDefinition(rolodex)
-	for _, pr := range required {
-		inlinedNode := inlineProcessRef(pr)
-		if inlinedNode == nil {
-			continue
-		}
-		if pr.ref != nil {
-			inlinedPaths[pr.ref.FullDefinition] = inlinedNode
-		}
-		inlineMatchingRefs(pr, inlinedNode, refsByDefinition)
-	}
-	return inlinedPaths
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // sequencedRefsByFullDefinition buckets refs once for inlineRequiredRefs.
 func sequencedRefsByFullDefinition(rolodex *index.Rolodex) map[string][]*index.Reference {
-	refsByDefinition := make(map[string][]*index.Reference)
-	if rolodex == nil {
-		return refsByDefinition
-	}
-
-	indexes := append([]*index.SpecIndex{}, rolodex.GetIndexes()...)
-	indexes = append(indexes, rolodex.GetRootIndex())
-	seen := make(map[*index.SpecIndex]struct{}, len(indexes))
-
-	for _, idx := range indexes {
-		if idx == nil {
-			continue
-		}
-		if _, ok := seen[idx]; ok {
-			continue
-		}
-		seen[idx] = struct{}{}
-
-		for _, seqRef := range idx.GetRawReferencesSequenced() {
-			if seqRef == nil || seqRef.IsExtensionRef || seqRef.Node == nil || seqRef.FullDefinition == "" {
-				continue
-			}
-			refsByDefinition[seqRef.FullDefinition] = append(refsByDefinition[seqRef.FullDefinition], seqRef)
-		}
-	}
-	return refsByDefinition
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // inlineProcessRef replaces the source ref node with its resolved target node.
-func inlineProcessRef(pr *processRef) *yaml.Node {
-	if pr == nil || pr.fromDiscriminator || pr.seqRef == nil || pr.seqRef.Node == nil || pr.ref == nil {
-		return nil
-	}
-
-	if pr.refPointer != "" {
-		uri := strings.Split(pr.refPointer, "#/")
-		if len(uri) == 2 && uri[0] != "" {
-			if !filepath.IsAbs(uri[0]) && !strings.HasPrefix(uri[0], "http") {
-				uri[0] = utils.CheckPathOverlap(filepath.Dir(pr.idx.GetSpecAbsolutePath()), uri[0], string(os.PathSeparator))
-			}
-			pointerRef := pr.idx.FindComponent(context.Background(), strings.Join(uri, "#/"))
-			if pointerRef == nil || pointerRef.Node == nil {
-				return nil
-			}
-			pr.seqRef.Node.Content = pointerRef.Node.Content
-			return pointerRef.Node
-		}
-	}
-
-	if pr.ref.Node == nil {
-		return nil
-	}
-	pr.seqRef.Node.Content = pr.ref.Node.Content
-	return pr.ref.Node
-}
+func inlineProcessRef(pr *processRef) *yaml.Node { _ = "STUB: not implemented"; return nil }
 
 // inlineMatchingRefs applies the same inline replacement to repeated matching refs.
 func inlineMatchingRefs(pr *processRef, inlinedNode *yaml.Node, refsByDefinition map[string][]*index.Reference) {
-	if pr == nil || pr.ref == nil || inlinedNode == nil || refsByDefinition == nil {
-		return
-	}
-	key := pr.mapKey
-	if key == "" {
-		key = processRefMapKey(pr.ref, pr.seqRef)
-	}
-
-	for _, seqRef := range refsByDefinition[pr.ref.FullDefinition] {
-		if contextualProcessRefKey(pr.ref.FullDefinition, seqRef) != key {
-			continue
-		}
-		seqRef.Node.Content = inlinedNode.Content
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 // resolveBundleInlineConfig resolves the inlineLocalRefs setting from the fallback chain:
@@ -832,44 +290,27 @@ func inlineMatchingRefs(pr *processRef, inlinedNode *yaml.Node, refsByDefinition
 // 2. DocumentConfiguration.BundleInlineRefs (document-wide default)
 // 3. false (system default - preserve local refs)
 func resolveBundleInlineConfig(bundleConfig *BundleInlineConfig, docConfig *datamodel.DocumentConfiguration) bool {
-	if bundleConfig != nil && bundleConfig.InlineLocalRefs != nil {
-		return *bundleConfig.InlineLocalRefs
-	}
-	if docConfig != nil {
-		return docConfig.BundleInlineRefs
-	}
-	return false // system default
+	_ = "STUB: not implemented"
+	return false
 }
+
+// system default
 
 func bundleWithConfig(model *v3.Document, config *BundleInlineConfig, docConfig *datamodel.DocumentConfiguration) ([]byte, error) {
-	if model == nil {
-		return nil, errors.New("model cannot be nil")
-	}
-
-	inlineLocalRefs := resolveBundleInlineConfig(config, docConfig)
-
-	// enable bundling mode to preserve local component refs during marshalling
-	// when inlineLocalRefs is true, skip bundling mode to inline everything
-	if !inlineLocalRefs {
-		highbase.SetBundlingMode(true)
-		defer highbase.SetBundlingMode(false)
-	}
-
-	if model.Rolodex != nil {
-		// copy external schemas referenced by discriminator mappings to root components
-		// ensures bundled output is valid and self-contained
-		if config != nil && config.ResolveDiscriminatorExternalRefs {
-			resolveDiscriminatorExternalRefs(model)
-		}
-
-		// resolve extension refs before rendering (mutates model's extension nodes in-place)
-		// extensions are raw yaml nodes that bypass MarshalYAMLInline()
-		resolveExtensionRefs(model.Rolodex)
-	}
-
-	// render inline - discriminator mappings and circular refs are preserved via SchemaProxy.MarshalYAMLInline()
-	return model.RenderInline()
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// enable bundling mode to preserve local component refs during marshalling
+// when inlineLocalRefs is true, skip bundling mode to inline everything
+
+// copy external schemas referenced by discriminator mappings to root components
+// ensures bundled output is valid and self-contained
+
+// resolve extension refs before rendering (mutates model's extension nodes in-place)
+// extensions are raw yaml nodes that bypass MarshalYAMLInline()
+
+// render inline - discriminator mappings and circular refs are preserved via SchemaProxy.MarshalYAMLInline()
 
 // externalSchemaRef represents an external schema that needs to be copied to the root document's components.
 type externalSchemaRef struct {
@@ -882,522 +323,189 @@ type externalSchemaRef struct {
 
 // resolveDiscriminatorExternalRefs handles copying external schemas referenced by discriminators
 // to the root document's components section and rewrites the references.
-func resolveDiscriminatorExternalRefs(model *v3.Document) {
-	if model == nil || model.Rolodex == nil {
-		return
-	}
+func resolveDiscriminatorExternalRefs(model *v3.Document) { _ = "STUB: not implemented"; return }
 
-	rolodex := model.Rolodex
-	rootIdx := rolodex.GetRootIndex()
+// Collect all external schemas referenced by discriminators
 
-	// Collect all external schemas referenced by discriminators
-	externalSchemas := collectExternalDiscriminatorSchemas(rolodex, rootIdx)
-	if len(externalSchemas) == 0 {
-		return
-	}
+// Ensure model has Components (buildComponents always succeeds with valid rootIdx,
+// and rootIdx must be valid since collectExternalDiscriminatorSchemas would panic otherwise)
 
-	// Ensure model has Components (buildComponents always succeeds with valid rootIdx,
-	// and rootIdx must be valid since collectExternalDiscriminatorSchemas would panic otherwise)
-	if model.Components == nil {
-		model.Components, _ = buildComponents(rootIdx)
-	}
+// Build existing names map from current components for collision detection
 
-	// Build existing names map from current components for collision detection
-	existingNames := make(map[string]bool)
-	for pair := model.Components.Schemas.First(); pair != nil; pair = pair.Next() {
-		existingNames[pair.Key()] = true
-	}
+// Copy schemas to components and build ref mapping
+// We need to map both local refs (like #/components/schemas/Cat) and
+// external refs (like ./external.yaml#/components/schemas/Cat) to the new location
 
-	// Copy schemas to components and build ref mapping
-	// We need to map both local refs (like #/components/schemas/Cat) and
-	// external refs (like ./external.yaml#/components/schemas/Cat) to the new location
-	refMapping := make(map[string]string)
-	for _, extSchema := range externalSchemas {
-		// externalSchemas has unique fullDef values (from map iteration in collectExternalDiscriminatorSchemas)
-		newRef := copySchemaToComponents(model, extSchema, existingNames)
+// externalSchemas has unique fullDef values (from map iteration in collectExternalDiscriminatorSchemas)
 
-		// Map the local ref format (used in external files)
-		refMapping[extSchema.originalRef] = newRef
+// Map the local ref format (used in external files)
 
-		// Also map external ref formats that might be used in the root document
-		// e.g., "./vehicles/car.yaml#/components/schemas/Car"
-		// The external ref format is: relative path from root + JSON pointer
-		if extSchema.idx != nil {
-			rootPath := rootIdx.GetSpecAbsolutePath()
-			extPath := extSchema.idx.GetSpecAbsolutePath()
-			if rootPath != "" && extPath != "" {
-				// Calculate relative path from root to external file
-				relPath, err := filepath.Rel(filepath.Dir(rootPath), extPath)
-				if err == nil {
-					// Normalize path separators to forward slashes for cross-platform compatibility
-					// OpenAPI refs always use forward slashes regardless of OS
-					relPath = filepath.ToSlash(relPath)
+// Also map external ref formats that might be used in the root document
+// e.g., "./vehicles/car.yaml#/components/schemas/Car"
+// The external ref format is: relative path from root + JSON pointer
 
-					// Build external ref format: ./relpath#/components/schemas/Name
-					externalRefFormat := relPath + extSchema.originalRef
-					refMapping[externalRefFormat] = newRef
-					// Also try with "./" prefix
-					if !strings.HasPrefix(relPath, ".") && !strings.HasPrefix(relPath, "/") {
-						refMapping["./"+externalRefFormat] = newRef
-					}
-				}
-			}
-		}
-	}
+// Calculate relative path from root to external file
 
-	// Rewrite discriminator mapping refs and oneOf/anyOf refs
-	rewriteInlineDiscriminatorRefs(rolodex, refMapping)
-}
+// Normalize path separators to forward slashes for cross-platform compatibility
+// OpenAPI refs always use forward slashes regardless of OS
+
+// Build external ref format: ./relpath#/components/schemas/Name
+
+// Also try with "./" prefix
+
+// Rewrite discriminator mapping refs and oneOf/anyOf refs
 
 // collectExternalDiscriminatorSchemas identifies external schemas referenced by discriminators
 // that need to be copied to the root document's components section.
 func collectExternalDiscriminatorSchemas(rolodex *index.Rolodex, rootIdx *index.SpecIndex) []*externalSchemaRef {
-	var result []*externalSchemaRef
-
-	// Use existing infrastructure to collect pinned refs
-	pinned := make(map[string]struct{})
-
-	// Collect from all indexes (root and external)
-	collectDiscriminatorMappingValues(rootIdx, rootIdx.GetRootNode(), pinned)
-	for _, idx := range rolodex.GetIndexes() {
-		collectDiscriminatorMappingValues(idx, idx.GetRootNode(), pinned)
-	}
-
-	// Pre-build index lookup map for O(1) lookups instead of O(N) per ref
-	indexByPath := make(map[string]*index.SpecIndex)
-	for _, idx := range rolodex.GetIndexes() {
-		indexByPath[idx.GetSpecAbsolutePath()] = idx
-	}
-
-	rootPath := rootIdx.GetSpecAbsolutePath()
-
-	// Convert pinned refs to externalSchemaRef structs
-	for fullDef := range pinned {
-		// Parse the full definition to get the original ref
-		// Format: "/absolute/path/to/file.yaml#/components/schemas/SchemaName"
-		parts := strings.Split(fullDef, "#")
-		filePath := parts[0]
-		jsonPointer := "#" + parts[1]
-
-		// Skip if this is from the root document (not external)
-		if filePath == rootPath {
-			continue
-		}
-
-		// find the index for this file using pre-built map (O(1) lookup)
-		sourceIdx, ok := indexByPath[filePath]
-		if !ok {
-			// defensive: skip if index not found (shouldn't happen with valid specs)
-			continue
-		}
-
-		// find the actual reference - this was already found when pinning
-		ref, _ := sourceIdx.SearchIndexForReference(jsonPointer)
-
-		// Extract schema name from the JSON pointer
-		// e.g., "#/components/schemas/Cat" -> "Cat"
-		pointerParts := strings.Split(strings.TrimPrefix(parts[1], "/"), "/")
-		schemaName := pointerParts[len(pointerParts)-1]
-
-		result = append(result, &externalSchemaRef{
-			idx:         sourceIdx,
-			ref:         ref,
-			schemaName:  schemaName,
-			fullDef:     fullDef,
-			originalRef: jsonPointer,
-		})
-	}
-
-	return result
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// Use existing infrastructure to collect pinned refs
+
+// Collect from all indexes (root and external)
+
+// Pre-build index lookup map for O(1) lookups instead of O(N) per ref
+
+// Convert pinned refs to externalSchemaRef structs
+
+// Parse the full definition to get the original ref
+// Format: "/absolute/path/to/file.yaml#/components/schemas/SchemaName"
+
+// Skip if this is from the root document (not external)
+
+// find the index for this file using pre-built map (O(1) lookup)
+
+// defensive: skip if index not found (shouldn't happen with valid specs)
+
+// find the actual reference - this was already found when pinning
+
+// Extract schema name from the JSON pointer
+// e.g., "#/components/schemas/Cat" -> "Cat"
 
 // copySchemaToComponents copies an external schema to the root document's components section.
 // Returns the new reference string (e.g., "#/components/schemas/Cat").
 // existingNames is updated with the new name to track collisions across multiple calls.
 func copySchemaToComponents(model *v3.Document, extSchema *externalSchemaRef, existingNames map[string]bool) string {
+	_ = "STUB: not implemented"
 	// Build the schema from the YAML node
 	// extSchema.ref.Node is always valid (validated when collecting external schemas)
-	schema, _ := buildSchema(extSchema.ref.Node, extSchema.idx)
-
-	// Check for naming collisions and get unique name
-	finalName := extSchema.schemaName
-	if existingNames[finalName] {
-		finalName = calculateCollisionNameInline(finalName, extSchema.fullDef, "__", existingNames)
-	}
-
-	// Track this name to prevent future collisions
-	existingNames[finalName] = true
-
-	// Add to components
-	model.Components.Schemas.Set(finalName, schema)
-
-	return fmt.Sprintf("#/components/schemas/%s", finalName)
+	return ""
 }
+
+// Check for naming collisions and get unique name
+
+// Track this name to prevent future collisions
+
+// Add to components
 
 // calculateCollisionNameInline generates a unique name for a schema to avoid collisions.
 // It first tries appending the source filename, then falls back to numeric suffixes.
 func calculateCollisionNameInline(name, fullDef, delimiter string, existingNames map[string]bool) string {
+	_ = "STUB: not implemented"
 	// Extract filename from the full definition path
-	parts := strings.Split(fullDef, "#")
-	filePath := parts[0]
-	baseName := filepath.Base(filePath)
-	// Remove extension
-	baseName = strings.TrimSuffix(baseName, filepath.Ext(baseName))
-
-	// Try filename-based name first
-	candidate := fmt.Sprintf("%s%s%s", name, delimiter, baseName)
-	if !existingNames[candidate] {
-		return candidate
-	}
-
-	// If filename-based collision exists, try numeric suffixes
-	for i := 1; ; i++ {
-		candidate = fmt.Sprintf("%s%s%s%s%d", name, delimiter, baseName, delimiter, i)
-		if !existingNames[candidate] {
-			return candidate
-		}
-	}
+	return ""
 }
+
+// Remove extension
+
+// Try filename-based name first
+
+// If filename-based collision exists, try numeric suffixes
 
 // rewriteInlineDiscriminatorRefs updates discriminator mapping refs and oneOf/anyOf refs
 // to point to the newly copied component locations.
 func rewriteInlineDiscriminatorRefs(rolodex *index.Rolodex, refMapping map[string]string) {
-	if len(refMapping) == 0 {
-		return
-	}
-
-	// Collect all discriminator mapping nodes
-	mappingNodes := collectDiscriminatorMappingNodes(rolodex)
-
-	// Update discriminator mapping values
-	for _, mappingNode := range mappingNodes {
-		originalValue := mappingNode.Value
-		if newRef, ok := refMapping[originalValue]; ok {
-			mappingNode.Value = newRef
-		}
-	}
-
-	// Also update oneOf/anyOf $ref values in all indexes
-	allIndexes := append(rolodex.GetIndexes(), rolodex.GetRootIndex())
-	for _, idx := range allIndexes {
-		updateOneOfAnyOfRefs(idx.GetRootNode(), refMapping)
-	}
+	_ = "STUB: not implemented"
+	return
 }
+
+// Collect all discriminator mapping nodes
+
+// Update discriminator mapping values
+
+// Also update oneOf/anyOf $ref values in all indexes
 
 // updateOneOfAnyOfRefs recursively walks a YAML node tree to update oneOf/anyOf $ref values.
 func updateOneOfAnyOfRefs(n *yaml.Node, refMapping map[string]string) {
-	if n == nil {
-		return
-	}
-
-	if n.Kind == yaml.DocumentNode && len(n.Content) > 0 {
-		n = n.Content[0]
-	}
-
-	switch n.Kind {
-	case yaml.SequenceNode:
-		for _, c := range n.Content {
-			updateOneOfAnyOfRefs(c, refMapping)
-		}
-		return
-	case yaml.MappingNode:
-	default:
-		return
-	}
-
-	var hasDiscriminator bool
-	var oneOfNode, anyOfNode *yaml.Node
-
-	// First pass: check for discriminator and find oneOf/anyOf
-	for i := 0; i < len(n.Content); i += 2 {
-		k, v := n.Content[i], n.Content[i+1]
-		switch k.Value {
-		case "discriminator":
-			hasDiscriminator = true
-		case "oneOf":
-			oneOfNode = v
-		case "anyOf":
-			anyOfNode = v
-		}
-	}
-
-	// Update refs in oneOf/anyOf if this schema has a discriminator
-	if hasDiscriminator {
-		updateUnionRefs(oneOfNode, refMapping)
-		updateUnionRefs(anyOfNode, refMapping)
-	}
-
-	// Recursively process all children
-	for i := 0; i < len(n.Content); i += 2 {
-		updateOneOfAnyOfRefs(n.Content[i+1], refMapping)
-	}
+	_ = "STUB: not implemented"
+	return
 }
+
+// First pass: check for discriminator and find oneOf/anyOf
+
+// Update refs in oneOf/anyOf if this schema has a discriminator
+
+// Recursively process all children
 
 // updateUnionRefs updates $ref values in a oneOf or anyOf sequence.
 func updateUnionRefs(seq *yaml.Node, refMapping map[string]string) {
-	if seq == nil || seq.Kind != yaml.SequenceNode {
-		return
-	}
-	for _, item := range seq.Content {
-		if item.Kind != yaml.MappingNode {
-			continue
-		}
-		for i := 0; i < len(item.Content); i += 2 {
-			k, v := item.Content[i], item.Content[i+1]
-			if k.Value == "$ref" && v.Kind == yaml.ScalarNode {
-				if newRef, ok := refMapping[v.Value]; ok {
-					v.Value = newRef
-				}
-			}
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 func collectDiscriminatorMappingValues(idx *index.SpecIndex, n *yaml.Node, pinned map[string]struct{}) {
-	if n.Kind == yaml.DocumentNode && len(n.Content) > 0 {
-		n = n.Content[0]
-	}
-
-	switch n.Kind {
-	case yaml.SequenceNode:
-		for _, c := range n.Content {
-			collectDiscriminatorMappingValues(idx, c, pinned)
-		}
-		return
-	case yaml.MappingNode:
-	default:
-		return
-	}
-
-	var discriminator, oneOf, anyOf *yaml.Node
-
-	for i := 0; i < len(n.Content); i += 2 {
-		k, v := n.Content[i], n.Content[i+1]
-		switch k.Value {
-		case "discriminator":
-			discriminator = v
-		case "oneOf":
-			oneOf = v
-		case "anyOf":
-			anyOf = v
-		}
-		collectDiscriminatorMappingValues(idx, v, pinned)
-	}
-
-	if discriminator != nil {
-		walkDiscriminatorMapping(idx, discriminator, pinned)
-		walkUnionRefs(idx, oneOf, pinned)
-		walkUnionRefs(idx, anyOf, pinned)
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 func walkDiscriminatorMapping(idx *index.SpecIndex, discriminatorNode *yaml.Node, pinned map[string]struct{}) {
-	if discriminatorNode.Kind != yaml.MappingNode {
-		return
-	}
-
-	for i := 0; i < len(discriminatorNode.Content); i += 2 {
-		if discriminatorNode.Content[i].Value == "mapping" {
-			mappingNode := discriminatorNode.Content[i+1]
-			if mappingNode.Kind != yaml.MappingNode {
-				continue
-			}
-
-			for j := 0; j < len(mappingNode.Content); j += 2 {
-				refValue := mappingNode.Content[j+1].Value
-
-				if ref, refIdx := idx.SearchIndexForReference(refValue); ref != nil {
-					fullDef := fmt.Sprintf("%s%s", refIdx.GetSpecAbsolutePath(), ref.Definition)
-					pinned[fullDef] = struct{}{}
-				}
-			}
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 func walkUnionRefs(idx *index.SpecIndex, seq *yaml.Node, pinned map[string]struct{}) {
-	if seq == nil || seq.Kind != yaml.SequenceNode {
-		return
-	}
-	for _, item := range seq.Content {
-		if item.Kind != yaml.MappingNode {
-			continue
-		}
-		for i := 0; i < len(item.Content); i += 2 {
-			k, v := item.Content[i], item.Content[i+1]
-			if k.Value != "$ref" || v.Kind != yaml.ScalarNode {
-				continue
-			}
-			if ref, refIdx := idx.SearchIndexForReference(v.Value); ref != nil {
-				full := fmt.Sprintf("%s%s", refIdx.GetSpecAbsolutePath(), ref.Definition)
-				pinned[full] = struct{}{}
-			}
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 // collectDiscriminatorMappingNodes gathers all discriminator mapping value nodes from the document tree.
 func collectDiscriminatorMappingNodes(rolodex *index.Rolodex) []*yaml.Node {
-	var mappingNodes []*yaml.Node
-
-	collectDiscriminatorMappingNodesFromIndex(rolodex.GetRootIndex(), rolodex.GetRootIndex().GetRootNode(), &mappingNodes)
-	for _, idx := range rolodex.GetIndexes() {
-		collectDiscriminatorMappingNodesFromIndex(idx, idx.GetRootNode(), &mappingNodes)
-	}
-
-	return mappingNodes
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // collectDiscriminatorMappingNodesWithContext gathers all discriminator mapping value nodes
 // along with their source index context for proper relative path resolution.
 func collectDiscriminatorMappingNodesWithContext(rolodex *index.Rolodex) []*discriminatorMappingWithContext {
-	var mappings []*discriminatorMappingWithContext
-
-	collectDiscriminatorMappingNodesFromIndexWithContext(rolodex.GetRootIndex(), rolodex.GetRootIndex().GetRootNode(), &mappings)
-	for _, idx := range rolodex.GetIndexes() {
-		collectDiscriminatorMappingNodesFromIndexWithContext(idx, idx.GetRootNode(), &mappings)
-	}
-
-	return mappings
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // collectDiscriminatorMappingNodesFromIndexWithContext recursively walks a YAML node tree
 // to find discriminator mapping nodes, preserving the source index context.
 func collectDiscriminatorMappingNodesFromIndexWithContext(idx *index.SpecIndex, n *yaml.Node, mappings *[]*discriminatorMappingWithContext) {
-	if n.Kind == yaml.DocumentNode && len(n.Content) > 0 {
-		n = n.Content[0]
-	}
-
-	switch n.Kind {
-	case yaml.SequenceNode:
-		for _, c := range n.Content {
-			collectDiscriminatorMappingNodesFromIndexWithContext(idx, c, mappings)
-		}
-		return
-	case yaml.MappingNode:
-	default:
-		return
-	}
-
-	var discriminator *yaml.Node
-
-	for i := 0; i < len(n.Content); i += 2 {
-		k, v := n.Content[i], n.Content[i+1]
-		switch k.Value {
-		case "discriminator":
-			discriminator = v
-		}
-		collectDiscriminatorMappingNodesFromIndexWithContext(idx, v, mappings)
-	}
-
-	if discriminator != nil && discriminator.Kind == yaml.MappingNode {
-		for i := 0; i < len(discriminator.Content); i += 2 {
-			if discriminator.Content[i].Value == "mapping" {
-				mappingNode := discriminator.Content[i+1]
-				if mappingNode.Kind != yaml.MappingNode {
-					continue
-				}
-				for j := 0; j < len(mappingNode.Content); j += 2 {
-					*mappings = append(*mappings, &discriminatorMappingWithContext{
-						node:      mappingNode.Content[j+1],
-						sourceIdx: idx,
-					})
-				}
-			}
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 // collectDiscriminatorMappingNodesFromIndex recursively walks a YAML node tree to find discriminator mapping nodes.
 func collectDiscriminatorMappingNodesFromIndex(idx *index.SpecIndex, n *yaml.Node, mappingNodes *[]*yaml.Node) {
-	if n.Kind == yaml.DocumentNode && len(n.Content) > 0 {
-		n = n.Content[0]
-	}
-
-	switch n.Kind {
-	case yaml.SequenceNode:
-		for _, c := range n.Content {
-			collectDiscriminatorMappingNodesFromIndex(idx, c, mappingNodes)
-		}
-		return
-	case yaml.MappingNode:
-	default:
-		return
-	}
-
-	var discriminator *yaml.Node
-
-	for i := 0; i < len(n.Content); i += 2 {
-		k, v := n.Content[i], n.Content[i+1]
-		switch k.Value {
-		case "discriminator":
-			discriminator = v
-		}
-		collectDiscriminatorMappingNodesFromIndex(idx, v, mappingNodes)
-	}
-
-	if discriminator != nil && discriminator.Kind == yaml.MappingNode {
-		for i := 0; i < len(discriminator.Content); i += 2 {
-			if discriminator.Content[i].Value == "mapping" {
-				mappingNode := discriminator.Content[i+1]
-				if mappingNode.Kind != yaml.MappingNode {
-					continue
-				}
-				for j := 0; j < len(mappingNode.Content); j += 2 {
-					*mappingNodes = append(*mappingNodes, mappingNode.Content[j+1])
-				}
-			}
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 // updateDiscriminatorMappingsComposed updates discriminator mapping references to point to composed component locations.
 func updateDiscriminatorMappingsComposed(mappings []*discriminatorMappingWithContext, processedNodes *orderedmap.Map[string, *processRef], rolodex *index.Rolodex) {
-	for _, mapping := range mappings {
-		originalValue := mapping.node.Value
-		if originalValue == "" {
-			continue
-		}
-
-		// Skip external URLs and URNs - they should never be rewritten
-		if strings.HasPrefix(originalValue, "http://") ||
-			strings.HasPrefix(originalValue, "https://") ||
-			strings.HasPrefix(originalValue, "urn:") {
-			continue
-		}
-
-		// Use the canonicalKey and targetIdx captured before bundling mutates refs.
-		// Calling SearchIndexForReference again here could return a mutated
-		// ref.FullDefinition that won't match processedNodes keys.
-		canonicalKey := mapping.canonicalKey
-		targetIdx := mapping.targetIdx
-
-		// If canonicalKey is empty, the mapping wasn't resolved during enqueue.
-		// Try to resolve it now as a fallback.
-		if canonicalKey == "" {
-			ref, refIdx := mapping.sourceIdx.SearchIndexForReference(originalValue)
-			if ref == nil {
-				ref, refIdx = rolodex.GetRootIndex().SearchIndexForReference(originalValue)
-			}
-			if ref == nil || refIdx == nil {
-				continue
-			}
-			canonicalKey = ref.FullDefinition
-			targetIdx = refIdx // Use the resolved index, not mapping.sourceIdx.
-		}
-
-		// Gate rewrites on processedNodes presence.
-		// Only rewrite if the target was actually composed into the bundled output.
-		// This prevents dangling refs when SearchIndexForReference resolves something
-		// that never made it into processedNodes (e.g., unprocessed transitive refs).
-		if processedNodes.GetOrZero(canonicalKey) == nil {
-			continue
-		}
-
-		// Use targetIdx (where the ref actually lives), NOT sourceIdx
-		newRef := renameRef(targetIdx, canonicalKey, processedNodes)
-		if newRef != originalValue {
-			mapping.node.Value = newRef
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
+
+// Skip external URLs and URNs - they should never be rewritten
+
+// Use the canonicalKey and targetIdx captured before bundling mutates refs.
+// Calling SearchIndexForReference again here could return a mutated
+// ref.FullDefinition that won't match processedNodes keys.
+
+// If canonicalKey is empty, the mapping wasn't resolved during enqueue.
+// Try to resolve it now as a fallback.
+
+// Use the resolved index, not mapping.sourceIdx.
+
+// Gate rewrites on processedNodes presence.
+// Only rewrite if the target was actually composed into the bundled output.
+// This prevents dangling refs when SearchIndexForReference resolves something
+// that never made it into processedNodes (e.g., unprocessed transitive refs).
+
+// Use targetIdx (where the ref actually lives), NOT sourceIdx

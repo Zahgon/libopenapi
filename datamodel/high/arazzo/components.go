@@ -4,8 +4,6 @@
 package arazzo
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
-	lowmodel "github.com/pb33f/libopenapi/datamodel/low"
 	low "github.com/pb33f/libopenapi/datamodel/low/arazzo"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -23,62 +21,29 @@ type Components struct {
 }
 
 // NewComponents creates a new high-level Components instance from a low-level one.
-func NewComponents(comp *low.Components) *Components {
-	c := new(Components)
-	c.low = comp
-
-	if !comp.Inputs.IsEmpty() && comp.Inputs.Value != nil {
-		c.Inputs = lowmodel.FromReferenceMap[string, *yaml.Node](comp.Inputs.Value)
-	}
-	if !comp.Parameters.IsEmpty() && comp.Parameters.Value != nil {
-		c.Parameters = lowmodel.FromReferenceMapWithFunc(comp.Parameters.Value, func(v *low.Parameter) *Parameter {
-			return NewParameter(v)
-		})
-	}
-	if !comp.SuccessActions.IsEmpty() && comp.SuccessActions.Value != nil {
-		c.SuccessActions = lowmodel.FromReferenceMapWithFunc(comp.SuccessActions.Value, func(v *low.SuccessAction) *SuccessAction {
-			return NewSuccessAction(v)
-		})
-	}
-	if !comp.FailureActions.IsEmpty() && comp.FailureActions.Value != nil {
-		c.FailureActions = lowmodel.FromReferenceMapWithFunc(comp.FailureActions.Value, func(v *low.FailureAction) *FailureAction {
-			return NewFailureAction(v)
-		})
-	}
-	c.Extensions = high.ExtractExtensions(comp.Extensions)
-	return c
-}
+func NewComponents(comp *low.Components) *Components { _ = "STUB: not implemented"; return nil }
 
 // GoLow returns the low-level Components instance used to create the high-level one.
 func (c *Components) GoLow() *low.Components {
-	return c.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped returns the low-level Components instance with no type.
+	return nil
 }
 
-// GoLowUntyped returns the low-level Components instance with no type.
 func (c *Components) GoLowUntyped() any {
-	return c.low
+	_ = "STUB: not implemented"
+
+	// Render returns a YAML representation of the Components object as a byte slice.
+	return *new(any)
 }
 
-// Render returns a YAML representation of the Components object as a byte slice.
 func (c *Components) Render() ([]byte, error) {
-	return yaml.Marshal(c)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML creates a ready to render YAML representation of the Components object.
+		nil
 }
 
-// MarshalYAML creates a ready to render YAML representation of the Components object.
-func (c *Components) MarshalYAML() (any, error) {
-	m := orderedmap.New[string, any]()
-	if c.Inputs != nil && c.Inputs.Len() > 0 {
-		m.Set(low.InputsLabel, c.Inputs)
-	}
-	if c.Parameters != nil && c.Parameters.Len() > 0 {
-		m.Set(low.ParametersLabel, c.Parameters)
-	}
-	if c.SuccessActions != nil && c.SuccessActions.Len() > 0 {
-		m.Set(low.SuccessActionsLabel, c.SuccessActions)
-	}
-	if c.FailureActions != nil && c.FailureActions.Len() > 0 {
-		m.Set(low.FailureActionsLabel, c.FailureActions)
-	}
-	marshalExtensions(m, c.Extensions)
-	return m, nil
-}
+func (c *Components) MarshalYAML() (any, error) { _ = "STUB: not implemented"; return *new(any), nil }

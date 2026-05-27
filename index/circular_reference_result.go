@@ -1,8 +1,6 @@
 package index
 
 import (
-	"strings"
-
 	"go.yaml.in/yaml/v4"
 )
 
@@ -21,14 +19,6 @@ type CircularReferenceResult struct {
 
 // GenerateJourneyPath generates a string representation of the journey taken to find the circular reference.
 func (c *CircularReferenceResult) GenerateJourneyPath() string {
-	buf := strings.Builder{}
-	for i, ref := range c.Journey {
-		if i > 0 {
-			buf.WriteString(" -> ")
-		}
-
-		buf.WriteString(ref.Name)
-	}
-
-	return buf.String()
+	_ = "STUB: not implemented"
+	return ""
 }

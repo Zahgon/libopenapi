@@ -4,7 +4,6 @@
 package low
 
 import (
-	"encoding/binary"
 	"hash/maphash"
 	"sync"
 
@@ -34,61 +33,31 @@ var visitedPool = sync.Pool{
 }
 
 // getVisitedMap returns a cleared map from the pool.
-func getVisitedMap() map[*yaml.Node]bool {
-	return visitedPool.Get().(map[*yaml.Node]bool)
-}
+func getVisitedMap() map[*yaml.Node]bool { _ = "STUB: not implemented"; return nil }
 
 // putVisitedMap returns a map to the pool, discarding maps that grew too large.
-func putVisitedMap(m map[*yaml.Node]bool) {
-	if len(m) > 1024 {
-		return // let GC collect oversized maps
-	}
-	clear(m)
-	visitedPool.Put(m)
-}
+func putVisitedMap(m map[*yaml.Node]bool) { _ = "STUB: not implemented"; return }
+
+// let GC collect oversized maps
 
 // ClearNodePools replaces the sync.Pool instances in this package that hold
 // *yaml.Node pointers (visitedPool maps). After a document lifecycle ends,
 // pooled maps still reference parsed YAML nodes, preventing GC collection.
-func ClearNodePools() {
-	visitedPool = sync.Pool{
-		New: func() any { return make(map[*yaml.Node]bool, 32) },
-	}
-}
+func ClearNodePools() { _ = "STUB: not implemented"; return }
 
 // WithHasher provides a pooled hasher for the duration of fn.
 // The hasher is automatically returned to the pool after fn completes.
 // This pattern eliminates forgotten PutHasher() bugs.
-func WithHasher(fn func(h *maphash.Hash) uint64) uint64 {
-	hasher := hasherPool.Get().(*maphash.Hash)
-	hasher.Reset()
-	result := fn(hasher)
-	hasherPool.Put(hasher)
-	return result
-}
+func WithHasher(fn func(h *maphash.Hash) uint64) uint64 { _ = "STUB: not implemented"; return 0 }
 
 // HashBool writes a boolean as a single byte.
-func HashBool(h *maphash.Hash, b bool) {
-	if b {
-		h.WriteByte(1)
-	} else {
-		h.WriteByte(0)
-	}
-}
+func HashBool(h *maphash.Hash, b bool) { _ = "STUB: not implemented"; return }
 
 // HashInt64 writes an int64 without allocation using binary encoding.
-func HashInt64(h *maphash.Hash, n int64) {
-	var buf [8]byte
-	binary.LittleEndian.PutUint64(buf[:], uint64(n))
-	h.Write(buf[:])
-}
+func HashInt64(h *maphash.Hash, n int64) { _ = "STUB: not implemented"; return }
 
 // HashUint64 writes another hash value (for composition of nested Hashable objects).
-func HashUint64(h *maphash.Hash, v uint64) {
-	var buf [8]byte
-	binary.LittleEndian.PutUint64(buf[:], v)
-	h.Write(buf[:])
-}
+func HashUint64(h *maphash.Hash, v uint64) { _ = "STUB: not implemented"; return }
 
 // HASH_PIPE is the separator byte used between hash fields. :)
 const HASH_PIPE = '|'

@@ -5,13 +5,11 @@ package base
 
 import (
 	"context"
-	"hash/maphash"
 	"sync"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -36,71 +34,45 @@ type License struct {
 
 // Build out a license, complain if both a URL and identifier are present as they are mutually exclusive
 func (l *License) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
-	l.KeyNode = keyNode
-	l.reference = low.Reference{}
-	l.Reference = &l.reference
-	l.nodeStore = sync.Map{}
-	l.Nodes = &l.nodeStore
-	l.context = ctx
-	l.index = idx
-	if root == nil {
-		l.RootNode = nil
-		l.Extensions = nil
-		return nil
-	}
-	root = utils.NodeAlias(root)
-	l.RootNode = root
-	utils.CheckForMergeNodes(root)
-	if len(root.Content) > 0 {
-		l.NodeMap.ExtractNodes(root, false)
-	} else {
-		l.AddNode(root.Line, root)
-	}
-	l.Extensions = low.ExtractExtensions(root)
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // GetIndex will return the index.SpecIndex instance attached to the License object
 func (l *License) GetIndex() *index.SpecIndex {
-	return l.index
+	_ = "STUB: not implemented"
+
+	// GetContext will return the context.Context instance used when building the License object
+	return nil
 }
 
-// GetContext will return the context.Context instance used when building the License object
 func (l *License) GetContext() context.Context {
-	return l.context
+	_ = "STUB: not implemented"
+
+	// GetRootNode will return the root yaml node of the License object
+	return *new(context.Context)
 }
 
-// GetRootNode will return the root yaml node of the License object
 func (l *License) GetRootNode() *yaml.Node {
-	return l.RootNode
+	_ = "STUB: not implemented"
+
+	// GetKeyNode will return the key yaml node of the License object
+	return nil
 }
 
-// GetKeyNode will return the key yaml node of the License object
 func (l *License) GetKeyNode() *yaml.Node {
-	return l.KeyNode
+	_ = "STUB: not implemented"
+
+	// Hash will return a consistent hash of the License object
+	return nil
 }
 
-// Hash will return a consistent hash of the License object
-func (l *License) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if !l.Name.IsEmpty() {
-			h.WriteString(l.Name.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !l.URL.IsEmpty() {
-			h.WriteString(l.URL.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !l.Identifier.IsEmpty() {
-			h.WriteString(l.Identifier.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		// Note: Extensions are not included in the hash for License
-		return h.Sum64()
-	})
-}
+func (l *License) Hash() uint64 { _ = "STUB: not implemented"; return 0 }
+
+// Note: Extensions are not included in the hash for License
 
 // GetExtensions returns all extensions for License
 func (l *License) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return l.Extensions
+	_ = "STUB: not implemented"
+	return nil
 }

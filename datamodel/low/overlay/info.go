@@ -5,12 +5,10 @@ package overlay
 
 import (
 	"context"
-	"hash/maphash"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -31,68 +29,50 @@ type Info struct {
 
 // GetIndex returns the index.SpecIndex instance attached to the Info object
 func (i *Info) GetIndex() *index.SpecIndex {
-	return i.index
+	_ = "STUB: not implemented"
+
+	// GetContext returns the context.Context instance used when building the Info object
+	return nil
 }
 
-// GetContext returns the context.Context instance used when building the Info object
 func (i *Info) GetContext() context.Context {
-	return i.context
+	_ = "STUB: not implemented"
+
+	// FindExtension returns a ValueReference containing the extension value, if found.
+	return *new(context.Context)
 }
 
-// FindExtension returns a ValueReference containing the extension value, if found.
 func (i *Info) FindExtension(ext string) *low.ValueReference[*yaml.Node] {
-	return low.FindItemInOrderedMap(ext, i.Extensions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetRootNode returns the root yaml node of the Info object
 func (i *Info) GetRootNode() *yaml.Node {
-	return i.RootNode
+	_ = "STUB: not implemented"
+
+	// GetKeyNode returns the key yaml node of the Info object
+	return nil
 }
 
-// GetKeyNode returns the key yaml node of the Info object
 func (i *Info) GetKeyNode() *yaml.Node {
-	return i.KeyNode
+	_ = "STUB: not implemented"
+
+	// Build will extract extensions for the Info object.
+	return nil
 }
 
-// Build will extract extensions for the Info object.
 func (i *Info) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
-	i.KeyNode = keyNode
-	root = utils.NodeAlias(root)
-	i.RootNode = root
-	utils.CheckForMergeNodes(root)
-	i.Reference = new(low.Reference)
-	i.Nodes = low.ExtractNodes(ctx, root)
-	i.Extensions = low.ExtractExtensions(root)
-	i.index = idx
-	i.context = ctx
-	low.ExtractExtensionNodes(ctx, i.Extensions, i.Nodes)
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // GetExtensions returns all Info extensions and satisfies the low.HasExtensions interface.
 func (i *Info) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return i.Extensions
+	_ = "STUB: not implemented"
+	return nil
+
+	// Hash will return a consistent Hash of the Info object
 }
 
-// Hash will return a consistent Hash of the Info object
-func (inf *Info) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if !inf.Title.IsEmpty() {
-			h.WriteString(inf.Title.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !inf.Version.IsEmpty() {
-			h.WriteString(inf.Version.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !inf.Description.IsEmpty() {
-			h.WriteString(inf.Description.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		for _, ext := range low.HashExtensions(inf.Extensions) {
-			h.WriteString(ext)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		return h.Sum64()
-	})
-}
+func (inf *Info) Hash() uint64 { _ = "STUB: not implemented"; return 0 }

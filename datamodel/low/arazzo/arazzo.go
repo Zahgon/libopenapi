@@ -5,7 +5,6 @@ package arazzo
 
 import (
 	"context"
-	"hash/maphash"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
@@ -36,97 +35,50 @@ var extractArazzoSourceDescriptions = extractArray[SourceDescription]
 // For Arazzo low models this is typically nil, because Arazzo parsing does not build a SpecIndex.
 // The index parameter is still required to satisfy the shared low.Buildable interface and generic extractors.
 func (a *Arazzo) GetIndex() *index.SpecIndex {
-	return a.index
+	_ = "STUB: not implemented"
+
+	// GetContext returns the context.Context instance used when building the Arazzo object.
+	return nil
 }
 
-// GetContext returns the context.Context instance used when building the Arazzo object.
 func (a *Arazzo) GetContext() context.Context {
-	return a.context
+	_ = "STUB: not implemented"
+
+	// FindExtension returns a ValueReference containing the extension value, if found.
+	return *new(context.Context)
 }
 
-// FindExtension returns a ValueReference containing the extension value, if found.
 func (a *Arazzo) FindExtension(ext string) *low.ValueReference[*yaml.Node] {
-	return low.FindItemInOrderedMap(ext, a.Extensions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetRootNode returns the root yaml node of the Arazzo object.
 func (a *Arazzo) GetRootNode() *yaml.Node {
-	return a.RootNode
+	_ = "STUB: not implemented"
+
+	// GetKeyNode returns the key yaml node of the Arazzo object.
+	return nil
 }
 
-// GetKeyNode returns the key yaml node of the Arazzo object.
 func (a *Arazzo) GetKeyNode() *yaml.Node {
-	return a.KeyNode
+	_ = "STUB: not implemented"
+
+	// Build will extract all properties of the Arazzo document.
+	return nil
 }
 
-// Build will extract all properties of the Arazzo document.
 func (a *Arazzo) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
-	root = initBuild(&arazzoBase{
-		KeyNode:    &a.KeyNode,
-		RootNode:   &a.RootNode,
-		Reference:  &a.Reference,
-		NodeMap:    &a.NodeMap,
-		Extensions: &a.Extensions,
-		Index:      &a.index,
-		Context:    &a.context,
-	}, ctx, keyNode, root, idx)
-
-	info, err := low.ExtractObject[*Info](ctx, InfoLabel, root, idx)
-	if err != nil {
-		return err
-	}
-	a.Info = info
-
-	sourceDescs, err := extractArazzoSourceDescriptions(ctx, SourceDescriptionsLabel, root, idx)
-	if err != nil {
-		return err
-	}
-	a.SourceDescriptions = sourceDescs
-
-	workflows, err := extractArray[Workflow](ctx, WorkflowsLabel, root, idx)
-	if err != nil {
-		return err
-	}
-	a.Workflows = workflows
-
-	components, err := low.ExtractObject[*Components](ctx, ComponentsLabel, root, idx)
-	if err != nil {
-		return err
-	}
-	a.Components = components
-
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // GetExtensions returns all Arazzo extensions and satisfies the low.HasExtensions interface.
 func (a *Arazzo) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return a.Extensions
+	_ = "STUB: not implemented"
+	return nil
+
+	// Hash will return a consistent hash of the Arazzo object.
 }
 
-// Hash will return a consistent hash of the Arazzo object.
-func (a *Arazzo) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if !a.Arazzo.IsEmpty() {
-			h.WriteString(a.Arazzo.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !a.Info.IsEmpty() {
-			low.HashUint64(h, a.Info.Value.Hash())
-		}
-		if !a.SourceDescriptions.IsEmpty() {
-			for _, sd := range a.SourceDescriptions.Value {
-				low.HashUint64(h, sd.Value.Hash())
-			}
-		}
-		if !a.Workflows.IsEmpty() {
-			for _, w := range a.Workflows.Value {
-				low.HashUint64(h, w.Value.Hash())
-			}
-		}
-		if !a.Components.IsEmpty() {
-			low.HashUint64(h, a.Components.Value.Hash())
-		}
-		hashExtensionsInto(h, a.Extensions)
-		return h.Sum64()
-	})
-}
+func (a *Arazzo) Hash() uint64 { _ = "STUB: not implemented"; return 0 }

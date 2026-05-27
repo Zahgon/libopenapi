@@ -10,45 +10,31 @@ import (
 
 // SetCache sets a sync map as a temporary cache for the index.
 func (index *SpecIndex) SetCache(sync *sync.Map) {
-	index.cache = sync
+	_ = "STUB: not implemented"
+
+	// HighCacheHit increments the counter of high cache hits by one, and returns the current value of hits.
+	return
 }
 
-// HighCacheHit increments the counter of high cache hits by one, and returns the current value of hits.
-func (index *SpecIndex) HighCacheHit() uint64 {
-	index.highModelCache.AddHit()
-	return index.highModelCache.GetHits()
-}
+func (index *SpecIndex) HighCacheHit() uint64 { _ = "STUB: not implemented"; return 0 }
 
 // HighCacheMiss increments the counter of high cache misses by one, and returns the current value of misses.
-func (index *SpecIndex) HighCacheMiss() uint64 {
-	index.highModelCache.AddMiss()
-	return index.highModelCache.GetMisses()
-}
+func (index *SpecIndex) HighCacheMiss() uint64 { _ = "STUB: not implemented"; return 0 }
 
 // GetHighCacheHits returns the number of hits on the high model cache.
-func (index *SpecIndex) GetHighCacheHits() uint64 {
-	return index.highModelCache.GetHits()
-}
+func (index *SpecIndex) GetHighCacheHits() uint64 { _ = "STUB: not implemented"; return 0 }
 
 // GetHighCacheMisses returns the number of misses on the high model cache.
-func (index *SpecIndex) GetHighCacheMisses() uint64 {
-	return index.highModelCache.GetMisses()
-}
+func (index *SpecIndex) GetHighCacheMisses() uint64 { _ = "STUB: not implemented"; return 0 }
 
 // GetHighCache returns the high model cache for this index.
-func (index *SpecIndex) GetHighCache() Cache {
-	return index.highModelCache
-}
+func (index *SpecIndex) GetHighCache() Cache { _ = "STUB: not implemented"; return *new(Cache) }
 
 // InitHighCache allocates a new high model cache onto the index.
-func (index *SpecIndex) InitHighCache() {
-	index.highModelCache = CreateNewCache()
-}
+func (index *SpecIndex) InitHighCache() { _ = "STUB: not implemented"; return }
 
 // SetHighCache sets the high model cache for this index.
-func (index *SpecIndex) SetHighCache(cache *SimpleCache) {
-	index.highModelCache = cache
-}
+func (index *SpecIndex) SetHighCache(cache *SimpleCache) { _ = "STUB: not implemented"; return }
 
 // Cache is an interface for a simple cache that can be used by any consumer.
 type Cache interface {
@@ -73,51 +59,44 @@ type SimpleCache struct {
 }
 
 // CreateNewCache creates a new simple cache with a sync.Map store.
-func CreateNewCache() Cache {
-	return &SimpleCache{store: &sync.Map{}}
-}
+func CreateNewCache() Cache { _ = "STUB: not implemented"; return *new(Cache) }
 
 // SetStore sets the store for the cache.
 func (c *SimpleCache) SetStore(store *sync.Map) {
-	c.store = store
+	_ = "STUB: not implemented"
+
+	// GetStore returns the store for the cache.
+	return
 }
 
-// GetStore returns the store for the cache.
 func (c *SimpleCache) GetStore() *sync.Map {
-	return c.store
+	_ = "STUB: not implemented"
+
+	// Load retrieves a value from the cache.
+	return nil
 }
 
-// Load retrieves a value from the cache.
 func (c *SimpleCache) Load(key any) (value any, ok bool) {
-	return c.store.Load(key)
+	_ = "STUB: not implemented"
+	return *
+
+	// Store stores a key-value pair in the cache.
+	new(any), false
 }
 
-// Store stores a key-value pair in the cache.
-func (c *SimpleCache) Store(key, value any) {
-	c.store.Store(key, value)
-}
+func (c *SimpleCache) Store(key, value any) { _ = "STUB: not implemented"; return }
 
 // AddHit increments the hit counter by one, and returns the current value of hits.
-func (c *SimpleCache) AddHit() uint64 {
-	return c.hits.Add(1)
-}
+func (c *SimpleCache) AddHit() uint64 { _ = "STUB: not implemented"; return 0 }
 
 // AddMiss increments the miss counter by one, and returns the current value of misses.
-func (c *SimpleCache) AddMiss() uint64 {
-	return c.misses.Add(1)
-}
+func (c *SimpleCache) AddMiss() uint64 { _ = "STUB: not implemented"; return 0 }
 
 // GetHits returns the current value of hits.
-func (c *SimpleCache) GetHits() uint64 {
-	return c.hits.Load()
-}
+func (c *SimpleCache) GetHits() uint64 { _ = "STUB: not implemented"; return 0 }
 
 // GetMisses returns the current value of misses.
-func (c *SimpleCache) GetMisses() uint64 {
-	return c.misses.Load()
-}
+func (c *SimpleCache) GetMisses() uint64 { _ = "STUB: not implemented"; return 0 }
 
 // Clear clears the cache.
-func (c *SimpleCache) Clear() {
-	c.store.Clear()
-}
+func (c *SimpleCache) Clear() { _ = "STUB: not implemented"; return }

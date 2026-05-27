@@ -4,7 +4,6 @@
 package base
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/base"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -23,39 +22,29 @@ type License struct {
 }
 
 // NewLicense will create a new high-level License instance from a low-level one.
-func NewLicense(license *low.License) *License {
-	l := new(License)
-	l.low = license
-	l.Extensions = high.ExtractExtensions(license.Extensions)
-	if !license.URL.IsEmpty() {
-		l.URL = license.URL.Value
-	}
-	if !license.Name.IsEmpty() {
-		l.Name = license.Name.Value
-	}
-	if !license.Identifier.IsEmpty() {
-		l.Identifier = license.Identifier.Value
-	}
-	return l
-}
+func NewLicense(license *low.License) *License { _ = "STUB: not implemented"; return nil }
 
 // GoLow will return the low-level License used to create the high-level one.
 func (l *License) GoLow() *low.License {
-	return l.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level License instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level License instance that was used to create the high-level one, with no type
 func (l *License) GoLowUntyped() any {
-	return l.low
+	_ = "STUB: not implemented"
+
+	// Render will return a YAML representation of the License object as a byte slice.
+	return *new(any)
 }
 
-// Render will return a YAML representation of the License object as a byte slice.
 func (l *License) Render() ([]byte, error) {
-	return yaml.Marshal(l)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML will create a ready to render YAML representation of the License object.
+		nil
 }
 
-// MarshalYAML will create a ready to render YAML representation of the License object.
-func (l *License) MarshalYAML() (interface{}, error) {
-	nb := high.NewNodeBuilder(l, l.low)
-	return nb.Render(), nil
-}
+func (l *License) MarshalYAML() (interface{}, error) { _ = "STUB: not implemented"; return nil, nil }

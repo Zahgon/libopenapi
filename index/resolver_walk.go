@@ -20,21 +20,16 @@ func newRelativeWalkState(
 	depth int,
 	schemaIDBase string,
 ) relativeWalkState {
-	return relativeWalkState{
-		foundRelatives: foundRelatives,
-		journey:        journey,
-		resolve:        resolve,
-		depth:          depth,
-		schemaIDBase:   schemaIDBase,
-	}
+	_ = "STUB: not implemented"
+	return *new(relativeWalkState)
 }
 
 func (state relativeWalkState) withNodeBase(resolver *Resolver, node *yaml.Node) relativeWalkState {
-	state.schemaIDBase = resolver.resolveSchemaIdBase(state.schemaIDBase, node)
-	return state
+	_ = "STUB: not implemented"
+	return *new(relativeWalkState)
 }
 
 func (state relativeWalkState) descend() relativeWalkState {
-	state.depth++
-	return state
+	_ = "STUB: not implemented"
+	return *new(relativeWalkState)
 }

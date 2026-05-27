@@ -3,13 +3,4 @@
 
 package utils
 
-func UnwrapErrors(err error) []error {
-	if err == nil {
-		return []error{}
-	}
-	if uw, ok := err.(interface{ Unwrap() []error }); ok {
-		return uw.Unwrap()
-	} else {
-		return []error{err}
-	}
-}
+func UnwrapErrors(err error) []error { _ = "STUB: not implemented"; return nil }

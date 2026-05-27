@@ -5,7 +5,6 @@ package golang
 
 import (
 	"reflect"
-	"sort"
 
 	highbase "github.com/pb33f/libopenapi/datamodel/high/base"
 	"github.com/pb33f/libopenapi/orderedmap"
@@ -104,290 +103,121 @@ type GeneratedType struct {
 }
 
 // NewGenerator creates a Go model generator.
-func NewGenerator(opts ...Option) *Generator {
-	g := &Generator{
-		packageName:                 "models",
-		optionalFieldsAsPointers:    true,
-		omitEmpty:                   true,
-		nullableAsPointer:           true,
-		additionalPropertiesMethods: true,
-		nestedTypeNameDelimiter:     "_",
-		jsonTags:                    true,
-		formatMappings:              make(map[string]formatMapping),
-		typeSchemas:                 make(map[reflect.Type]*highbase.SchemaProxy),
-		fieldSchemas:                make(map[fieldSchemaKey]*highbase.SchemaProxy),
-		jsonSchemas:                 make(map[fieldSchemaKey]*highbase.SchemaProxy),
-		imports:                     make(map[string]struct{}),
-		seenDecls:                   make(map[string]struct{}),
-		metadataSchemas:             make(map[string]*highbase.Schema),
-		openapiCache:                make(map[*highbase.SchemaProxy]*SchemaIR),
-		reflectCache:                make(map[reflect.Type]*SchemaIR),
-		reflectStack:                make(map[reflect.Type]bool),
-		oneOfRegistrations:          make(map[reflect.Type][]reflect.Type),
-		discriminatorRegistrations:  make(map[reflect.Type]discriminatorRegistration),
-	}
-	for _, opt := range opts {
-		if opt != nil {
-			opt(g)
-		}
-	}
-	return g
-}
+func NewGenerator(opts ...Option) *Generator { _ = "STUB: not implemented"; return nil }
 
 // run returns a generator carrying fresh per-invocation state. Configuration is
 // shared with the receiver and treated as read-only during generation, so a
 // configured Generator is safe to reuse across calls and across goroutines.
 // renderFile owns the rendering output buffers (imports, decls, metadata), so
 // they are reset there rather than duplicated here.
-func (g *Generator) run() *Generator {
-	r := *g
-	r.diagnostics = nil
-	r.openapiCache = make(map[*highbase.SchemaProxy]*SchemaIR)
-	r.reflectCache = make(map[reflect.Type]*SchemaIR)
-	r.reflectStack = make(map[reflect.Type]bool)
-	r.typeNames = nil
-	r.componentNames = nil
-	r.componentTypeNames = nil
-	r.componentKinds = nil
-	r.currentComponent = ""
-	return &r
-}
+func (g *Generator) run() *Generator { _ = "STUB: not implemented"; return nil }
 
 // RenderSchema renders a single OpenAPI schema as Go source.
 func RenderSchema(name string, schema *highbase.SchemaProxy, opts ...Option) ([]byte, error) {
-	return NewGenerator(opts...).RenderSchema(name, schema)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // SchemaFromValue generates an OpenAPI schema for the runtime type of value.
 func SchemaFromValue(value any, opts ...Option) (*highbase.SchemaProxy, error) {
-	return NewGenerator(opts...).SchemaFromValue(value)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // SchemaFromType generates an OpenAPI schema for a Go reflection type.
 func SchemaFromType(t reflect.Type, opts ...Option) (*highbase.SchemaProxy, error) {
-	return NewGenerator(opts...).SchemaFromType(t)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // SchemasFromValues generates an OpenAPI component graph for runtime values.
 func SchemasFromValues(values ...any) (*SchemaSet, error) {
-	return NewGenerator().SchemasFromValues(values...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // SchemasFromValuesWithOptions generates an OpenAPI component graph for runtime
 // values using generator options.
 func SchemasFromValuesWithOptions(values []any, opts ...Option) (*SchemaSet, error) {
-	return NewGenerator(opts...).SchemasFromValues(values...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // SchemasFromTypes generates an OpenAPI component graph for Go reflection
 // types.
 func SchemasFromTypes(types ...reflect.Type) (*SchemaSet, error) {
-	return NewGenerator().SchemasFromTypes(types...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // SchemasFromTypesWithOptions generates an OpenAPI component graph for Go
 // reflection types using generator options.
 func SchemasFromTypesWithOptions(types []reflect.Type, opts ...Option) (*SchemaSet, error) {
-	return NewGenerator(opts...).SchemasFromTypes(types...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // RenderSchema renders a single OpenAPI schema as Go source using this
 // generator.
 func (g *Generator) RenderSchema(name string, schema *highbase.SchemaProxy) ([]byte, error) {
-	if schema == nil {
-		return nil, wrapPath(ErrNilSchema, name)
-	}
-	r := g.run()
-	r.typeNames = newNameRegistry()
-	ir, err := r.irFromOpenAPI(name, schema, name)
-	if err != nil {
-		return nil, err
-	}
-	file, err := r.renderFile([]*SchemaIR{ir})
-	if err != nil {
-		return nil, err
-	}
-	return file.Source, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // RenderSchemas renders an ordered map of OpenAPI schemas as one Go source
 // file.
 func (g *Generator) RenderSchemas(schemas *orderedmap.Map[string, *highbase.SchemaProxy]) (*GeneratedFile, error) {
-	if err := validatePackageName(g.packageName); err != nil {
-		return nil, err
-	}
-	r := g.run()
-	if schemas == nil {
-		return r.renderFile(nil)
-	}
-	r.typeNames = newNameRegistry()
-	r.componentTypeNames = r.resolveComponentTypeNames(schemas)
-	irs := make([]*SchemaIR, 0, schemas.Len())
-	for name, schema := range schemas.FromOldest() {
-		ir, err := r.irFromOpenAPI(name, schema, name)
-		if err != nil {
-			return nil, err
-		}
-		irs = append(irs, ir)
-	}
-	r.componentKinds = make(map[string]Kind, len(irs))
-	for _, ir := range irs {
-		if ir != nil && ir.Name != "" {
-			r.componentKinds[ir.Name] = ir.Kind
-		}
-	}
-	return r.renderFile(irs)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (g *Generator) resolveComponentTypeNames(schemas *orderedmap.Map[string, *highbase.SchemaProxy]) map[string]string {
-	names := make(map[string]string)
-	if schemas == nil {
-		return names
-	}
-	registry := g.typeNames
-	if registry == nil {
-		registry = newNameRegistry()
-	}
-	for name := range schemas.FromOldest() {
-		resolved, collision := registry.resolve(name, g.publicName(name))
-		names[name] = resolved
-		if collision {
-			g.addDiagnostic(DiagnosticComponentNameCollision, name, "component name collision resolved as "+resolved)
-		}
-	}
-	return names
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (g *Generator) resolveTypeName(original, candidate, path string) string {
-	if g.typeNames == nil {
-		return candidate
-	}
-	resolved, collision := g.typeNames.resolve(original, candidate)
-	if collision {
-		g.addDiagnostic(DiagnosticTypeNameCollision, path, "type name collision resolved as "+resolved)
-	}
-	return resolved
+	_ = "STUB: not implemented"
+	return ""
 }
 
 // SchemaFromValue generates an OpenAPI schema for the runtime type of value
 // using this generator.
 func (g *Generator) SchemaFromValue(value any) (*highbase.SchemaProxy, error) {
-	if value == nil {
-		return nil, wrapPath(ErrNilType, "")
-	}
-	return g.SchemaFromType(reflect.TypeOf(value))
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // SchemaFromType generates an OpenAPI schema for a Go reflection type using
 // this generator.
 func (g *Generator) SchemaFromType(t reflect.Type) (*highbase.SchemaProxy, error) {
-	if t == nil {
-		return nil, wrapPath(ErrNilType, "")
-	}
-	r := g.run()
-	nameType := derefType(t)
-	ir, err := r.irFromReflect(t, typeName(nameType), typeName(nameType))
-	if err != nil {
-		return nil, err
-	}
-	return r.openapiFromIR(ir), nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // SchemasFromValues generates an OpenAPI component graph for runtime values
 // using this generator.
 func (g *Generator) SchemasFromValues(values ...any) (*SchemaSet, error) {
-	types := make([]reflect.Type, 0, len(values))
-	for _, value := range values {
-		if value == nil {
-			return nil, wrapPath(ErrNilType, "")
-		}
-		types = append(types, reflect.TypeOf(value))
-	}
-	return g.SchemasFromTypes(types...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // SchemasFromTypes generates an OpenAPI component graph for Go reflection types
 // using this generator.
 func (g *Generator) SchemasFromTypes(types ...reflect.Type) (*SchemaSet, error) {
-	r := g.run()
-	roots := orderedmap.New[string, *highbase.SchemaProxy]()
-	components := orderedmap.New[string, *highbase.SchemaProxy]()
-	var root *highbase.SchemaProxy
-	for i, t := range types {
-		if t == nil {
-			return nil, wrapPath(ErrNilType, "")
-		}
-		nameType := derefType(t)
-		ir, err := r.irFromReflect(t, typeName(nameType), typeName(nameType))
-		if err != nil {
-			return nil, err
-		}
-		rootName := ir.Name
-		rootProxy := r.rootProxy(ir)
-		if i == 0 {
-			root = rootProxy
-		}
-		if _, exists := roots.Get(rootName); exists {
-			r.addDiagnostic(DiagnosticRootNameCollision, rootName, "root name collision resolved by keeping first schema")
-			continue
-		}
-		roots.Set(rootName, rootProxy)
-	}
-	irs := make([]*SchemaIR, 0, len(r.reflectCache))
-	for _, ir := range r.reflectCache {
-		if ir != nil && ir.Name != "" && isComponentKind(ir.Kind) {
-			irs = append(irs, ir)
-		}
-	}
-	sortIRsByName(irs)
-	componentNames := make(map[string]struct{}, len(irs))
-	for _, ir := range irs {
-		componentNames[ir.Name] = struct{}{}
-	}
-	r.componentNames = componentNames
-	for _, ir := range irs {
-		if _, exists := components.Get(ir.Name); exists {
-			r.addDiagnostic(DiagnosticComponentNameCollision, ir.Name, "component name collision resolved by keeping first schema")
-			continue
-		}
-		r.currentComponent = ir.Name
-		components.Set(ir.Name, r.openapiFromIR(ir))
-	}
-	return &SchemaSet{
-		Root:        root,
-		Roots:       roots,
-		Components:  components,
-		Diagnostics: append([]Diagnostic(nil), r.diagnostics...),
-	}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (g *Generator) rootProxy(ir *SchemaIR) *highbase.SchemaProxy {
-	if ir != nil && ir.Name != "" && isComponentKind(ir.Kind) {
-		ref := "#/components/schemas/" + ir.Name
-		if ir.Nullable {
-			return nullableReferenceProxy(ref, false, ir)
-		}
-		return highbase.CreateSchemaProxyRef(ref)
-	}
-	return g.openapiFromIR(ir)
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (g *Generator) addDiagnostic(code, path, message string) {
-	g.diagnostics = append(g.diagnostics, Diagnostic{Code: code, Path: path, Message: message})
-}
+func (g *Generator) addDiagnostic(code, path, message string) { _ = "STUB: not implemented"; return }
 
-func (g *Generator) addImport(path string) {
-	if path != "" {
-		g.imports[path] = struct{}{}
-	}
-}
+func (g *Generator) addImport(path string) { _ = "STUB: not implemented"; return }
 
-func isComponentKind(kind Kind) bool {
-	return kind == KindObject || kind == KindAllOf || kind == KindEnum || kind == KindUnion
-}
+func isComponentKind(kind Kind) bool { _ = "STUB: not implemented"; return false }
 
-func sortIRsByName(irs []*SchemaIR) {
-	sort.SliceStable(irs, func(i, j int) bool {
-		return irs[i].Name < irs[j].Name
-	})
-}
+func sortIRsByName(irs []*SchemaIR) { _ = "STUB: not implemented"; return }

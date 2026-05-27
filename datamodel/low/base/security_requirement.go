@@ -5,14 +5,11 @@ package base
 
 import (
 	"context"
-	"hash/maphash"
-	"sort"
 	"sync"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -39,134 +36,50 @@ type SecurityRequirement struct {
 
 // GetContext will return the context.Context instance used when building the SecurityRequirement object
 func (s *SecurityRequirement) GetContext() context.Context {
-	return s.context
+	_ = "STUB: not implemented"
+
+	// GetIndex will return the index.SpecIndex instance attached to the SecurityRequirement object
+	return *new(context.Context)
 }
 
-// GetIndex will return the index.SpecIndex instance attached to the SecurityRequirement object
 func (s *SecurityRequirement) GetIndex() *index.SpecIndex {
-	return s.index
-}
+	_ = "STUB: not implemented"
 
-// Build will extract security requirements from the node (the structure is odd, to be honest)
-func (s *SecurityRequirement) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
-	s.KeyNode = keyNode
-	s.reference = low.Reference{}
-	s.Reference = &s.reference
-	s.nodeStore = sync.Map{}
-	s.Nodes = &s.nodeStore
-	s.context = ctx
-	s.index = idx
-	if root == nil {
-		s.RootNode = nil
-		s.ContainsEmptyRequirement = true
-		s.Requirements = low.ValueReference[*orderedmap.Map[low.KeyReference[string], low.ValueReference[[]low.ValueReference[string]]]]{
-			Value:     orderedmap.New[low.KeyReference[string], low.ValueReference[[]low.ValueReference[string]]](),
-			ValueNode: nil,
-		}
-		return nil
-	}
-	root = utils.NodeAlias(root)
-	s.RootNode = root
-	utils.CheckForMergeNodes(root)
-	if len(root.Content) > 0 {
-		s.NodeMap.ExtractNodes(root, false)
-	} else {
-		s.AddNode(root.Line, root)
-	}
-
-	var labelNode *yaml.Node
-	valueMap := orderedmap.New[low.KeyReference[string], low.ValueReference[[]low.ValueReference[string]]]()
-	var arr []low.ValueReference[string]
-	for i := range root.Content {
-		if i%2 == 0 {
-			labelNode = root.Content[i]
-			arr = []low.ValueReference[string]{} // reset roles.
-			continue
-		}
-		for j := range root.Content[i].Content {
-			if root.Content[i].Content[j].Value == "" {
-				s.ContainsEmptyRequirement = true
-			}
-			arr = append(arr, low.ValueReference[string]{
-				Value:     root.Content[i].Content[j].Value,
-				ValueNode: root.Content[i].Content[j],
-			})
-			s.Nodes.Store(root.Content[i].Content[j].Line, root.Content[i].Content[j])
-		}
-		valueMap.Set(
-			low.KeyReference[string]{
-				Value:   labelNode.Value,
-				KeyNode: labelNode,
-			},
-			low.ValueReference[[]low.ValueReference[string]]{
-				Value:     arr,
-				ValueNode: root.Content[i],
-			},
-		)
-	}
-	if len(root.Content) == 0 {
-		s.ContainsEmptyRequirement = true
-	}
-	s.Requirements = low.ValueReference[*orderedmap.Map[low.KeyReference[string], low.ValueReference[[]low.ValueReference[string]]]]{
-		Value:     valueMap,
-		ValueNode: root,
-	}
-
+	// Build will extract security requirements from the node (the structure is odd, to be honest)
 	return nil
 }
 
+func (s *SecurityRequirement) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
+	_ = "STUB: not implemented"
+	return nil
+}
+
+// reset roles.
+
 // GetRootNode will return the root yaml node of the SecurityRequirement object
 func (s *SecurityRequirement) GetRootNode() *yaml.Node {
-	return s.RootNode
+	_ = "STUB: not implemented"
+
+	// GetKeyNode will return the key yaml node of the SecurityRequirement object
+	return nil
 }
 
-// GetKeyNode will return the key yaml node of the SecurityRequirement object
 func (s *SecurityRequirement) GetKeyNode() *yaml.Node {
-	return s.KeyNode
+	_ = "STUB: not implemented"
+
+	// FindRequirement will attempt to locate a security requirement string from a supplied name.
+	return nil
 }
 
-// FindRequirement will attempt to locate a security requirement string from a supplied name.
 func (s *SecurityRequirement) FindRequirement(name string) []low.ValueReference[string] {
-	for k, v := range s.Requirements.Value.FromOldest() {
-		if k.Value == name {
-			return v.Value
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // GetKeys returns a string slice of all the keys used in the requirement.
-func (s *SecurityRequirement) GetKeys() []string {
-	keys := make([]string, orderedmap.Len(s.Requirements.Value))
-	z := 0
-	for k := range s.Requirements.Value.KeysFromOldest() {
-		keys[z] = k.Value
-		z++
-	}
-	return keys
-}
+func (s *SecurityRequirement) GetKeys() []string { _ = "STUB: not implemented"; return nil }
 
 // Hash will return a consistent hash of the SecurityRequirement object
-func (s *SecurityRequirement) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		for k, v := range orderedmap.SortAlpha(s.Requirements.Value).FromOldest() {
-			// Pre-allocate vals slice
-			vals := make([]string, len(v.Value))
-			for y := range v.Value {
-				vals[y] = v.Value[y].Value
-			}
-			sort.Strings(vals)
+func (s *SecurityRequirement) Hash() uint64 { _ = "STUB: not implemented"; return 0 }
 
-			h.WriteString(k.Value)
-			h.WriteByte('-')
-			for i, val := range vals {
-				if i > 0 {
-					h.WriteByte(low.HASH_PIPE)
-				}
-				h.WriteString(val)
-			}
-			h.WriteByte(low.HASH_PIPE)
-		}
-		return h.Sum64()
-	})
-}
+// Pre-allocate vals slice

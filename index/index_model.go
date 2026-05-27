@@ -4,15 +4,11 @@
 package index
 
 import (
-	"encoding/json"
 	"io/fs"
 	"log/slog"
 	"net/http"
 	"net/url"
-	"path/filepath"
 	"sync"
-
-	"github.com/pb33f/libopenapi/utils"
 
 	"github.com/pb33f/libopenapi/datamodel"
 	"go.yaml.in/yaml/v4"
@@ -60,24 +56,8 @@ type ReferenceMapped struct {
 
 // MarshalJSON is a custom JSON marshaller for the ReferenceMapped struct.
 func (rm *ReferenceMapped) MarshalJSON() ([]byte, error) {
-	d := map[string]interface{}{
-		"definition":     rm.Definition,
-		"fullDefinition": rm.FullDefinition,
-		"jsonPath":       rm.OriginalReference.Path,
-		"line":           rm.OriginalReference.Node.Line,
-		"startColumn":    rm.OriginalReference.Node.Column,
-		"endColumn": rm.OriginalReference.Node.Content[1].Column +
-			(len(rm.OriginalReference.Node.Content[1].Value) + 2),
-	}
-	if rm.IsPolymorphic {
-		d["isPolymorphic"] = true
-	}
-
-	if rm.Reference != nil && rm.Reference.KeyNode != nil {
-		d["targetLine"] = rm.Reference.KeyNode.Line
-		d["targetColumn"] = rm.Reference.KeyNode.Column
-	}
-	return json.Marshal(d)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // SpecIndexConfig is a configuration struct for the SpecIndex introduced in 0.6.0 that provides an expandable
@@ -235,73 +215,30 @@ type SpecIndexConfig struct {
 // SetTheoreticalRoot sets the spec file paths to point to a theoretical spec file, which does not exist but is required
 //
 //	to formulate the absolute path to root references correctly.
-func (s *SpecIndexConfig) SetTheoreticalRoot() {
-	s.SpecFilePath = filepath.Join(s.BasePath, theoreticalRoot)
-
-	basePath := s.BasePath
-	if !filepath.IsAbs(basePath) {
-		basePath, _ = filepath.Abs(basePath)
-	}
-	s.SpecAbsolutePath = filepath.Join(basePath, theoreticalRoot)
-}
+func (s *SpecIndexConfig) SetTheoreticalRoot() { _ = "STUB: not implemented"; return }
 
 // GetId returns the id of the SpecIndexConfig. If the id is not set, it will generate a random alphanumeric string
-func (s *SpecIndexConfig) GetId() string {
-	if s.id == "" {
-		s.id = utils.GenerateAlphanumericString(6)
-	}
-	return s.id
-}
+func (s *SpecIndexConfig) GetId() string { _ = "STUB: not implemented"; return "" }
 
 // ToDocumentConfiguration converts SpecIndexConfig to DocumentConfiguration for compatibility
 func (s *SpecIndexConfig) ToDocumentConfiguration() *datamodel.DocumentConfiguration {
-	if s == nil {
-		return nil
-	}
-	// default strategy if not set
-	strategy := s.PropertyMergeStrategy
-	if strategy == 0 {
-		strategy = datamodel.PreserveLocal
-	}
-	return &datamodel.DocumentConfiguration{
-		BaseURL:                               s.BaseURL,
-		BasePath:                              s.BasePath,
-		SpecFilePath:                          s.SpecFilePath,
-		AllowFileReferences:                   s.AllowFileLookup,
-		AllowRemoteReferences:                 s.AllowRemoteLookup,
-		BypassDocumentCheck:                   s.SkipDocumentCheck,
-		IgnorePolymorphicCircularReferences:   s.IgnorePolymorphicCircularReferences,
-		IgnoreArrayCircularReferences:         s.IgnoreArrayCircularReferences,
-		UseSchemaQuickHash:                    s.UseSchemaQuickHash,
-		AllowUnknownExtensionContentDetection: s.AllowUnknownExtensionContentDetection,
-		TransformSiblingRefs:                  s.TransformSiblingRefs,
-		MergeReferencedProperties:             s.MergeReferencedProperties,
-		ResolveNestedRefsWithDocumentContext:  s.ResolveNestedRefsWithDocumentContext,
-		PropertyMergeStrategy:                 strategy,
-		SkipExternalRefResolution:             s.SkipExternalRefResolution,
-		Logger:                                s.Logger,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// default strategy if not set
 
 // CreateOpenAPIIndexConfig is a helper function to create a new SpecIndexConfig with the AllowRemoteLookup and
 // AllowFileLookup set to true. This is the default behavior of the index in previous versions of libopenapi. (pre 0.6.0)
 //
 // The default BasePath is the current working directory.
-func CreateOpenAPIIndexConfig() *SpecIndexConfig {
-	return &SpecIndexConfig{
-		AllowRemoteLookup: true,
-		AllowFileLookup:   true,
-		id:                utils.GenerateAlphanumericString(6),
-	}
-}
+func CreateOpenAPIIndexConfig() *SpecIndexConfig { _ = "STUB: not implemented"; return nil }
 
 // CreateClosedAPIIndexConfig is a helper function to create a new SpecIndexConfig with the AllowRemoteLookup and
 // AllowFileLookup set to false. This is the default behavior of the index in versions 0.6.0+
 //
 // The default BasePath is the current working directory.
-func CreateClosedAPIIndexConfig() *SpecIndexConfig {
-	return &SpecIndexConfig{id: utils.GenerateAlphanumericString(6)}
-}
+func CreateClosedAPIIndexConfig() *SpecIndexConfig { _ = "STUB: not implemented"; return nil }
 
 // SpecIndex is a complete pre-computed index of the entire specification. Numbers are pre-calculated and
 // quick direct access to paths, operations, tags are all available. No need to walk the entire node tree in rules,
@@ -425,196 +362,51 @@ type SpecIndex struct {
 }
 
 // GetResolver returns the resolver for this index.
-func (index *SpecIndex) GetResolver() *Resolver {
-	index.resolverLock.RLock()
-	defer index.resolverLock.RUnlock()
-	return index.resolver
-}
+func (index *SpecIndex) GetResolver() *Resolver { _ = "STUB: not implemented"; return nil }
 
 // SetResolver sets the resolver for this index.
-func (index *SpecIndex) SetResolver(resolver *Resolver) {
-	index.resolverLock.Lock()
-	defer index.resolverLock.Unlock()
-	index.resolver = resolver
-}
+func (index *SpecIndex) SetResolver(resolver *Resolver) { _ = "STUB: not implemented"; return }
 
 // GetConfig returns the SpecIndexConfig for this index.
-func (index *SpecIndex) GetConfig() *SpecIndexConfig {
-	return index.config
-}
+func (index *SpecIndex) GetConfig() *SpecIndexConfig { _ = "STUB: not implemented"; return nil }
 
 // GetNodeMap returns the line-to-column-to-node map built during indexing.
 func (index *SpecIndex) GetNodeMap() map[int]map[int]*yaml.Node {
-	return index.nodeMap
+	_ = "STUB: not implemented"
+	return nil
+
+	// GetCache returns the reference lookup cache used during resolution.
 }
 
-// GetCache returns the reference lookup cache used during resolution.
 func (index *SpecIndex) GetCache() *sync.Map {
-	return index.cache
+	_ = "STUB: not implemented"
+
+	// Release nils every field on SpecIndex that can pin YAML node trees, Reference
+	// maps, or large caches in memory. Call this once all consumers of the index are
+	// finished so the GC can reclaim the underlying data even if an interface value
+	// or escaped closure still holds a pointer to the SpecIndex struct itself.
+	return nil
 }
 
-// Release nils every field on SpecIndex that can pin YAML node trees, Reference
-// maps, or large caches in memory. Call this once all consumers of the index are
-// finished so the GC can reclaim the underlying data even if an interface value
-// or escaped closure still holds a pointer to the SpecIndex struct itself.
-func (index *SpecIndex) Release() {
-	if index == nil {
-		return
-	}
-	index.releaseDocumentNodes()
-	index.releaseReferenceIndexes()
-	index.releaseComponentIndexes()
-	index.releaseDerivedState()
-	index.releaseOwnedResources()
-	index.resetRuntimeState()
-}
+func (index *SpecIndex) Release() { _ = "STUB: not implemented"; return }
 
-func (index *SpecIndex) releaseDocumentNodes() {
-	index.root = nil
-	index.pathsNode = nil
-	index.tagsNode = nil
-	index.parametersNode = nil
-	index.schemasNode = nil
-	index.securitySchemesNode = nil
-	index.requestBodiesNode = nil
-	index.responsesNode = nil
-	index.headersNode = nil
-	index.examplesNode = nil
-	index.linksNode = nil
-	index.callbacksNode = nil
-	index.pathItemsNode = nil
-	index.rootServersNode = nil
-	index.rootSecurityNode = nil
-}
+func (index *SpecIndex) releaseDocumentNodes() { _ = "STUB: not implemented"; return }
 
-func (index *SpecIndex) releaseReferenceIndexes() {
-	index.allRefs = nil
-	index.rawSequencedRefs = nil
-	index.linesWithRefs = nil
-	index.allMappedRefs = nil
-	index.allMappedRefsSequenced = nil
-	index.refsByLine = nil
-	index.pathRefs = nil
-	index.paramOpRefs = nil
-	index.paramCompRefs = nil
-	index.paramAllRefs = nil
-	index.paramInlineDuplicateNames = nil
-	index.globalTagRefs = nil
-	index.securitySchemeRefs = nil
-	index.requestBodiesRefs = nil
-	index.responsesRefs = nil
-	index.headersRefs = nil
-	index.examplesRefs = nil
-	index.securityRequirementRefs = nil
-	index.callbacksRefs = nil
-	index.linksRefs = nil
-	index.operationTagsRefs = nil
-	index.operationDescriptionRefs = nil
-	index.operationSummaryRefs = nil
-	index.callbackRefs = nil
-	index.serversRefs = nil
-	index.opServersRefs = nil
-	index.polymorphicRefs = nil
-	index.polymorphicAllOfRefs = nil
-	index.polymorphicOneOfRefs = nil
-	index.polymorphicAnyOfRefs = nil
-	index.externalDocumentsRef = nil
-	index.rootSecurity = nil
-	index.refsWithSiblings = nil
-}
+func (index *SpecIndex) releaseReferenceIndexes() { _ = "STUB: not implemented"; return }
 
-func (index *SpecIndex) releaseComponentIndexes() {
-	index.allRefSchemaDefinitions = nil
-	index.allInlineSchemaDefinitions = nil
-	index.allInlineSchemaObjectDefinitions = nil
-	index.allComponentSchemaDefinitions = nil
-	index.allSecuritySchemes = nil
-	index.allComponentSchemas = nil
-	index.allParameters = nil
-	index.allRequestBodies = nil
-	index.allResponses = nil
-	index.allHeaders = nil
-	index.allExamples = nil
-	index.allLinks = nil
-	index.allCallbacks = nil
-	index.allComponentPathItems = nil
-	index.allExternalDocuments = nil
-	index.externalSpecIndex = nil
-}
+func (index *SpecIndex) releaseComponentIndexes() { _ = "STUB: not implemented"; return }
 
-func (index *SpecIndex) releaseDerivedState() {
-	index.nodeMap = nil
-	index.allDescriptions = nil
-	index.allSummaries = nil
-	index.allEnums = nil
-	index.allObjectsWithProperties = nil
-	index.circularReferences = nil
-	index.polyCircularReferences = nil
-	index.arrayCircularReferences = nil
-	index.tagCircularReferences = nil
-	index.refErrors = nil
-	index.operationParamErrors = nil
-	index.cache = nil
-	index.highModelCache = nil
-	index.schemaIdRegistry = nil
-	index.pendingResolve = nil
-	index.uri = nil
-	index.logger = nil
-}
+func (index *SpecIndex) releaseDerivedState() { _ = "STUB: not implemented"; return }
 
-func (index *SpecIndex) releaseOwnedResources() {
-	index.resolverLock.Lock()
-	if index.resolver != nil {
-		index.resolver.Release()
-		index.resolver = nil
-	}
-	index.resolverLock.Unlock()
+func (index *SpecIndex) releaseOwnedResources() { _ = "STUB: not implemented"; return }
 
-	if index.rolodex != nil {
-		index.rolodex.Release()
-		index.rolodex = nil
-	}
-
-	if index.config != nil {
-		index.config.SpecInfo.Release()
-		index.config = nil
-	}
-}
-
-func (index *SpecIndex) resetRuntimeState() {
-	index.externalDocumentsCount = 0
-	index.operationTagsCount = 0
-	index.globalTagsCount = 0
-	index.totalTagsCount = 0
-	index.globalLinksCount = 0
-	index.globalCallbacksCount = 0
-	index.pathCount = 0
-	index.operationCount = 0
-	index.operationParamCount = 0
-	index.componentParamCount = 0
-	index.componentsInlineParamUniqueCount = 0
-	index.componentsInlineParamDuplicateCount = 0
-	index.schemaCount = 0
-	index.refCount = 0
-	index.enumCount = 0
-	index.descriptionCount = 0
-	index.summaryCount = 0
-	index.allowCircularReferences = false
-	index.built = false
-	index.componentIndexChan = nil
-	index.polyComponentIndexChan = nil
-	index.nodeMapCompleted = nil
-}
+func (index *SpecIndex) resetRuntimeState() { _ = "STUB: not implemented"; return }
 
 // SetAbsolutePath sets the absolute path to the spec file for the index. Will be absolute, either as a http link or a file.
-func (index *SpecIndex) SetAbsolutePath(absolutePath string) {
-	index.specAbsolutePath = absolutePath
-}
+func (index *SpecIndex) SetAbsolutePath(absolutePath string) { _ = "STUB: not implemented"; return }
 
 // GetSpecAbsolutePath returns the absolute path to the spec file for the index. Will be absolute, either as a http link or a file.
-func (index *SpecIndex) GetSpecAbsolutePath() string {
-	return index.specAbsolutePath
-}
+func (index *SpecIndex) GetSpecAbsolutePath() string { _ = "STUB: not implemented"; return "" }
 
 // ExternalLookupFunction is for lookup functions that take a JSONSchema reference and tries to find that node in the
 // URI based document. Decides if the reference is local, remote or in a file.
@@ -630,9 +422,7 @@ type IndexingError struct {
 }
 
 // Error returns the underlying error message.
-func (i *IndexingError) Error() string {
-	return i.Err.Error()
-}
+func (i *IndexingError) Error() string { _ = "STUB: not implemented"; return "" }
 
 // DescriptionReference holds data about a description that was found and where it was found.
 type DescriptionReference struct {

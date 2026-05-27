@@ -5,7 +5,6 @@ package arazzo
 
 import (
 	"context"
-	"hash/maphash"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
@@ -34,72 +33,50 @@ var extractRequestBodyReplacements = extractArray[PayloadReplacement]
 // For Arazzo low models this is typically nil, because Arazzo parsing does not build a SpecIndex.
 // The index parameter is still required to satisfy the shared low.Buildable interface and generic extractors.
 func (r *RequestBody) GetIndex() *index.SpecIndex {
-	return r.index
+	_ = "STUB: not implemented"
+
+	// GetContext returns the context.Context instance used when building the RequestBody object.
+	return nil
 }
 
-// GetContext returns the context.Context instance used when building the RequestBody object.
 func (r *RequestBody) GetContext() context.Context {
-	return r.context
+	_ = "STUB: not implemented"
+
+	// FindExtension returns a ValueReference containing the extension value, if found.
+	return *new(context.Context)
 }
 
-// FindExtension returns a ValueReference containing the extension value, if found.
 func (r *RequestBody) FindExtension(ext string) *low.ValueReference[*yaml.Node] {
-	return low.FindItemInOrderedMap(ext, r.Extensions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetRootNode returns the root yaml node of the RequestBody object.
 func (r *RequestBody) GetRootNode() *yaml.Node {
-	return r.RootNode
+	_ = "STUB: not implemented"
+
+	// GetKeyNode returns the key yaml node of the RequestBody object.
+	return nil
 }
 
-// GetKeyNode returns the key yaml node of the RequestBody object.
 func (r *RequestBody) GetKeyNode() *yaml.Node {
-	return r.KeyNode
+	_ = "STUB: not implemented"
+
+	// Build will extract all properties of the RequestBody object.
+	return nil
 }
 
-// Build will extract all properties of the RequestBody object.
 func (r *RequestBody) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
-	root = initBuild(&arazzoBase{
-		KeyNode:    &r.KeyNode,
-		RootNode:   &r.RootNode,
-		Reference:  &r.Reference,
-		NodeMap:    &r.NodeMap,
-		Extensions: &r.Extensions,
-		Index:      &r.index,
-		Context:    &r.context,
-	}, ctx, keyNode, root, idx)
-
-	r.Payload = extractRawNode(PayloadLabel, root)
-
-	replacements, err := extractRequestBodyReplacements(ctx, ReplacementsLabel, root, idx)
-	if err != nil {
-		return err
-	}
-	r.Replacements = replacements
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // GetExtensions returns all RequestBody extensions and satisfies the low.HasExtensions interface.
 func (r *RequestBody) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return r.Extensions
+	_ = "STUB: not implemented"
+	return nil
+
+	// Hash will return a consistent hash of the RequestBody object.
 }
 
-// Hash will return a consistent hash of the RequestBody object.
-func (r *RequestBody) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if !r.ContentType.IsEmpty() {
-			h.WriteString(r.ContentType.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !r.Payload.IsEmpty() {
-			hashYAMLNode(h, r.Payload.Value)
-		}
-		if !r.Replacements.IsEmpty() {
-			for _, rep := range r.Replacements.Value {
-				low.HashUint64(h, rep.Value.Hash())
-			}
-		}
-		hashExtensionsInto(h, r.Extensions)
-		return h.Sum64()
-	})
-}
+func (r *RequestBody) Hash() uint64 { _ = "STUB: not implemented"; return 0 }

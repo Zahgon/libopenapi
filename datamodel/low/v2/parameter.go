@@ -5,14 +5,11 @@ package v2
 
 import (
 	"context"
-	"hash/maphash"
-	"sort"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/datamodel/low/base"
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -86,230 +83,94 @@ type Parameter struct {
 
 // FindExtension attempts to locate a extension value given a name.
 func (p *Parameter) FindExtension(ext string) *low.ValueReference[*yaml.Node] {
-	return low.FindItemInOrderedMap(ext, p.Extensions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetExtensions returns all Parameter extensions and satisfies the low.HasExtensions interface.
 func (p *Parameter) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return p.Extensions
+	_ = "STUB: not implemented"
+	return nil
+
+	// Build will extract out extensions, schema, items and default value
 }
 
-// Build will extract out extensions, schema, items and default value
 func (p *Parameter) Build(ctx context.Context, _, root *yaml.Node, idx *index.SpecIndex) error {
-	root = utils.NodeAlias(root)
-	utils.CheckForMergeNodes(root)
-	p.Extensions = low.ExtractExtensions(root)
-	sch, sErr := base.ExtractSchema(ctx, root, idx)
-	if sErr != nil {
-		return sErr
-	}
-	if sch != nil {
-		p.Schema = *sch
-	}
-	items, iErr := low.ExtractObject[*Items](ctx, ItemsLabel, root, idx)
-	if iErr != nil {
-		return iErr
-	}
-	p.Items = items
-
-	_, ln, vn := utils.FindKeyNodeFull(DefaultLabel, root.Content)
-	if vn != nil {
-		p.Default = low.NodeReference[*yaml.Node]{
-			Value:     vn,
-			KeyNode:   ln,
-			ValueNode: vn,
-		}
-		return nil
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // Hash will return a consistent Hash of the Parameter object
-func (p *Parameter) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if p.Name.Value != "" {
-			h.WriteString(p.Name.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if p.In.Value != "" {
-			h.WriteString(p.In.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if p.Type.Value != "" {
-			h.WriteString(p.Type.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if p.Format.Value != "" {
-			h.WriteString(p.Format.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if p.Description.Value != "" {
-			h.WriteString(p.Description.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		low.HashBool(h, p.Required.Value)
-		h.WriteByte(low.HASH_PIPE)
-		low.HashBool(h, p.AllowEmptyValue.Value)
-		h.WriteByte(low.HASH_PIPE)
-		if p.Schema.Value != nil {
-			h.WriteString(low.GenerateHashString(p.Schema.Value.Schema()))
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if p.CollectionFormat.Value != "" {
-			h.WriteString(p.CollectionFormat.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if p.Default.Value != nil && !p.Default.Value.IsZero() {
-			h.WriteString(low.GenerateHashString(p.Default.Value))
-			h.WriteByte(low.HASH_PIPE)
-		}
-		low.HashInt64(h, int64(p.Maximum.Value))
-		h.WriteByte(low.HASH_PIPE)
-		low.HashInt64(h, int64(p.Minimum.Value))
-		h.WriteByte(low.HASH_PIPE)
-		low.HashBool(h, p.ExclusiveMinimum.Value)
-		h.WriteByte(low.HASH_PIPE)
-		low.HashBool(h, p.ExclusiveMaximum.Value)
-		h.WriteByte(low.HASH_PIPE)
-		low.HashInt64(h, int64(p.MinLength.Value))
-		h.WriteByte(low.HASH_PIPE)
-		low.HashInt64(h, int64(p.MaxLength.Value))
-		h.WriteByte(low.HASH_PIPE)
-		low.HashInt64(h, int64(p.MinItems.Value))
-		h.WriteByte(low.HASH_PIPE)
-		low.HashInt64(h, int64(p.MaxItems.Value))
-		h.WriteByte(low.HASH_PIPE)
-		low.HashInt64(h, int64(p.MultipleOf.Value))
-		h.WriteByte(low.HASH_PIPE)
-		low.HashBool(h, p.UniqueItems.Value)
-		h.WriteByte(low.HASH_PIPE)
-		if p.Pattern.Value != "" {
-			h.WriteString(p.Pattern.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-
-		keys := make([]string, len(p.Enum.Value))
-		for k := range p.Enum.Value {
-			keys[k] = low.ValueToString(p.Enum.Value[k].Value)
-		}
-		sort.Strings(keys)
-		for _, key := range keys {
-			h.WriteString(key)
-			h.WriteByte(low.HASH_PIPE)
-		}
-
-		for _, ext := range low.HashExtensions(p.Extensions) {
-			h.WriteString(ext)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if p.Items.Value != nil {
-			low.HashUint64(h, p.Items.Value.Hash())
-			h.WriteByte(low.HASH_PIPE)
-		}
-		return h.Sum64()
-	})
-}
+func (p *Parameter) Hash() uint64 { _ = "STUB: not implemented"; return 0 }
 
 // Getters used by what-changed feature to satisfy the SwaggerParameter interface.
 
-func (p *Parameter) GetName() *low.NodeReference[string] {
-	return &p.Name
-}
+func (p *Parameter) GetName() *low.NodeReference[string] { _ = "STUB: not implemented"; return nil }
 
-func (p *Parameter) GetIn() *low.NodeReference[string] {
-	return &p.In
-}
+func (p *Parameter) GetIn() *low.NodeReference[string] { _ = "STUB: not implemented"; return nil }
 
-func (p *Parameter) GetType() *low.NodeReference[string] {
-	return &p.Type
-}
+func (p *Parameter) GetType() *low.NodeReference[string] { _ = "STUB: not implemented"; return nil }
 
 func (p *Parameter) GetDescription() *low.NodeReference[string] {
-	return &p.Description
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (p *Parameter) GetRequired() *low.NodeReference[bool] {
-	return &p.Required
-}
+func (p *Parameter) GetRequired() *low.NodeReference[bool] { _ = "STUB: not implemented"; return nil }
 
 func (p *Parameter) GetAllowEmptyValue() *low.NodeReference[bool] {
-	return &p.AllowEmptyValue
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (p *Parameter) GetSchema() *low.NodeReference[any] {
-	i := low.NodeReference[any]{
-		KeyNode:   p.Schema.KeyNode,
-		ValueNode: p.Schema.ValueNode,
-		Value:     p.Schema.Value,
-	}
-	return &i
-}
+func (p *Parameter) GetSchema() *low.NodeReference[any] { _ = "STUB: not implemented"; return nil }
 
-func (p *Parameter) GetFormat() *low.NodeReference[string] {
-	return &p.Format
-}
+func (p *Parameter) GetFormat() *low.NodeReference[string] { _ = "STUB: not implemented"; return nil }
 
-func (p *Parameter) GetItems() *low.NodeReference[any] {
-	i := low.NodeReference[any]{
-		KeyNode:   p.Items.KeyNode,
-		ValueNode: p.Items.ValueNode,
-		Value:     p.Items.Value,
-	}
-	return &i
-}
+func (p *Parameter) GetItems() *low.NodeReference[any] { _ = "STUB: not implemented"; return nil }
 
 func (p *Parameter) GetCollectionFormat() *low.NodeReference[string] {
-	return &p.CollectionFormat
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (p *Parameter) GetDefault() *low.NodeReference[*yaml.Node] {
-	return &p.Default
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (p *Parameter) GetMaximum() *low.NodeReference[int] {
-	return &p.Maximum
-}
+func (p *Parameter) GetMaximum() *low.NodeReference[int] { _ = "STUB: not implemented"; return nil }
 
 func (p *Parameter) GetExclusiveMaximum() *low.NodeReference[bool] {
-	return &p.ExclusiveMaximum
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (p *Parameter) GetMinimum() *low.NodeReference[int] {
-	return &p.Minimum
-}
+func (p *Parameter) GetMinimum() *low.NodeReference[int] { _ = "STUB: not implemented"; return nil }
 
 func (p *Parameter) GetExclusiveMinimum() *low.NodeReference[bool] {
-	return &p.ExclusiveMinimum
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (p *Parameter) GetMaxLength() *low.NodeReference[int] {
-	return &p.MaxLength
-}
+func (p *Parameter) GetMaxLength() *low.NodeReference[int] { _ = "STUB: not implemented"; return nil }
 
-func (p *Parameter) GetMinLength() *low.NodeReference[int] {
-	return &p.MinLength
-}
+func (p *Parameter) GetMinLength() *low.NodeReference[int] { _ = "STUB: not implemented"; return nil }
 
-func (p *Parameter) GetPattern() *low.NodeReference[string] {
-	return &p.Pattern
-}
+func (p *Parameter) GetPattern() *low.NodeReference[string] { _ = "STUB: not implemented"; return nil }
 
-func (p *Parameter) GetMaxItems() *low.NodeReference[int] {
-	return &p.MaxItems
-}
+func (p *Parameter) GetMaxItems() *low.NodeReference[int] { _ = "STUB: not implemented"; return nil }
 
-func (p *Parameter) GetMinItems() *low.NodeReference[int] {
-	return &p.MinItems
-}
+func (p *Parameter) GetMinItems() *low.NodeReference[int] { _ = "STUB: not implemented"; return nil }
 
 func (p *Parameter) GetUniqueItems() *low.NodeReference[bool] {
-	return &p.UniqueItems
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (p *Parameter) GetEnum() *low.NodeReference[[]low.ValueReference[*yaml.Node]] {
-	return &p.Enum
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (p *Parameter) GetMultipleOf() *low.NodeReference[int] {
-	return &p.MultipleOf
-}
+func (p *Parameter) GetMultipleOf() *low.NodeReference[int] { _ = "STUB: not implemented"; return nil }

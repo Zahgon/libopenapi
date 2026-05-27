@@ -9,9 +9,6 @@
 package v3
 
 import (
-	"hash/maphash"
-	"sort"
-
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/datamodel/low/base"
 	"github.com/pb33f/libopenapi/index"
@@ -103,131 +100,33 @@ type Document struct {
 
 // FindSecurityRequirement will attempt to locate a security requirement string from a supplied name.
 func (d *Document) FindSecurityRequirement(name string) []low.ValueReference[string] {
-	for k := range d.Security.Value {
-		requirements := d.Security.Value[k].Value.Requirements
-		for k, v := range requirements.Value.FromOldest() {
-			if k.Value == name {
-				return v.Value
-			}
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // GetExtensions returns all Document extensions and satisfies the low.HasExtensions interface.
 func (d *Document) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return d.Extensions
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (d *Document) GetExternalDocs() *low.NodeReference[any] {
-	return &low.NodeReference[any]{
-		KeyNode:   d.ExternalDocs.KeyNode,
-		ValueNode: d.ExternalDocs.ValueNode,
-		Value:     d.ExternalDocs.Value,
-	}
-}
+func (d *Document) GetExternalDocs() *low.NodeReference[any] { _ = "STUB: not implemented"; return nil }
 
 func (d *Document) GetIndex() *index.SpecIndex {
-	return d.Index
+	_ = "STUB: not implemented"
+
+	// Hash will return a consistent Hash of the Document object
+	return nil
 }
 
-// Hash will return a consistent Hash of the Document object
-func (d *Document) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if d.Version.Value != "" {
-			h.WriteString(d.Version.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if d.Info.Value != nil {
-			h.WriteString(low.GenerateHashString(d.Info.Value))
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if d.JsonSchemaDialect.Value != "" {
-			h.WriteString(d.JsonSchemaDialect.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if d.Self.Value != "" {
-			h.WriteString(d.Self.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
+func (d *Document) Hash() uint64 { _ = "STUB: not implemented"; return 0 }
 
-		// Webhooks - pre-allocate slice
-		if d.Webhooks.GetValue() != nil {
-			webhookLen := d.Webhooks.GetValue().Len()
-			if webhookLen > 0 {
-				keys := make([]string, 0, webhookLen)
-				for k, v := range d.Webhooks.GetValue().FromOldest() {
-					keys = append(keys, k.Value+"-"+low.GenerateHashString(v.Value))
-				}
-				sort.Strings(keys)
-				for _, key := range keys {
-					h.WriteString(key)
-					h.WriteByte(low.HASH_PIPE)
-				}
-			}
-		}
+// Webhooks - pre-allocate slice
 
-		// Servers - pre-allocate slice
-		serverLen := len(d.Servers.Value)
-		if serverLen > 0 {
-			keys := make([]string, 0, serverLen)
-			for i := range d.Servers.Value {
-				keys = append(keys, low.GenerateHashString(d.Servers.Value[i].Value))
-			}
-			sort.Strings(keys)
-			for _, key := range keys {
-				h.WriteString(key)
-				h.WriteByte(low.HASH_PIPE)
-			}
-		}
+// Servers - pre-allocate slice
 
-		if d.Paths.Value != nil {
-			h.WriteString(low.GenerateHashString(d.Paths.Value))
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if d.Components.Value != nil {
-			h.WriteString(low.GenerateHashString(d.Components.Value))
-			h.WriteByte(low.HASH_PIPE)
-		}
+// Security - pre-allocate slice
 
-		// Security - pre-allocate slice
-		securityLen := len(d.Security.Value)
-		if securityLen > 0 {
-			keys := make([]string, 0, securityLen)
-			for i := range d.Security.Value {
-				keys = append(keys, low.GenerateHashString(d.Security.Value[i].Value))
-			}
-			sort.Strings(keys)
-			for _, key := range keys {
-				h.WriteString(key)
-				h.WriteByte(low.HASH_PIPE)
-			}
-		}
+// Tags - pre-allocate slice
 
-		// Tags - pre-allocate slice
-		tagLen := len(d.Tags.Value)
-		if tagLen > 0 {
-			keys := make([]string, 0, tagLen)
-			for i := range d.Tags.Value {
-				keys = append(keys, low.GenerateHashString(d.Tags.Value[i].Value))
-			}
-			sort.Strings(keys)
-			for _, key := range keys {
-				h.WriteString(key)
-				h.WriteByte(low.HASH_PIPE)
-			}
-		}
-
-		if d.ExternalDocs.Value != nil {
-			h.WriteString(low.GenerateHashString(d.ExternalDocs.Value))
-			h.WriteByte(low.HASH_PIPE)
-		}
-
-		// Extensions
-		for _, ext := range low.HashExtensions(d.Extensions) {
-			h.WriteString(ext)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		return h.Sum64()
-	})
-}
+// Extensions

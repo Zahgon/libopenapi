@@ -4,95 +4,15 @@
 package arazzo
 
 import (
-	"fmt"
-
 	"go.yaml.in/yaml/v4"
 )
 
-func toYAMLNode(value any) (*yaml.Node, error) {
-	if value == nil {
-		return nil, nil
-	}
-	if node, ok := value.(*yaml.Node); ok {
-		return node, nil
-	}
-	return directYAMLNode(value)
-}
+func toYAMLNode(value any) (*yaml.Node, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // directYAMLNode converts a Go value to a *yaml.Node for expression evaluation.
 // Map key ordering is not deterministic since the output is used for JSONPath
 // and expression evaluation, not for rendering.
-func directYAMLNode(value any) (*yaml.Node, error) {
-	switch typed := value.(type) {
-	case yaml.Node:
-		return &typed, nil
-	case map[string]any:
-		node := &yaml.Node{Kind: yaml.MappingNode, Tag: "!!map"}
-		for k, v := range typed {
-			keyNode := &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: k}
-			valueNode, err := directYAMLNode(v)
-			if err != nil {
-				return nil, err
-			}
-			node.Content = append(node.Content, keyNode, valueNode)
-		}
-		return node, nil
-	case map[any]any:
-		node := &yaml.Node{Kind: yaml.MappingNode, Tag: "!!map"}
-		for k, v := range typed {
-			ks := sprintMapKey(k)
-			keyNode := &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: ks}
-			valueNode, err := directYAMLNode(v)
-			if err != nil {
-				return nil, err
-			}
-			node.Content = append(node.Content, keyNode, valueNode)
-		}
-		return node, nil
-	case []any:
-		node := &yaml.Node{Kind: yaml.SequenceNode, Tag: "!!seq"}
-		for _, item := range typed {
-			itemNode, err := directYAMLNode(item)
-			if err != nil {
-				return nil, err
-			}
-			node.Content = append(node.Content, itemNode)
-		}
-		return node, nil
-	case []string:
-		node := &yaml.Node{Kind: yaml.SequenceNode, Tag: "!!seq"}
-		for _, item := range typed {
-			node.Content = append(node.Content, &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: item})
-		}
-		return node, nil
-	case string:
-		return &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: typed}, nil
-	case bool:
-		if typed {
-			return &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!bool", Value: "true"}, nil
-		}
-		return &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!bool", Value: "false"}, nil
-	case int, int8, int16, int32, int64:
-		return &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!int", Value: fmt.Sprint(typed)}, nil
-	case uint, uint8, uint16, uint32, uint64:
-		return &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!int", Value: fmt.Sprint(typed)}, nil
-	case float32, float64:
-		return &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!float", Value: fmt.Sprint(typed)}, nil
-	case nil:
-		return nil, nil
-	default:
-		node := &yaml.Node{}
-		if err := node.Encode(value); err != nil {
-			return nil, err
-		}
-		return node, nil
-	}
-}
+func directYAMLNode(value any) (*yaml.Node, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // sprintMapKey converts a map key to a string, fast-pathing the common string case.
-func sprintMapKey(k any) string {
-	if s, ok := k.(string); ok {
-		return s
-	}
-	return fmt.Sprint(k)
-}
+func sprintMapKey(k any) string { _ = "STUB: not implemented"; return "" }

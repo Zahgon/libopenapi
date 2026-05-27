@@ -5,7 +5,6 @@ package base
 
 import (
 	"context"
-	"hash/maphash"
 	"sync"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
@@ -34,70 +33,45 @@ type Contact struct {
 }
 
 func (c *Contact) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
-	c.KeyNode = keyNode
-	c.RootNode = root
-	c.reference = low.Reference{}
-	c.Reference = &c.reference
-	c.nodeStore = sync.Map{}
-	c.Nodes = &c.nodeStore
-	if root == nil {
-		c.Extensions = nil
-		c.context = ctx
-		c.index = idx
-		return nil
-	}
-	if len(root.Content) > 0 {
-		c.NodeMap.ExtractNodes(root, false)
-	} else {
-		c.AddNode(root.Line, root)
-	}
-	c.Extensions = low.ExtractExtensions(root)
-	c.context = ctx
-	c.index = idx
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // GetIndex will return the index.SpecIndex instance attached to the Contact object
 func (c *Contact) GetIndex() *index.SpecIndex {
-	return c.index
+	_ = "STUB: not implemented"
+
+	// GetContext will return the context.Context instance used when building the Contact object
+	return nil
 }
 
-// GetContext will return the context.Context instance used when building the Contact object
 func (c *Contact) GetContext() context.Context {
-	return c.context
+	_ = "STUB: not implemented"
+
+	// GetRootNode will return the root yaml node of the Contact object
+	return *new(context.Context)
 }
 
-// GetRootNode will return the root yaml node of the Contact object
 func (c *Contact) GetRootNode() *yaml.Node {
-	return c.RootNode
+	_ = "STUB: not implemented"
+
+	// GetKeyNode will return the key yaml node of the Contact object
+	return nil
 }
 
-// GetKeyNode will return the key yaml node of the Contact object
 func (c *Contact) GetKeyNode() *yaml.Node {
-	return c.KeyNode
+	_ = "STUB: not implemented"
+
+	// Hash will return a consistent hash of the Contact object
+	return nil
 }
 
-// Hash will return a consistent hash of the Contact object
-func (c *Contact) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if !c.Name.IsEmpty() {
-			h.WriteString(c.Name.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !c.URL.IsEmpty() {
-			h.WriteString(c.URL.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !c.Email.IsEmpty() {
-			h.WriteString(c.Email.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		// Note: Extensions are not included in the hash for Contact
-		return h.Sum64()
-	})
-}
+func (c *Contact) Hash() uint64 { _ = "STUB: not implemented"; return 0 }
+
+// Note: Extensions are not included in the hash for Contact
 
 // GetExtensions returns all extensions for Contact
 func (c *Contact) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return c.Extensions
+	_ = "STUB: not implemented"
+	return nil
 }

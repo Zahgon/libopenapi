@@ -5,12 +5,10 @@ package overlay
 
 import (
 	"context"
-	"hash/maphash"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -33,88 +31,52 @@ type Action struct {
 
 // GetIndex returns the index.SpecIndex instance attached to the Action object
 func (a *Action) GetIndex() *index.SpecIndex {
-	return a.index
+	_ = "STUB: not implemented"
+
+	// GetContext returns the context.Context instance used when building the Action object
+	return nil
 }
 
-// GetContext returns the context.Context instance used when building the Action object
 func (a *Action) GetContext() context.Context {
-	return a.context
+	_ = "STUB: not implemented"
+
+	// FindExtension returns a ValueReference containing the extension value, if found.
+	return *new(context.Context)
 }
 
-// FindExtension returns a ValueReference containing the extension value, if found.
 func (a *Action) FindExtension(ext string) *low.ValueReference[*yaml.Node] {
-	return low.FindItemInOrderedMap(ext, a.Extensions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetRootNode returns the root yaml node of the Action object
 func (a *Action) GetRootNode() *yaml.Node {
-	return a.RootNode
-}
+	_ = "STUB: not implemented"
 
-// GetKeyNode returns the key yaml node of the Action object
-func (a *Action) GetKeyNode() *yaml.Node {
-	return a.KeyNode
-}
-
-// Build will extract extensions for the Action object.
-func (a *Action) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
-	a.KeyNode = keyNode
-	root = utils.NodeAlias(root)
-	a.RootNode = root
-	utils.CheckForMergeNodes(root)
-	a.Reference = new(low.Reference)
-	a.Nodes = low.ExtractNodes(ctx, root)
-	a.Extensions = low.ExtractExtensions(root)
-	a.index = idx
-	a.context = ctx
-	low.ExtractExtensionNodes(ctx, a.Extensions, a.Nodes)
-
-	// Extract the update node directly if present
-	for i := 0; i < len(root.Content); i += 2 {
-		if i+1 < len(root.Content) && root.Content[i].Value == UpdateLabel {
-			a.Update = low.NodeReference[*yaml.Node]{
-				Value:     root.Content[i+1],
-				KeyNode:   root.Content[i],
-				ValueNode: root.Content[i+1],
-			}
-			break
-		}
-	}
+	// GetKeyNode returns the key yaml node of the Action object
 	return nil
 }
 
-// GetExtensions returns all Action extensions and satisfies the low.HasExtensions interface.
-func (a *Action) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return a.Extensions
+func (a *Action) GetKeyNode() *yaml.Node {
+	_ = "STUB: not implemented"
+
+	// Build will extract extensions for the Action object.
+	return nil
 }
 
-// Hash will return a consistent Hash of the Action object
-func (a *Action) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if !a.Target.IsEmpty() {
-			h.WriteString(a.Target.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !a.Description.IsEmpty() {
-			h.WriteString(a.Description.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !a.Update.IsEmpty() {
-			h.WriteString(low.GenerateHashString(a.Update.Value))
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !a.Remove.IsEmpty() {
-			low.HashBool(h, a.Remove.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !a.Copy.IsEmpty() {
-			h.WriteString(a.Copy.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		for _, ext := range low.HashExtensions(a.Extensions) {
-			h.WriteString(ext)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		return h.Sum64()
-	})
+func (a *Action) Build(ctx context.Context, keyNode, root *yaml.Node, idx *index.SpecIndex) error {
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// Extract the update node directly if present
+
+// GetExtensions returns all Action extensions and satisfies the low.HasExtensions interface.
+func (a *Action) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
+	_ = "STUB: not implemented"
+	return nil
+
+	// Hash will return a consistent Hash of the Action object
+}
+
+func (a *Action) Hash() uint64 { _ = "STUB: not implemented"; return 0 }

@@ -4,7 +4,6 @@
 package index
 
 import (
-	"fmt"
 	"log/slog"
 )
 
@@ -23,55 +22,12 @@ func registerSchemaIdToRegistry(
 	logger *slog.Logger,
 	registryName string,
 ) (*schemaIdRegistrationResult, error) {
-	if entry == nil {
-		return nil, fmt.Errorf("cannot register nil SchemaIdEntry")
-	}
-
-	if err := ValidateSchemaId(entry.Id); err != nil {
-		if logger != nil {
-			logger.Warn("invalid $id value, skipping registration",
-				"registry", registryName,
-				"id", entry.Id,
-				"error", err.Error(),
-				"line", entry.Line,
-				"column", entry.Column)
-		}
-		return nil, err
-	}
-
-	key := entry.GetKey()
-
-	if existing, ok := registry[key]; ok {
-		if logger != nil {
-			existingPath := ""
-			newPath := ""
-			if existing.Index != nil {
-				existingPath = existing.Index.GetSpecAbsolutePath()
-			}
-			if entry.Index != nil {
-				newPath = entry.Index.GetSpecAbsolutePath()
-			}
-			logger.Warn("duplicate $id detected, keeping first registration",
-				"registry", registryName,
-				"id", key,
-				"first_location", fmt.Sprintf("%s:%d:%d", existingPath, existing.Line, existing.Column),
-				"duplicate_location", fmt.Sprintf("%s:%d:%d", newPath, entry.Line, entry.Column))
-		}
-		return &schemaIdRegistrationResult{registered: false, duplicate: true, key: key}, nil
-	}
-
-	registry[key] = entry
-	return &schemaIdRegistrationResult{registered: true, duplicate: false, key: key}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // copySchemaIdRegistry creates a defensive copy of a schema ID registry.
 func copySchemaIdRegistry(registry map[string]*SchemaIdEntry) map[string]*SchemaIdEntry {
-	if registry == nil {
-		return make(map[string]*SchemaIdEntry)
-	}
-	result := make(map[string]*SchemaIdEntry, len(registry))
-	for k, v := range registry {
-		result[k] = v
-	}
-	return result
+	_ = "STUB: not implemented"
+	return nil
 }

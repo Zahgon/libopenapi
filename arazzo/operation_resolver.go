@@ -18,23 +18,15 @@ type operationResolver struct {
 
 // findOperationByID returns true if operationID exists in any attached OpenAPI document.
 func (r *operationResolver) findOperationByID(operationID string) bool {
-	return operationIDExistsInDocs(r.searchDocs, operationID)
+	_ = "STUB: not implemented"
+	return false
 }
 
 // docForSource returns the OpenAPI document mapped to the given source name, or nil.
 func (r *operationResolver) docForSource(sourceName string) *v3high.Document {
-	return r.sourceDocs[sourceName]
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // defaultDoc returns the first available OpenAPI document for fallback lookups.
-func (r *operationResolver) defaultDoc() *v3high.Document {
-	if len(r.sourceOrder) > 0 {
-		if doc := r.sourceDocs[r.sourceOrder[0]]; doc != nil {
-			return doc
-		}
-	}
-	if len(r.searchDocs) > 0 {
-		return r.searchDocs[0]
-	}
-	return nil
-}
+func (r *operationResolver) defaultDoc() *v3high.Document { _ = "STUB: not implemented"; return nil }

@@ -4,9 +4,6 @@
 package base
 
 import (
-	"log/slog"
-
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/base"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -34,50 +31,33 @@ type XML struct {
 }
 
 // NewXML creates a new high-level XML instance from a low-level one.
-func NewXML(xml *low.XML) *XML {
-	x := new(XML)
-	x.low = xml
-	x.Name = xml.Name.Value
-	x.Namespace = xml.Namespace.Value
-	x.Prefix = xml.Prefix.Value
-	x.Attribute = xml.Attribute.Value
-	x.NodeType = xml.NodeType.Value
-	x.Wrapped = xml.Wrapped.Value
-	x.Extensions = high.ExtractExtensions(xml.Extensions)
+func NewXML(xml *low.XML) *XML { _ = "STUB: not implemented"; return nil }
 
-	// log warning if using deprecated attribute field in OpenAPI 3.2+
-	if xml.GetIndex() != nil && xml.GetIndex().GetConfig() != nil && xml.GetIndex().GetConfig().SpecInfo != nil {
-		version := xml.GetIndex().GetConfig().SpecInfo.VersionNumeric
-		if version >= 3.2 && x.Attribute && x.NodeType == "" {
-			// log deprecation warning
-			logger := xml.GetIndex().GetConfig().Logger
-			if logger != nil {
-				logger.Warn("XML 'attribute' field is deprecated in OpenAPI 3.2+, use 'nodeType' instead",
-					slog.String("name", x.Name))
-			}
-		}
-	}
+// log warning if using deprecated attribute field in OpenAPI 3.2+
 
-	return x
-}
+// log deprecation warning
 
 // GoLow returns the low level XML reference used to create the high level one.
 func (x *XML) GoLow() *low.XML {
-	return x.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level XML instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level XML instance that was used to create the high-level one, with no type
 func (x *XML) GoLowUntyped() any {
-	return x.low
+	_ = "STUB: not implemented"
+
+	// Render will return a YAML representation of the XML object as a byte slice.
+	return *new(any)
 }
 
-// Render will return a YAML representation of the XML object as a byte slice.
 func (x *XML) Render() ([]byte, error) {
-	return yaml.Marshal(x)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML will create a ready to render YAML representation of the XML object.
+		nil
 }
 
-// MarshalYAML will create a ready to render YAML representation of the XML object.
-func (x *XML) MarshalYAML() (interface{}, error) {
-	nb := high.NewNodeBuilder(x, x.low)
-	return nb.Render(), nil
-}
+func (x *XML) MarshalYAML() (interface{}, error) { _ = "STUB: not implemented"; return nil, nil }

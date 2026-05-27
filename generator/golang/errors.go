@@ -5,7 +5,6 @@ package golang
 
 import (
 	"errors"
-	"fmt"
 )
 
 var (
@@ -16,9 +15,4 @@ var (
 	ErrInvalidPackageName = errors.New("invalid package name")
 )
 
-func wrapPath(err error, path string) error {
-	if path == "" {
-		return fmt.Errorf("generator/golang: %w", err)
-	}
-	return fmt.Errorf("generator/golang: %w at %s", err, path)
-}
+func wrapPath(err error, path string) error { _ = "STUB: not implemented"; return nil }

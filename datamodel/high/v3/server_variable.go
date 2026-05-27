@@ -4,7 +4,6 @@
 package v3
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/v3"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -24,38 +23,34 @@ type ServerVariable struct {
 
 // NewServerVariable will return a new high-level instance of a ServerVariable from a low-level one.
 func NewServerVariable(variable *low.ServerVariable) *ServerVariable {
-	v := new(ServerVariable)
-	v.low = variable
-	var enums []string
-	for _, enum := range variable.Enum {
-		if enum.Value != "" {
-			enums = append(enums, enum.Value)
-		}
-	}
-	v.Default = variable.Default.Value
-	v.Description = variable.Description.Value
-	v.Enum = enums
-	v.Extensions = high.ExtractExtensions(variable.Extensions)
-	return v
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GoLow returns the low-level ServerVariable used to create the high\-level one.
 func (s *ServerVariable) GoLow() *low.ServerVariable {
-	return s.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level ServerVariable instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level ServerVariable instance that was used to create the high-level one, with no type
 func (s *ServerVariable) GoLowUntyped() any {
-	return s.low
+	_ = "STUB: not implemented"
+
+	// Render will return a YAML representation of the ServerVariable object as a byte slice.
+	return *new(any)
 }
 
-// Render will return a YAML representation of the ServerVariable object as a byte slice.
 func (s *ServerVariable) Render() ([]byte, error) {
-	return yaml.Marshal(s)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML will create a ready to render YAML representation of the ServerVariable object.
+		nil
 }
 
-// MarshalYAML will create a ready to render YAML representation of the ServerVariable object.
 func (s *ServerVariable) MarshalYAML() (interface{}, error) {
-	nb := high.NewNodeBuilder(s, s.low)
-	return nb.Render(), nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

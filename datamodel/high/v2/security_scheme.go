@@ -4,7 +4,6 @@
 package v2
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/v2"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -32,37 +31,9 @@ type SecurityScheme struct {
 
 // NewSecurityScheme creates a new instance of SecurityScheme from a low-level one.
 func NewSecurityScheme(securityScheme *low.SecurityScheme) *SecurityScheme {
-	s := new(SecurityScheme)
-	s.low = securityScheme
-	s.Extensions = high.ExtractExtensions(securityScheme.Extensions)
-	if !securityScheme.Type.IsEmpty() {
-		s.Type = securityScheme.Type.Value
-	}
-	if !securityScheme.Description.IsEmpty() {
-		s.Description = securityScheme.Description.Value
-	}
-	if !securityScheme.Name.IsEmpty() {
-		s.Name = securityScheme.Name.Value
-	}
-	if !securityScheme.In.IsEmpty() {
-		s.In = securityScheme.In.Value
-	}
-	if !securityScheme.Flow.IsEmpty() {
-		s.Flow = securityScheme.Flow.Value
-	}
-	if !securityScheme.AuthorizationUrl.IsEmpty() {
-		s.AuthorizationUrl = securityScheme.AuthorizationUrl.Value
-	}
-	if !securityScheme.TokenUrl.IsEmpty() {
-		s.TokenUrl = securityScheme.TokenUrl.Value
-	}
-	if !securityScheme.Scopes.IsEmpty() {
-		s.Scopes = NewScopes(securityScheme.Scopes.Value)
-	}
-	return s
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GoLow returns the low-level SecurityScheme that was used to create the high-level one.
-func (s *SecurityScheme) GoLow() *low.SecurityScheme {
-	return s.low
-}
+func (s *SecurityScheme) GoLow() *low.SecurityScheme { _ = "STUB: not implemented"; return nil }

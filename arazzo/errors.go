@@ -5,8 +5,6 @@ package arazzo
 
 import (
 	"errors"
-	"fmt"
-	"strings"
 )
 
 // Document errors
@@ -89,18 +87,15 @@ type ValidationError struct {
 	Cause  error
 }
 
-func (e *ValidationError) Error() string {
-	if e.Line > 0 {
-		return fmt.Sprintf("%s (line %d, col %d): %s", e.Path, e.Line, e.Column, e.Cause)
-	}
-	return fmt.Sprintf("%s: %s", e.Path, e.Cause)
-}
+func (e *ValidationError) Error() string { _ = "STUB: not implemented"; return "" }
 
 func (e *ValidationError) Unwrap() error {
-	return e.Cause
+	_ = "STUB: not implemented"
+
+	// StepFailureError represents a step execution failure with structured context.
+	return nil
 }
 
-// StepFailureError represents a step execution failure with structured context.
 type StepFailureError struct {
 	StepId         string
 	CriterionIndex int // -1 if not criterion-related
@@ -108,21 +103,15 @@ type StepFailureError struct {
 	Cause          error
 }
 
-func (e *StepFailureError) Error() string {
-	if e.Cause != nil {
-		return fmt.Sprintf("step %q failed: %s", e.StepId, e.Cause)
-	}
-	if e.CriterionIndex >= 0 {
-		return fmt.Sprintf("step %q: successCriteria[%d] %s", e.StepId, e.CriterionIndex, e.Message)
-	}
-	return fmt.Sprintf("step %q failed", e.StepId)
-}
+func (e *StepFailureError) Error() string { _ = "STUB: not implemented"; return "" }
 
 func (e *StepFailureError) Unwrap() error {
-	return e.Cause
+	_ = "STUB: not implemented"
+
+	// Warning represents a non-fatal validation issue.
+	return nil
 }
 
-// Warning represents a non-fatal validation issue.
 type Warning struct {
 	Path    string
 	Line    int
@@ -130,12 +119,7 @@ type Warning struct {
 	Message string
 }
 
-func (w *Warning) String() string {
-	if w.Line > 0 {
-		return fmt.Sprintf("%s (line %d, col %d): %s", w.Path, w.Line, w.Column, w.Message)
-	}
-	return fmt.Sprintf("%s: %s", w.Path, w.Message)
-}
+func (w *Warning) String() string { _ = "STUB: not implemented"; return "" }
 
 // ValidationResult holds all validation errors and warnings.
 type ValidationResult struct {
@@ -144,35 +128,13 @@ type ValidationResult struct {
 }
 
 // HasErrors returns true if there are any validation errors.
-func (r *ValidationResult) HasErrors() bool {
-	return len(r.Errors) > 0
-}
+func (r *ValidationResult) HasErrors() bool { _ = "STUB: not implemented"; return false }
 
 // HasWarnings returns true if there are any validation warnings.
-func (r *ValidationResult) HasWarnings() bool {
-	return len(r.Warnings) > 0
-}
+func (r *ValidationResult) HasWarnings() bool { _ = "STUB: not implemented"; return false }
 
 // Error implements the error interface, returning all errors as a combined string.
-func (r *ValidationResult) Error() string {
-	if !r.HasErrors() {
-		return ""
-	}
-	msgs := make([]string, 0, len(r.Errors))
-	for _, e := range r.Errors {
-		msgs = append(msgs, e.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
+func (r *ValidationResult) Error() string { _ = "STUB: not implemented"; return "" }
 
 // Unwrap returns the individual validation errors for use with errors.Is/As (Go 1.20+).
-func (r *ValidationResult) Unwrap() []error {
-	if len(r.Errors) == 0 {
-		return nil
-	}
-	errs := make([]error, len(r.Errors))
-	for i, ve := range r.Errors {
-		errs[i] = ve
-	}
-	return errs
-}
+func (r *ValidationResult) Unwrap() []error { _ = "STUB: not implemented"; return nil }

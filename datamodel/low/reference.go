@@ -2,11 +2,9 @@ package low
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -19,26 +17,13 @@ type Reference struct {
 	reference string
 }
 
-func (r Reference) GetReference() string {
-	return r.reference
-}
+func (r Reference) GetReference() string { _ = "STUB: not implemented"; return "" }
 
-func (r Reference) IsReference() bool {
-	return r.reference != ""
-}
+func (r Reference) IsReference() bool { _ = "STUB: not implemented"; return false }
 
-func (r Reference) GetReferenceNode() *yaml.Node {
-	if r.IsReference() && r.refNode == nil {
-		return utils.CreateRefNode(r.reference)
-	}
+func (r Reference) GetReferenceNode() *yaml.Node { _ = "STUB: not implemented"; return nil }
 
-	return r.refNode
-}
-
-func (r *Reference) SetReference(ref string, node *yaml.Node) {
-	r.reference = ref
-	r.refNode = node
-}
+func (r *Reference) SetReference(ref string, node *yaml.Node) { _ = "STUB: not implemented"; return }
 
 type IsReferenced interface {
 	IsReference() bool
@@ -151,199 +136,126 @@ type ValueReference[T any] struct {
 }
 
 // IsEmpty will return true if this reference has no key or value nodes assigned (it's been ignored)
-func (n NodeReference[T]) IsEmpty() bool {
-	return n.KeyNode == nil && n.ValueNode == nil
-}
+func (n NodeReference[T]) IsEmpty() bool { _ = "STUB: not implemented"; return false }
 
-func (n NodeReference[T]) NodeLineNumber() int {
-	if !n.IsEmpty() {
-		return n.ValueNode.Line
-	} else {
-		return 0
-	}
-}
+func (n NodeReference[T]) NodeLineNumber() int { _ = "STUB: not implemented"; return 0 }
 
 // GenerateMapKey will return a string based on the line and column number of the node, e.g. 33:56 for line 33, col 56.
-func (n NodeReference[T]) GenerateMapKey() string {
-	return fmt.Sprintf("%d:%d", n.ValueNode.Line, n.ValueNode.Column)
-}
+func (n NodeReference[T]) GenerateMapKey() string { _ = "STUB: not implemented"; return "" }
 
 // Mutate will set the reference value to what is supplied. This happens to both the Value and ValueNode, which means
 // the root document is permanently mutated and changes will be reflected in any serialization of the root document.
-func (n NodeReference[T]) Mutate(value T) NodeReference[T] {
-	n.ValueNode.Value = fmt.Sprintf("%v", value)
-	n.Value = value
-	return n
-}
+func (n NodeReference[T]) Mutate(value T) NodeReference[T] { _ = "STUB: not implemented"; return nil }
 
 // GetValueNode will return the yaml.Node containing the reference value node
 func (n NodeReference[T]) GetValueNode() *yaml.Node {
-	return n.ValueNode
+	_ = "STUB: not implemented"
+
+	// GetKeyNode will return the yaml.Node containing the reference key node
+	return nil
 }
 
-// GetKeyNode will return the yaml.Node containing the reference key node
 func (n NodeReference[T]) GetKeyNode() *yaml.Node {
-	return n.KeyNode
+	_ = "STUB: not implemented"
+
+	// GetValue will return the  raw value of the node
+	return nil
 }
 
-// GetValue will return the  raw value of the node
 func (n NodeReference[T]) GetValue() T {
-	return n.Value
+	_ = "STUB: not implemented"
+
+	// GetValueUntyped will return the raw value of the node with no type
+	return *new(T)
 }
 
-// GetValueUntyped will return the raw value of the node with no type
 func (n NodeReference[T]) GetValueUntyped() any {
-	return n.Value
+	_ = "STUB: not implemented"
+
+	// IsEmpty will return true if this reference has no key or value nodes assigned (it's been ignored)
+	return *new(any)
 }
 
-// IsEmpty will return true if this reference has no key or value nodes assigned (it's been ignored)
-func (n ValueReference[T]) IsEmpty() bool {
-	return n.ValueNode == nil
-}
+func (n ValueReference[T]) IsEmpty() bool { _ = "STUB: not implemented"; return false }
 
 // NodeLineNumber will return the line number of the value node (or 0 if the value node is empty)
-func (n ValueReference[T]) NodeLineNumber() int {
-	if !n.IsEmpty() {
-		return n.ValueNode.Line
-	} else {
-		return 0
-	}
-}
+func (n ValueReference[T]) NodeLineNumber() int { _ = "STUB: not implemented"; return 0 }
 
 // GenerateMapKey will return a string based on the line and column number of the node, e.g. 33:56 for line 33, col 56.
-func (n ValueReference[T]) GenerateMapKey() string {
-	return fmt.Sprintf("%d:%d", n.ValueNode.Line, n.ValueNode.Column)
-}
+func (n ValueReference[T]) GenerateMapKey() string { _ = "STUB: not implemented"; return "" }
 
 // GetValueNode will return the yaml.Node containing the reference value node
 func (n ValueReference[T]) GetValueNode() *yaml.Node {
-	return n.ValueNode
+	_ = "STUB: not implemented"
+
+	// GetValue will return the  raw value of the node
+	return nil
 }
 
-// GetValue will return the  raw value of the node
 func (n ValueReference[T]) GetValue() T {
-	return n.Value
+	_ = "STUB: not implemented"
+
+	// GetValueUntyped will return the raw value of the node with no type
+	return *new(T)
 }
 
-// GetValueUntyped will return the raw value of the node with no type
-func (n ValueReference[T]) GetValueUntyped() any {
-	return n.Value
-}
+func (n ValueReference[T]) GetValueUntyped() any { _ = "STUB: not implemented"; return *new(any) }
 
 func (n ValueReference[T]) MarshalYAML() (interface{}, error) {
-	if n.IsReference() {
-		return n.GetReferenceNode(), nil
-	}
-	var h yaml.Node
-	e := n.ValueNode.Decode(&h)
-	return h, e
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (n KeyReference[T]) MarshalYAML() (interface{}, error) {
-	return n.KeyNode, nil
+	_ = "STUB: not implemented"
+	return nil,
+
+		// IsEmpty will return true if this reference has no key or value nodes assigned (it's been ignored)
+		nil
 }
 
-// IsEmpty will return true if this reference has no key or value nodes assigned (it's been ignored)
-func (n KeyReference[T]) IsEmpty() bool {
-	return n.KeyNode == nil
-}
+func (n KeyReference[T]) IsEmpty() bool { _ = "STUB: not implemented"; return false }
 
 // GetValueUntyped will return the raw value of the node with no type
 func (n KeyReference[T]) GetValueUntyped() any {
-	return n.Value
+	_ = "STUB: not implemented"
+
+	// GetKeyNode will return the yaml.Node containing the reference key node.
+	return *new(any)
 }
 
-// GetKeyNode will return the yaml.Node containing the reference key node.
 func (n KeyReference[T]) GetKeyNode() *yaml.Node {
-	return n.KeyNode
+	_ = "STUB: not implemented"
+
+	// GenerateMapKey will return a string based on the line and column number of the node, e.g. 33:56 for line 33, col 56.
+	return nil
 }
 
-// GenerateMapKey will return a string based on the line and column number of the node, e.g. 33:56 for line 33, col 56.
-func (n KeyReference[T]) GenerateMapKey() string {
-	return fmt.Sprintf("%d:%d", n.KeyNode.Line, n.KeyNode.Column)
-}
+func (n KeyReference[T]) GenerateMapKey() string { _ = "STUB: not implemented"; return "" }
 
 // Mutate will set the reference value to what is supplied. This happens to both the Value and ValueNode, which means
 // the root document is permanently mutated and changes will be reflected in any serialization of the root document.
-func (n ValueReference[T]) Mutate(value T) ValueReference[T] {
-	n.ValueNode.Value = fmt.Sprintf("%v", value)
-	n.Value = value
-	return n
-}
+func (n ValueReference[T]) Mutate(value T) ValueReference[T] { _ = "STUB: not implemented"; return nil }
 
 // IsCircular will determine if the node in question, is part of a circular reference chain discovered by the index.
 func IsCircular(node *yaml.Node, idx *index.SpecIndex) bool {
-	if idx == nil {
-		return false // no index! nothing we can do.
-	}
-	refs := idx.GetCircularReferences()
-	for i := range idx.GetCircularReferences() {
-		if refs[i].LoopPoint.Node == node {
-			return true
-		}
-		for k := range refs[i].Journey {
-			if refs[i].Journey[k].Node == node {
-				return true
-			}
-			isRef, _, refValue := utils.IsNodeRefValue(node)
-			if isRef && refs[i].Journey[k].Definition == refValue {
-				return true
-			}
-		}
-	}
-	// check mapped references in case we didn't find it.
-	_, nv := utils.FindKeyNode("$ref", node.Content)
-	if nv != nil {
-		ref := idx.GetMappedReferences()[nv.Value]
-		if ref != nil {
-			return ref.Circular
-		}
-	}
+	_ = "STUB: not implemented"
 	return false
+
+	// no index! nothing we can do.
 }
+
+// check mapped references in case we didn't find it.
 
 // GetCircularReferenceResult will check if a node is part of a circular reference chain and then return that
 // index.CircularReferenceResult it was located in. Returns nil if not found.
 func GetCircularReferenceResult(node *yaml.Node, idx *index.SpecIndex) *index.CircularReferenceResult {
-	if idx == nil {
-		return nil // no index! nothing we can do.
-	}
-	var refs []*index.CircularReferenceResult
-	if idx.GetResolver() != nil {
-		refs = append(refs, idx.GetResolver().GetCircularReferences()...)
-		refs = append(refs, idx.GetResolver().GetInfiniteCircularReferences()...)
-		refs = append(refs, idx.GetResolver().GetIgnoredCircularArrayReferences()...)
-		refs = append(refs, idx.GetResolver().GetIgnoredCircularPolyReferences()...)
-		refs = append(refs, idx.GetResolver().GetSafeCircularReferences()...)
-	} else {
-		refs = idx.GetCircularReferences()
-	}
-	for i := range refs {
-		if refs[i].LoopPoint.Node == node {
-			return refs[i]
-		}
-		for k := range refs[i].Journey {
-			if refs[i].Journey[k].Node == node {
-				return refs[i]
-			}
-			isRef, _, refValue := utils.IsNodeRefValue(node)
-			if isRef && refs[i].Journey[k].Definition == refValue {
-				return refs[i]
-			}
-		}
-	}
-	// check mapped references in case we didn't find it.
-	_, nv := utils.FindKeyNode("$ref", node.Content)
-	if nv != nil {
-		for i := range refs {
-			if refs[i].LoopPoint.Definition == nv.Value {
-				return refs[i]
-			}
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
+
+	// no index! nothing we can do.
 }
 
-func HashToString(hash uint64) string {
-	return fmt.Sprintf("%x", hash)
-}
+// check mapped references in case we didn't find it.
+
+func HashToString(hash uint64) string { _ = "STUB: not implemented"; return "" }

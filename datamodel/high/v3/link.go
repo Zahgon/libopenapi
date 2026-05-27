@@ -4,24 +4,16 @@
 package v3
 
 import (
-	"context"
-
-	"github.com/pb33f/libopenapi/datamodel/high"
-	"github.com/pb33f/libopenapi/datamodel/low"
-	lowmodel "github.com/pb33f/libopenapi/datamodel/low"
 	lowv3 "github.com/pb33f/libopenapi/datamodel/low/v3"
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
 // buildLowLink builds a low-level Link from a resolved YAML node.
 func buildLowLink(node *yaml.Node, idx *index.SpecIndex) (*lowv3.Link, error) {
-	var link lowv3.Link
-	lowmodel.BuildModel(node, &link)
-	link.Build(context.Background(), nil, node, idx)
-	return &link, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // Link represents a high-level OpenAPI 3+ Link object that is backed by a low-level one.
@@ -49,96 +41,71 @@ type Link struct {
 }
 
 // NewLink will create a new high-level Link instance from a low-level one.
-func NewLink(link *lowv3.Link) *Link {
-	l := new(Link)
-	l.low = link
-	l.OperationRef = link.OperationRef.Value
-	l.OperationId = link.OperationId.Value
-	l.Parameters = low.FromReferenceMap(link.Parameters.Value)
-	l.RequestBody = link.RequestBody.Value
-	l.Description = link.Description.Value
-	if link.Server.Value != nil {
-		l.Server = NewServer(link.Server.Value)
-	}
-	l.Extensions = high.ExtractExtensions(link.Extensions)
-	return l
-}
+func NewLink(link *lowv3.Link) *Link { _ = "STUB: not implemented"; return nil }
 
 // GoLow will return the low-level Link instance used to create the high-level one.
 func (l *Link) GoLow() *lowv3.Link {
-	return l.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level Link instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level Link instance that was used to create the high-level one, with no type
 func (l *Link) GoLowUntyped() any {
-	return l.low
+	_ = "STUB: not implemented"
+
+	// IsReference returns true if this Link is a reference to another Link definition.
+	return *new(any)
 }
 
-// IsReference returns true if this Link is a reference to another Link definition.
-func (l *Link) IsReference() bool {
-	return l.Reference != ""
-}
+func (l *Link) IsReference() bool { _ = "STUB: not implemented"; return false }
 
 // GetReference returns the reference string if this is a reference Link.
 func (l *Link) GetReference() string {
-	return l.Reference
+	_ = "STUB: not implemented"
+
+	// Render will return a YAML representation of the Link object as a byte slice.
+	return ""
 }
 
-// Render will return a YAML representation of the Link object as a byte slice.
 func (l *Link) Render() ([]byte, error) {
-	return yaml.Marshal(l)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML will create a ready to render YAML representation of the Link object.
+		nil
 }
 
-// MarshalYAML will create a ready to render YAML representation of the Link object.
 func (l *Link) MarshalYAML() (interface{}, error) {
+	_ = "STUB: not implemented"
 	// Handle reference-only link
-	if l.Reference != "" {
-		return utils.CreateRefNode(l.Reference), nil
-	}
-	nb := high.NewNodeBuilder(l, l.low)
-	return nb.Render(), nil
+	return nil, nil
 }
 
 // MarshalYAMLInline will create a ready to render YAML representation of the Link object,
 // with all references resolved inline.
 func (l *Link) MarshalYAMLInline() (interface{}, error) {
+	_ = "STUB: not implemented"
 	// reference-only objects render as $ref nodes
-	if l.Reference != "" {
-		return utils.CreateRefNode(l.Reference), nil
-	}
-
-	// resolve external reference if present
-	if l.low != nil {
-		// buildLowLink never returns an error, so we can ignore it
-		rendered, _ := high.RenderExternalRef(l.low, buildLowLink, NewLink)
-		if rendered != nil {
-			return rendered, nil
-		}
-	}
-
-	return high.RenderInline(l, l.low)
+	return nil, nil
 }
+
+// resolve external reference if present
+
+// buildLowLink never returns an error, so we can ignore it
 
 // MarshalYAMLInlineWithContext will create a ready to render YAML representation of the Link object,
 // resolving any references inline where possible. Uses the provided context for cycle detection.
 // The ctx parameter should be *base.InlineRenderContext but is typed as any to satisfy the
 // high.RenderableInlineWithContext interface without import cycles.
 func (l *Link) MarshalYAMLInlineWithContext(ctx any) (interface{}, error) {
-	if l.Reference != "" {
-		return utils.CreateRefNode(l.Reference), nil
-	}
-
-	// resolve external reference if present
-	if l.low != nil {
-		// buildLowLink never returns an error, so we can ignore it
-		rendered, _ := high.RenderExternalRefWithContext(l.low, buildLowLink, NewLink, ctx)
-		if rendered != nil {
-			return rendered, nil
-		}
-	}
-
-	return high.RenderInlineWithContext(l, l.low, ctx)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// resolve external reference if present
+
+// buildLowLink never returns an error, so we can ignore it
 
 // CreateLinkRef creates a Link that renders as a $ref to another link definition.
 // This is useful when building OpenAPI specs programmatically, and you want to reference
@@ -151,6 +118,4 @@ func (l *Link) MarshalYAMLInlineWithContext(ctx any) (interface{}, error) {
 // Renders as:
 //
 //	$ref: '#/components/links/GetUserByUserId'
-func CreateLinkRef(ref string) *Link {
-	return &Link{Reference: ref}
-}
+func CreateLinkRef(ref string) *Link { _ = "STUB: not implemented"; return nil }

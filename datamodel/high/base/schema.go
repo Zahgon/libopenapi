@@ -4,12 +4,6 @@
 package base
 
 import (
-	"encoding/json"
-
-	"errors"
-
-	"github.com/pb33f/libopenapi/datamodel/high"
-	lowmodel "github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/datamodel/low/base"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -134,426 +128,62 @@ type Schema struct {
 }
 
 // NewSchema will create a new high-level schema from a low-level one.
-func NewSchema(schema *base.Schema) *Schema {
-	s := new(Schema)
-	s.low = schema
-	s.Title = schema.Title.Value
-	if !schema.SchemaTypeRef.IsEmpty() {
-		s.SchemaTypeRef = schema.SchemaTypeRef.Value
-	}
-	if !schema.MultipleOf.IsEmpty() {
-		s.MultipleOf = &schema.MultipleOf.Value
-	}
-	if !schema.Maximum.IsEmpty() {
-		s.Maximum = &schema.Maximum.Value
-	}
-	if !schema.Minimum.IsEmpty() {
-		s.Minimum = &schema.Minimum.Value
-	}
-	// if we're dealing with a 3.0 spec using a bool
-	if !schema.ExclusiveMaximum.IsEmpty() && schema.ExclusiveMaximum.Value.IsA() {
-		s.ExclusiveMaximum = &DynamicValue[bool, float64]{
-			A: schema.ExclusiveMaximum.Value.A,
-		}
-	}
-	// if we're dealing with a 3.1 spec using an int
-	if !schema.ExclusiveMaximum.IsEmpty() && schema.ExclusiveMaximum.Value.IsB() {
-		s.ExclusiveMaximum = &DynamicValue[bool, float64]{
-			N: 1,
-			B: schema.ExclusiveMaximum.Value.B,
-		}
-	}
-	// if we're dealing with a 3.0 spec using a bool
-	if !schema.ExclusiveMinimum.IsEmpty() && schema.ExclusiveMinimum.Value.IsA() {
-		s.ExclusiveMinimum = &DynamicValue[bool, float64]{
-			A: schema.ExclusiveMinimum.Value.A,
-		}
-	}
-	// if we're dealing with a 3.1 spec, using an int
-	if !schema.ExclusiveMinimum.IsEmpty() && schema.ExclusiveMinimum.Value.IsB() {
-		s.ExclusiveMinimum = &DynamicValue[bool, float64]{
-			N: 1,
-			B: schema.ExclusiveMinimum.Value.B,
-		}
-	}
-	if !schema.MaxLength.IsEmpty() {
-		s.MaxLength = &schema.MaxLength.Value
-	}
-	if !schema.MinLength.IsEmpty() {
-		s.MinLength = &schema.MinLength.Value
-	}
-	if !schema.MaxItems.IsEmpty() {
-		s.MaxItems = &schema.MaxItems.Value
-	}
-	if !schema.MinItems.IsEmpty() {
-		s.MinItems = &schema.MinItems.Value
-	}
-	if !schema.MaxProperties.IsEmpty() {
-		s.MaxProperties = &schema.MaxProperties.Value
-	}
-	if !schema.MinProperties.IsEmpty() {
-		s.MinProperties = &schema.MinProperties.Value
-	}
+func NewSchema(schema *base.Schema) *Schema { _ = "STUB: not implemented"; return nil }
 
-	if !schema.MaxContains.IsEmpty() {
-		s.MaxContains = &schema.MaxContains.Value
-	}
-	if !schema.MinContains.IsEmpty() {
-		s.MinContains = &schema.MinContains.Value
-	}
-	if !schema.UniqueItems.IsEmpty() {
-		s.UniqueItems = &schema.UniqueItems.Value
-	}
-	if !schema.Contains.IsEmpty() {
-		s.Contains = NewSchemaProxy(&lowmodel.NodeReference[*base.SchemaProxy]{
-			ValueNode: schema.Contains.ValueNode,
-			Value:     schema.Contains.Value,
-		})
-	}
-	if !schema.If.IsEmpty() {
-		s.If = NewSchemaProxy(&lowmodel.NodeReference[*base.SchemaProxy]{
-			ValueNode: schema.If.ValueNode,
-			Value:     schema.If.Value,
-		})
-	}
-	if !schema.Else.IsEmpty() {
-		s.Else = NewSchemaProxy(&lowmodel.NodeReference[*base.SchemaProxy]{
-			ValueNode: schema.Else.ValueNode,
-			Value:     schema.Else.Value,
-		})
-	}
-	if !schema.Then.IsEmpty() {
-		s.Then = NewSchemaProxy(&lowmodel.NodeReference[*base.SchemaProxy]{
-			ValueNode: schema.Then.ValueNode,
-			Value:     schema.Then.Value,
-		})
-	}
-	if !schema.PropertyNames.IsEmpty() {
-		s.PropertyNames = NewSchemaProxy(&lowmodel.NodeReference[*base.SchemaProxy]{
-			ValueNode: schema.PropertyNames.ValueNode,
-			Value:     schema.PropertyNames.Value,
-		})
-	}
-	if !schema.UnevaluatedItems.IsEmpty() {
-		s.UnevaluatedItems = NewSchemaProxy(&lowmodel.NodeReference[*base.SchemaProxy]{
-			ValueNode: schema.UnevaluatedItems.ValueNode,
-			Value:     schema.UnevaluatedItems.Value,
-		})
-	}
+// if we're dealing with a 3.0 spec using a bool
 
-	var unevaluatedProperties *DynamicValue[*SchemaProxy, bool]
-	if !schema.UnevaluatedProperties.IsEmpty() {
-		if schema.UnevaluatedProperties.Value.IsA() {
-			unevaluatedProperties = &DynamicValue[*SchemaProxy, bool]{
-				A: NewSchemaProxy(&lowmodel.NodeReference[*base.SchemaProxy]{
-					ValueNode: schema.UnevaluatedProperties.ValueNode,
-					Value:     schema.UnevaluatedProperties.Value.A,
-					KeyNode:   schema.UnevaluatedProperties.KeyNode,
-				}),
-			}
-		} else {
-			unevaluatedProperties = &DynamicValue[*SchemaProxy, bool]{N: 1, B: schema.UnevaluatedProperties.Value.B}
-		}
-	}
-	s.UnevaluatedProperties = unevaluatedProperties
+// if we're dealing with a 3.1 spec using an int
 
-	s.Pattern = schema.Pattern.Value
-	s.Format = schema.Format.Value
+// if we're dealing with a 3.0 spec using a bool
 
-	// 3.0 spec is a single value
-	if !schema.Type.IsEmpty() && schema.Type.Value.IsA() {
-		s.Type = []string{schema.Type.Value.A}
-	}
-	// 3.1 spec may have multiple values
-	if !schema.Type.IsEmpty() && schema.Type.Value.IsB() {
-		for i := range schema.Type.Value.B {
-			s.Type = append(s.Type, schema.Type.Value.B[i].Value)
-		}
-	}
+// if we're dealing with a 3.1 spec, using an int
 
-	var additionalProperties *DynamicValue[*SchemaProxy, bool]
-	if !schema.AdditionalProperties.IsEmpty() {
-		if schema.AdditionalProperties.Value.IsA() {
-			additionalProperties = &DynamicValue[*SchemaProxy, bool]{
-				A: NewSchemaProxy(&lowmodel.NodeReference[*base.SchemaProxy]{
-					ValueNode: schema.AdditionalProperties.ValueNode,
-					Value:     schema.AdditionalProperties.Value.A,
-					KeyNode:   schema.AdditionalProperties.KeyNode,
-				}),
-			}
-		} else {
-			additionalProperties = &DynamicValue[*SchemaProxy, bool]{N: 1, B: schema.AdditionalProperties.Value.B}
-		}
-	}
-	s.AdditionalProperties = additionalProperties
+// 3.0 spec is a single value
 
-	s.Description = schema.Description.Value
-	s.ContentEncoding = schema.ContentEncoding.Value
-	s.ContentMediaType = schema.ContentMediaType.Value
-	s.Default = schema.Default.Value
-	s.Const = schema.Const.Value
-	if !schema.Nullable.IsEmpty() {
-		s.Nullable = &schema.Nullable.Value
-	}
-	if !schema.ReadOnly.IsEmpty() {
-		s.ReadOnly = &schema.ReadOnly.Value
-	}
-	if !schema.WriteOnly.IsEmpty() {
-		s.WriteOnly = &schema.WriteOnly.Value
-	}
-	if !schema.Deprecated.IsEmpty() {
-		s.Deprecated = &schema.Deprecated.Value
-	}
-	s.Example = schema.Example.Value
-	if len(schema.Examples.Value) > 0 {
-		examples := make([]*yaml.Node, len(schema.Examples.Value))
-		for i := 0; i < len(schema.Examples.Value); i++ {
-			examples[i] = schema.Examples.Value[i].Value
-		}
-		s.Examples = examples
-	}
-	s.Extensions = high.ExtractExtensions(schema.Extensions)
-	if !schema.Discriminator.IsEmpty() {
-		s.Discriminator = NewDiscriminator(schema.Discriminator.Value)
-	}
-	if !schema.XML.IsEmpty() {
-		s.XML = NewXML(schema.XML.Value)
-	}
-	if !schema.ExternalDocs.IsEmpty() {
-		s.ExternalDocs = NewExternalDoc(schema.ExternalDocs.Value)
-	}
-	var req []string
-	for i := range schema.Required.Value {
-		req = append(req, schema.Required.Value[i].Value)
-	}
-	if !schema.Required.IsEmpty() && schema.Required.ValueNode != nil &&
-		schema.Required.ValueNode.Kind == yaml.SequenceNode && len(schema.Required.Value) == 0 {
-		req = []string{}
-	}
-	s.Required = req
+// 3.1 spec may have multiple values
 
-	if !schema.Id.IsEmpty() {
-		s.Id = schema.Id.Value
-	}
-	if !schema.Anchor.IsEmpty() {
-		s.Anchor = schema.Anchor.Value
-	}
-	if !schema.DynamicAnchor.IsEmpty() {
-		s.DynamicAnchor = schema.DynamicAnchor.Value
-	}
-	if !schema.DynamicRef.IsEmpty() {
-		s.DynamicRef = schema.DynamicRef.Value
-	}
-	if !schema.Comment.IsEmpty() {
-		s.Comment = schema.Comment.Value
-	}
-	if !schema.ContentSchema.IsEmpty() {
-		s.ContentSchema = NewSchemaProxy(&lowmodel.NodeReference[*base.SchemaProxy]{
-			ValueNode: schema.ContentSchema.ValueNode,
-			Value:     schema.ContentSchema.Value,
-		})
-	}
-	if schema.Vocabulary.Value != nil {
-		vocabularyMap := orderedmap.New[string, bool]()
-		for k, v := range schema.Vocabulary.Value.FromOldest() {
-			vocabularyMap.Set(k.Value, v.Value)
-		}
-		s.Vocabulary = vocabularyMap
-	}
+// async work.
+// any polymorphic properties need to be handled in their own threads
+// any properties each need to be processed in their own thread.
+// we go as fast as we can.
 
-	var enum []*yaml.Node
-	for i := range schema.Enum.Value {
-		enum = append(enum, schema.Enum.Value[i].Value)
-	}
-	s.Enum = enum
+// for every item, build schema async
 
-	// async work.
-	// any polymorphic properties need to be handled in their own threads
-	// any properties each need to be processed in their own thread.
-	// we go as fast as we can.
-	polyCompletedChan := make(chan struct{})
-	errChan := make(chan error)
+// schema async
 
-	type buildResult struct {
-		idx int
-		s   *SchemaProxy
-	}
+// props async
 
-	// for every item, build schema async
-	buildSchema := func(sch lowmodel.ValueReference[*base.SchemaProxy], idx int, bChan chan buildResult) {
-		n := &lowmodel.NodeReference[*base.SchemaProxy]{
-			ValueNode: sch.ValueNode,
-			Value:     sch.Value,
-		}
-		n.SetReference(sch.GetReference(), sch.GetReferenceNode())
-
-		p := NewSchemaProxy(n)
-
-		bChan <- buildResult{idx: idx, s: p}
-	}
-
-	// schema async
-	buildOutSchemas := func(schemas []lowmodel.ValueReference[*base.SchemaProxy], items *[]*SchemaProxy,
-		doneChan chan struct{}, e chan error,
-	) {
-		bChan := make(chan buildResult)
-		totalSchemas := len(schemas)
-		for i := range schemas {
-			go buildSchema(schemas[i], i, bChan)
-		}
-		j := 0
-		for j < totalSchemas {
-			r := <-bChan
-			j++
-			(*items)[r.idx] = r.s
-		}
-		doneChan <- struct{}{}
-	}
-
-	// props async
-	buildProps := func(k lowmodel.KeyReference[string], v lowmodel.ValueReference[*base.SchemaProxy],
-		props *orderedmap.Map[string, *SchemaProxy], sw int,
-	) {
-		props.Set(k.Value, NewSchemaProxy(&lowmodel.NodeReference[*base.SchemaProxy]{
-			Value:     v.Value,
-			KeyNode:   k.KeyNode,
-			ValueNode: v.ValueNode,
-		}))
-
-		switch sw {
-		case 0:
-			s.Properties = props
-		case 1:
-			s.DependentSchemas = props
-		case 2:
-			s.PatternProperties = props
-		}
-	}
-
-	props := orderedmap.New[string, *SchemaProxy]()
-	if !schema.Properties.IsEmpty() {
-		s.Properties = props
-	}
-	for name, schemaProxy := range schema.Properties.Value.FromOldest() {
-		buildProps(name, schemaProxy, props, 0)
-	}
-
-	dependents := orderedmap.New[string, *SchemaProxy]()
-	if !schema.DependentSchemas.IsEmpty() {
-		s.DependentSchemas = dependents
-	}
-	for name, schemaProxy := range schema.DependentSchemas.Value.FromOldest() {
-		buildProps(name, schemaProxy, dependents, 1)
-	}
-
-	// Handle DependentRequired
-	if schema.DependentRequired.Value != nil {
-		depRequired := orderedmap.New[string, []string]()
-		for prop, requiredProps := range schema.DependentRequired.Value.FromOldest() {
-			depRequired.Set(prop.Value, requiredProps.Value)
-		}
-		s.DependentRequired = depRequired
-	}
-
-	patternProps := orderedmap.New[string, *SchemaProxy]()
-	if !schema.PatternProperties.IsEmpty() {
-		s.PatternProperties = patternProps
-	}
-	for name, schemaProxy := range schema.PatternProperties.Value.FromOldest() {
-		buildProps(name, schemaProxy, patternProps, 2)
-	}
-
-	var allOf []*SchemaProxy
-	var oneOf []*SchemaProxy
-	var anyOf []*SchemaProxy
-	var not *SchemaProxy
-	var items *DynamicValue[*SchemaProxy, bool]
-	var prefixItems []*SchemaProxy
-
-	children := 0
-	if !schema.AllOf.IsEmpty() {
-		children++
-		allOf = make([]*SchemaProxy, len(schema.AllOf.Value))
-		go buildOutSchemas(schema.AllOf.Value, &allOf, polyCompletedChan, errChan)
-	}
-	if !schema.AnyOf.IsEmpty() {
-		children++
-		anyOf = make([]*SchemaProxy, len(schema.AnyOf.Value))
-		go buildOutSchemas(schema.AnyOf.Value, &anyOf, polyCompletedChan, errChan)
-	}
-	if !schema.OneOf.IsEmpty() {
-		children++
-		oneOf = make([]*SchemaProxy, len(schema.OneOf.Value))
-		go buildOutSchemas(schema.OneOf.Value, &oneOf, polyCompletedChan, errChan)
-	}
-	if !schema.Not.IsEmpty() {
-		not = NewSchemaProxy(&schema.Not)
-	}
-	if !schema.Items.IsEmpty() {
-		if schema.Items.Value.IsA() {
-			items = &DynamicValue[*SchemaProxy, bool]{
-				A: NewSchemaProxy(&lowmodel.NodeReference[*base.SchemaProxy]{
-					ValueNode: schema.Items.ValueNode,
-					Value:     schema.Items.Value.A,
-					KeyNode:   schema.Items.KeyNode,
-				},
-				),
-			}
-		} else {
-			items = &DynamicValue[*SchemaProxy, bool]{N: 1, B: schema.Items.Value.B}
-		}
-	}
-	if !schema.PrefixItems.IsEmpty() {
-		children++
-		prefixItems = make([]*SchemaProxy, len(schema.PrefixItems.Value))
-		go buildOutSchemas(schema.PrefixItems.Value, &prefixItems, polyCompletedChan, errChan)
-	}
-
-	completeChildren := 0
-	if children > 0 {
-	allDone:
-		for {
-			<-polyCompletedChan
-			completeChildren++
-			if children == completeChildren {
-				break allDone
-			}
-		}
-	}
-	s.OneOf = oneOf
-	s.AnyOf = anyOf
-	s.AllOf = allOf
-	s.Items = items
-	s.PrefixItems = prefixItems
-	s.Not = not
-	return s
-}
+// Handle DependentRequired
 
 // GoLow will return the low-level instance of Schema that was used to create the high level one.
 func (s *Schema) GoLow() *base.Schema {
-	return s.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level Schema instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level Schema instance that was used to create the high-level one, with no type
 func (s *Schema) GoLowUntyped() any {
-	return s.low
+	_ = "STUB: not implemented"
+
+	// Render will return a YAML representation of the Schema object as a byte slice.
+	return *new(any)
 }
 
-// Render will return a YAML representation of the Schema object as a byte slice.
 func (s *Schema) Render() ([]byte, error) {
-	return yaml.Marshal(s)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// RenderInlineWithContext will return a YAML representation of the Schema object as a byte slice
+		// using the provided InlineRenderContext for cycle detection.
+		// Use this when multiple goroutines may render the same schemas concurrently.
+		// The ctx parameter should be *InlineRenderContext but is typed as any to avoid import cycles.
+		nil
 }
 
-// RenderInlineWithContext will return a YAML representation of the Schema object as a byte slice
-// using the provided InlineRenderContext for cycle detection.
-// Use this when multiple goroutines may render the same schemas concurrently.
-// The ctx parameter should be *InlineRenderContext but is typed as any to avoid import cycles.
 func (s *Schema) RenderInlineWithContext(ctx any) ([]byte, error) {
-	d, err := s.MarshalYAMLInlineWithContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return yaml.Marshal(d)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // RenderInline will return a YAML representation of the Schema object as a byte slice.
@@ -561,46 +191,23 @@ func (s *Schema) RenderInlineWithContext(ctx any) ([]byte, error) {
 // This method creates a fresh InlineRenderContext internally.
 //
 // Make sure you don't have any circular references!
-func (s *Schema) RenderInline() ([]byte, error) {
-	ctx := NewInlineRenderContext()
-	return s.RenderInlineWithContext(ctx)
-}
+func (s *Schema) RenderInline() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // MarshalYAML will create a ready to render YAML representation of the Schema object.
-func (s *Schema) MarshalYAML() (interface{}, error) {
-	nb := high.NewNodeBuilder(s, s.low)
+func (s *Schema) MarshalYAML() (interface{}, error) { _ = "STUB: not implemented"; return nil, nil }
 
-	// determine index version
-	idx := s.GoLow().Index
-	if idx != nil {
-		if idx.GetConfig().SpecInfo != nil {
-			nb.Version = idx.GetConfig().SpecInfo.VersionNumeric
-		}
-	}
-	return nb.Render(), nil
-}
+// determine index version
 
 // MarshalJSON will create a ready to render JSON representation of the Schema object.
-func (s *Schema) MarshalJSON() ([]byte, error) {
-	nb := high.NewNodeBuilder(s, s.low)
+func (s *Schema) MarshalJSON() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
-	// determine index version
-	idx := s.GoLow().Index
-	if idx != nil {
-		if idx.GetConfig().SpecInfo != nil {
-			nb.Version = idx.GetConfig().SpecInfo.VersionNumeric
-		}
-	}
-	// render node
-	node := nb.Render()
-	var renderedJSON map[string]interface{}
+// determine index version
 
-	// marshal into struct
-	_ = node.Decode(&renderedJSON)
+// render node
 
-	// return JSON bytes
-	return json.Marshal(renderedJSON)
-}
+// marshal into struct
+
+// return JSON bytes
 
 // MarshalYAMLInlineWithContext will render out the Schema pointer as YAML using the provided
 // InlineRenderContext for cycle detection. All refs will be inlined fully.
@@ -608,70 +215,35 @@ func (s *Schema) MarshalJSON() ([]byte, error) {
 // The ctx parameter should be *InlineRenderContext but is typed as any to satisfy the
 // high.RenderableInlineWithContext interface without import cycles.
 func (s *Schema) MarshalYAMLInlineWithContext(ctx any) (interface{}, error) {
+	_ = "STUB: not implemented"
 	// ensure we have a valid render context; create default bundle mode context if nil.
 	// this ensures backward compatibility where nil context = bundle mode behavior.
-	renderCtx, ok := ctx.(*InlineRenderContext)
-	if !ok || renderCtx == nil {
-		renderCtx = NewInlineRenderContext()
-		ctx = renderCtx
-	}
-
-	// determine if we should preserve discriminator refs based on rendering mode.
-	// in validation mode, we need to fully inline all refs for the JSON schema compiler.
-	// in bundle mode (default), we preserve discriminator refs for mapping compatibility.
-	if s.Discriminator != nil && renderCtx.Mode != RenderingModeValidation {
-		// mark oneOf/anyOf refs as preserved in the context (not on the SchemaProxy).
-		// this avoids mutating shared state and prevents race conditions.
-		for _, sp := range s.OneOf {
-			if sp != nil && sp.IsReference() {
-				renderCtx.MarkRefAsPreserved(sp.GetReference())
-			}
-		}
-		for _, sp := range s.AnyOf {
-			if sp != nil && sp.IsReference() {
-				renderCtx.MarkRefAsPreserved(sp.GetReference())
-			}
-		}
-	}
-
-	nb := high.NewNodeBuilder(s, s.low)
-	nb.Resolve = true
-	nb.RenderContext = ctx
-	// determine index version
-	idx := s.GoLow().Index
-	if idx != nil {
-		if idx.GetConfig().SpecInfo != nil {
-			nb.Version = idx.GetConfig().SpecInfo.VersionNumeric
-		}
-	}
-	return nb.Render(), errors.Join(nb.Errors...)
+	return nil, nil
 }
+
+// determine if we should preserve discriminator refs based on rendering mode.
+// in validation mode, we need to fully inline all refs for the JSON schema compiler.
+// in bundle mode (default), we preserve discriminator refs for mapping compatibility.
+
+// mark oneOf/anyOf refs as preserved in the context (not on the SchemaProxy).
+// this avoids mutating shared state and prevents race conditions.
+
+// determine index version
 
 // MarshalYAMLInline will render out the Schema pointer as YAML, and all refs will be inlined fully.
 // This method creates a fresh InlineRenderContext internally.
 func (s *Schema) MarshalYAMLInline() (interface{}, error) {
-	ctx := NewInlineRenderContext()
-	return s.MarshalYAMLInlineWithContext(ctx)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // MarshalJSONInline will render out the Schema pointer as JSON, and all refs will be inlined fully
-func (s *Schema) MarshalJSONInline() ([]byte, error) {
-	nb := high.NewNodeBuilder(s, s.low)
-	nb.Resolve = true
-	// determine index version
-	idx := s.GoLow().Index
-	if idx != nil {
-		if idx.GetConfig().SpecInfo != nil {
-			nb.Version = idx.GetConfig().SpecInfo.VersionNumeric
-		}
-	}
-	// render node
-	node := nb.Render()
-	var renderedJSON map[string]interface{}
+func (s *Schema) MarshalJSONInline() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
-	// marshal into struct
-	_ = node.Decode(&renderedJSON)
+// determine index version
 
-	// return JSON bytes
-	return json.Marshal(renderedJSON)
-}
+// render node
+
+// marshal into struct
+
+// return JSON bytes

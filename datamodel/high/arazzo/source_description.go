@@ -4,7 +4,6 @@
 package arazzo
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/arazzo"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -22,48 +21,34 @@ type SourceDescription struct {
 
 // NewSourceDescription creates a new high-level SourceDescription instance from a low-level one.
 func NewSourceDescription(sd *low.SourceDescription) *SourceDescription {
-	s := new(SourceDescription)
-	s.low = sd
-	if !sd.Name.IsEmpty() {
-		s.Name = sd.Name.Value
-	}
-	if !sd.URL.IsEmpty() {
-		s.URL = sd.URL.Value
-	}
-	if !sd.Type.IsEmpty() {
-		s.Type = sd.Type.Value
-	}
-	s.Extensions = high.ExtractExtensions(sd.Extensions)
-	return s
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GoLow returns the low-level SourceDescription instance used to create the high-level one.
 func (s *SourceDescription) GoLow() *low.SourceDescription {
-	return s.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped returns the low-level SourceDescription instance with no type.
+	return nil
 }
 
-// GoLowUntyped returns the low-level SourceDescription instance with no type.
 func (s *SourceDescription) GoLowUntyped() any {
-	return s.low
+	_ = "STUB: not implemented"
+
+	// Render returns a YAML representation of the SourceDescription object as a byte slice.
+	return *new(any)
 }
 
-// Render returns a YAML representation of the SourceDescription object as a byte slice.
 func (s *SourceDescription) Render() ([]byte, error) {
-	return yaml.Marshal(s)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML creates a ready to render YAML representation of the SourceDescription object.
+		nil
 }
 
-// MarshalYAML creates a ready to render YAML representation of the SourceDescription object.
 func (s *SourceDescription) MarshalYAML() (any, error) {
-	m := orderedmap.New[string, any]()
-	if s.Name != "" {
-		m.Set(low.NameLabel, s.Name)
-	}
-	if s.URL != "" {
-		m.Set(low.URLLabel, s.URL)
-	}
-	if s.Type != "" {
-		m.Set(low.TypeLabel, s.Type)
-	}
-	marshalExtensions(m, s.Extensions)
-	return m, nil
+	_ = "STUB: not implemented"
+	return *new(any), nil
 }

@@ -4,14 +4,9 @@
 package renderer
 
 import (
-	"encoding/json"
-	"fmt"
 	"reflect"
-	"strconv"
 
 	highbase "github.com/pb33f/libopenapi/datamodel/high/base"
-	"github.com/pb33f/libopenapi/orderedmap"
-	"go.yaml.in/yaml/v4"
 )
 
 const (
@@ -57,89 +52,60 @@ type MockGenerator struct {
 //
 // The location of a text file with one word per line is expected.
 func NewMockGeneratorWithDictionary(dictionaryLocation string, mockType MockType) *MockGenerator {
-	renderer := CreateRendererUsingDictionary(dictionaryLocation)
-	return &MockGenerator{renderer: renderer, mockType: mockType}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // NewMockGenerator creates a MockGenerator using the default dictionary.
 //
 // The default is located at /usr/share/dict/words on most systems. Windows users need to use
 // NewMockGeneratorWithDictionary to specify a custom dictionary.
-func NewMockGenerator(mockType MockType) *MockGenerator {
-	renderer := CreateRendererUsingDefaultDictionary()
-	return &MockGenerator{renderer: renderer, mockType: mockType}
-}
+func NewMockGenerator(mockType MockType) *MockGenerator { _ = "STUB: not implemented"; return nil }
 
 // SetPretty configures JSON mocks to render with indentation and newlines.
 //
 // JSON mocks render as a single line by default. This option affects only JSON; YAML is always rendered in YAML form.
 func (mg *MockGenerator) SetPretty() {
-	mg.pretty = true
+	_ = "STUB: not implemented"
+
+	// DisableRequiredCheck disables required-property filtering when rendering schema-based mocks.
+	//
+	// When disabled, all properties are rendered, not just required properties.
+	return
 }
 
-// DisableRequiredCheck disables required-property filtering when rendering schema-based mocks.
-//
-// When disabled, all properties are rendered, not just required properties.
-func (mg *MockGenerator) DisableRequiredCheck() {
-	mg.renderer.DisableRequiredCheck()
-}
+func (mg *MockGenerator) DisableRequiredCheck() { _ = "STUB: not implemented"; return }
 
 // SetUnresolvedRefHandler sets a callback that is invoked when a $ref cannot be resolved during mock rendering.
 func (mg *MockGenerator) SetUnresolvedRefHandler(handler UnresolvedRefHandler) {
-	mg.renderer.SetUnresolvedRefHandler(handler)
+	_ = "STUB: not implemented"
+	return
 }
 
 // SetMockGenerationOptions sets work and output budgets for generated mock values.
 //
 // Zero or negative option values are replaced with the package defaults.
 func (mg *MockGenerator) SetMockGenerationOptions(options MockGenerationOptions) {
-	mg.renderer.SetMockGenerationOptions(options)
+	_ = "STUB: not implemented"
+	return
 }
 
 // SetSeed sets a specific seed for the random number generator used by this mock generator.
 // This is useful for generating deterministic mocks for testing purposes.
-func (mg *MockGenerator) SetSeed(seed int64) {
-	mg.renderer.SetSeed(seed)
-}
+func (mg *MockGenerator) SetSeed(seed int64) { _ = "STUB: not implemented"; return }
 
 // extractSchema pulls the *base.Schema from a mockable struct or direct *base.Schema.
 // Returns an error for unresolved refs or build failures while preserving existing error behavior.
 func (mg *MockGenerator) extractSchema(mock any, v reflect.Value) (*highbase.Schema, error) {
-	switch reflect.TypeOf(mock) {
-	case reflect.TypeOf(&highbase.Schema{}):
-		return mock.(*highbase.Schema), nil
-	default:
-		schemaField := v.FieldByName(Schema)
-		if !schemaField.IsValid() {
-			return nil, nil
-		}
-		if sv, ok := schemaField.Interface().(*highbase.Schema); ok && sv != nil {
-			return sv, nil
-		}
-		if sv, ok := schemaField.Interface().(*highbase.SchemaProxy); ok && sv != nil {
-			schema := sv.Schema()
-			if schema == nil {
-				if sv.IsReference() {
-					return nil, fmt.Errorf("unable to resolve schema reference '%s' for mock generation",
-						sv.GetReference())
-				}
-				if err := sv.GetBuildError(); err != nil {
-					return nil, fmt.Errorf("unable to build schema for mock generation: %w", err)
-				}
-			}
-			return schema, nil
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil, nil
 }
 
 // renderForType dispatches rendering based on the configured mock type.
 // For XML, it uses RenderXML with schema context; for JSON/YAML it uses renderMock.
 func (mg *MockGenerator) renderForType(value any, schema *highbase.Schema) []byte {
-	if mg.mockType == XML {
-		return mg.RenderXML(value, schema)
-	}
-	return mg.renderMock(value)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GenerateMock generates a mock for a high-level mockable struct or *base.Schema pointer.
@@ -147,141 +113,26 @@ func (mg *MockGenerator) renderForType(value any, schema *highbase.Schema) []byt
 // The name parameter is optional. When provided, GenerateMock attempts to select a matching named example. If name is
 // empty, the first available example is used.
 func (mg *MockGenerator) GenerateMock(mock any, name string) ([]byte, error) {
-	if mock == nil || !reflect.ValueOf(mock).IsValid() || reflect.ValueOf(mock).IsNil() {
-		return nil, nil
-	}
-	v := reflect.ValueOf(mock).Elem()
-	num := v.NumField()
-	fieldCount := 0
-	for i := 0; i < num; i++ {
-		fieldName := v.Type().Field(i).Name
-		switch fieldName {
-		case Example:
-			fieldCount++
-		case Examples:
-			fieldCount++
-		}
-	}
-	mockReady := false
-	if fieldCount == 2 {
-		mockReady = true
-	}
-	if !mockReady {
-		return nil, fmt.Errorf("mockable struct only contains %d of the required "+
-			"fields (%s, %s)", fieldCount, Example, Examples)
-	}
-
-	// Extract schema before example selection so XML rendering can use schema metadata.
-	schemaValue, schemaErr := mg.extractSchema(mock, v)
-
-	var fallbackExample *highbase.Example = nil
-	examples := v.FieldByName(Examples)
-	examplesValue := examples.Interface()
-	if examplesValue != nil && !examples.IsNil() {
-		if examplesMap, ok := examplesValue.(*orderedmap.Map[string, *highbase.Example]); ok {
-			if examplesMap.Len() > 0 {
-				if example, ok := examplesMap.Get(name); ok {
-					return mg.renderForType(example.Value, schemaValue), nil
-				} else {
-					fallbackExample = examplesMap.Oldest().Value
-				}
-			}
-		}
-	}
-
-	f := v.FieldByName(Example)
-	if !f.IsNil() {
-		ex := f.Interface()
-		if y, ok := ex.(*yaml.Node); ok {
-			if y != nil {
-				ex = y
-			} else {
-				ex = nil
-			}
-		}
-		if ex != nil {
-			return mg.renderForType(ex, schemaValue), nil
-		}
-	}
-
-	if fallbackExample != nil {
-		return mg.renderForType(fallbackExample.Value, schemaValue), nil
-	}
-
-	// Surface schema extraction errors only after example paths have had their chance.
-	if schemaErr != nil {
-		return nil, schemaErr
-	}
-
-	if schemaValue != nil {
-
-		if schemaValue.Examples != nil {
-			if name != "" {
-				if i, err := strconv.Atoi(name); err == nil {
-					if i < len(schemaValue.Examples) {
-						return mg.renderForType(schemaValue.Examples[i], schemaValue), nil
-					}
-				}
-			}
-			return mg.renderForType(schemaValue.Examples[0], schemaValue), nil
-		}
-
-		if schemaValue.Example != nil {
-			return mg.renderForType(schemaValue.Example, schemaValue), nil
-		}
-
-		renderMap, renderErr := mg.renderer.RenderSchemaWithError(schemaValue)
-		if renderErr != nil {
-			return nil, renderErr
-		}
-		if renderMap == nil {
-			return nil, fmt.Errorf("unable to render schema for mock, it's empty")
-		}
-		return mg.renderForType(renderMap, schemaValue), nil
-	}
+	_ = "STUB: not implemented"
 	return nil, nil
 }
 
-func (mg *MockGenerator) renderMock(v any) []byte {
-	switch {
-	case mg.mockType == YAML:
-		return mg.renderMockYAML(v)
-	default:
-		return mg.renderMockJSON(v)
-	}
-}
+// Extract schema before example selection so XML rendering can use schema metadata.
 
-func (mg *MockGenerator) renderMockJSON(v any) []byte {
-	var data []byte
+// Surface schema extraction errors only after example paths have had their chance.
 
-	if y, ok := v.(*yaml.Node); ok {
-		_ = y.Decode(&v)
-	}
+func (mg *MockGenerator) renderMock(v any) []byte { _ = "STUB: not implemented"; return nil }
 
-	// determine the type, render properly.
-	switch reflect.ValueOf(v).Kind() {
-	case reflect.Map, reflect.Slice, reflect.Array, reflect.Struct, reflect.Ptr:
-		if mg.pretty {
-			data, _ = json.MarshalIndent(v, "", "  ")
-		} else {
-			data, _ = json.Marshal(v)
-		}
-	default:
-		// use json.Marshal for scalar types to produce valid JSON
-		// (e.g. strings get properly quoted: "bob" not bob)
-		data, _ = json.Marshal(v)
-	}
-	return data
-}
+func (mg *MockGenerator) renderMockJSON(v any) []byte { _ = "STUB: not implemented"; return nil }
+
+// determine the type, render properly.
+
+// use json.Marshal for scalar types to produce valid JSON
+// (e.g. strings get properly quoted: "bob" not bob)
 
 func (mg *MockGenerator) renderMockYAML(v any) []byte {
-	var data []byte
+	_ = "STUB: not implemented"
+
 	// determine the type, render properly.
-	switch reflect.ValueOf(v).Kind() {
-	case reflect.Map, reflect.Slice, reflect.Array, reflect.Struct, reflect.Ptr:
-		data, _ = yaml.Marshal(v)
-	default:
-		data = []byte(fmt.Sprint(v))
-	}
-	return data
+	return nil
 }

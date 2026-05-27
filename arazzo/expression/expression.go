@@ -9,24 +9,24 @@ package expression
 type ExpressionType int
 
 const (
-	URL                ExpressionType = iota // $url
-	Method                                   // $method
-	StatusCode                               // $statusCode
-	RequestHeader                            // $request.header.{name}
-	RequestQuery                             // $request.query.{name}
-	RequestPath                              // $request.path.{name}
-	RequestBody                              // $request.body{#/json-pointer}
-	ResponseHeader                           // $response.header.{name}
-	ResponseQuery                            // $response.query.{name}
-	ResponsePath                             // $response.path.{name}
-	ResponseBody                             // $response.body{#/json-pointer}
-	Inputs                                   // $inputs.{name}
-	Outputs                                  // $outputs.{name}
-	Steps                                    // $steps.{name}[.tail]
-	Workflows                                // $workflows.{name}[.tail]
-	SourceDescriptions                       // $sourceDescriptions.{name}[.tail]
-	Components                               // $components.{name}[.tail]
-	ComponentParameters                      // $components.parameters.{name}
+	URL                 ExpressionType = iota // $url
+	Method                                    // $method
+	StatusCode                                // $statusCode
+	RequestHeader                             // $request.header.{name}
+	RequestQuery                              // $request.query.{name}
+	RequestPath                               // $request.path.{name}
+	RequestBody                               // $request.body{#/json-pointer}
+	ResponseHeader                            // $response.header.{name}
+	ResponseQuery                             // $response.query.{name}
+	ResponsePath                              // $response.path.{name}
+	ResponseBody                              // $response.body{#/json-pointer}
+	Inputs                                    // $inputs.{name}
+	Outputs                                   // $outputs.{name}
+	Steps                                     // $steps.{name}[.tail]
+	Workflows                                 // $workflows.{name}[.tail]
+	SourceDescriptions                        // $sourceDescriptions.{name}[.tail]
+	Components                                // $components.{name}[.tail]
+	ComponentParameters                       // $components.parameters.{name}
 )
 
 // Expression represents a parsed Arazzo runtime expression.
@@ -41,7 +41,7 @@ type Expression struct {
 
 // Token represents a segment in an embedded expression string like "prefix {$expr} suffix".
 type Token struct {
-	Literal    string     // Non-empty if this is a literal text segment
-	Expression Expression // Valid if IsExpression is true
-	IsExpression bool     // True if this token is an expression
+	Literal      string     // Non-empty if this is a literal text segment
+	Expression   Expression // Valid if IsExpression is true
+	IsExpression bool       // True if this token is an expression
 }

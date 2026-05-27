@@ -4,7 +4,6 @@
 package v3
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/v3"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -23,45 +22,29 @@ type OAuthFlows struct {
 }
 
 // NewOAuthFlows creates a new high-level OAuthFlows instance from a low-level one.
-func NewOAuthFlows(flows *low.OAuthFlows) *OAuthFlows {
-	o := new(OAuthFlows)
-	o.low = flows
-	if !flows.Implicit.IsEmpty() {
-		o.Implicit = NewOAuthFlow(flows.Implicit.Value)
-	}
-	if !flows.Password.IsEmpty() {
-		o.Password = NewOAuthFlow(flows.Password.Value)
-	}
-	if !flows.ClientCredentials.IsEmpty() {
-		o.ClientCredentials = NewOAuthFlow(flows.ClientCredentials.Value)
-	}
-	if !flows.AuthorizationCode.IsEmpty() {
-		o.AuthorizationCode = NewOAuthFlow(flows.AuthorizationCode.Value)
-	}
-	if !flows.Device.IsEmpty() {
-		o.Device = NewOAuthFlow(flows.Device.Value)
-	}
-	o.Extensions = high.ExtractExtensions(flows.Extensions)
-	return o
-}
+func NewOAuthFlows(flows *low.OAuthFlows) *OAuthFlows { _ = "STUB: not implemented"; return nil }
 
 // GoLow returns the low-level OAuthFlows instance used to create the high-level one.
 func (o *OAuthFlows) GoLow() *low.OAuthFlows {
-	return o.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level OAuthFlows instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level OAuthFlows instance that was used to create the high-level one, with no type
 func (o *OAuthFlows) GoLowUntyped() any {
-	return o.low
+	_ = "STUB: not implemented"
+
+	// Render will return a YAML representation of the OAuthFlows object as a byte slice.
+	return *new(any)
 }
 
-// Render will return a YAML representation of the OAuthFlows object as a byte slice.
 func (o *OAuthFlows) Render() ([]byte, error) {
-	return yaml.Marshal(o)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML will create a ready to render YAML representation of the OAuthFlows object.
+		nil
 }
 
-// MarshalYAML will create a ready to render YAML representation of the OAuthFlows object.
-func (o *OAuthFlows) MarshalYAML() (interface{}, error) {
-	nb := high.NewNodeBuilder(o, o.low)
-	return nb.Render(), nil
-}
+func (o *OAuthFlows) MarshalYAML() (interface{}, error) { _ = "STUB: not implemented"; return nil, nil }

@@ -4,10 +4,7 @@
 package v2
 
 import (
-	"github.com/pb33f/libopenapi/datamodel"
 	highbase "github.com/pb33f/libopenapi/datamodel/high/base"
-	lowmodel "github.com/pb33f/libopenapi/datamodel/low"
-	lowbase "github.com/pb33f/libopenapi/datamodel/low/base"
 	low "github.com/pb33f/libopenapi/datamodel/low/v2"
 	"github.com/pb33f/libopenapi/orderedmap"
 )
@@ -24,27 +21,9 @@ type Definitions struct {
 
 // NewDefinitions will create a new high-level instance of a Definition from a low-level one.
 func NewDefinitions(definitions *low.Definitions) *Definitions {
-	rd := new(Definitions)
-	rd.low = definitions
-	defs := orderedmap.New[string, *highbase.SchemaProxy]()
-	translateFunc := func(pair orderedmap.Pair[lowmodel.KeyReference[string], lowmodel.ValueReference[*lowbase.SchemaProxy]]) (asyncResult[*highbase.SchemaProxy], error) {
-		return asyncResult[*highbase.SchemaProxy]{
-			key: pair.Key().Value,
-			result: highbase.NewSchemaProxy(&lowmodel.NodeReference[*lowbase.SchemaProxy]{
-				Value: pair.Value().Value,
-			}),
-		}, nil
-	}
-	resultFunc := func(value asyncResult[*highbase.SchemaProxy]) error {
-		defs.Set(value.key, value.result)
-		return nil
-	}
-	_ = datamodel.TranslateMapParallel(definitions.Schemas, translateFunc, resultFunc)
-	rd.Definitions = defs
-	return rd
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GoLow returns the low-level Definitions object used to create the high-level one.
-func (d *Definitions) GoLow() *low.Definitions {
-	return d.low
-}
+func (d *Definitions) GoLow() *low.Definitions { _ = "STUB: not implemented"; return nil }

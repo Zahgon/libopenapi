@@ -4,15 +4,8 @@
 package v3
 
 import (
-	"fmt"
-	"sort"
-
-	"github.com/pb33f/libopenapi/datamodel"
-	"github.com/pb33f/libopenapi/datamodel/high"
-	lowbase "github.com/pb33f/libopenapi/datamodel/low"
 	low "github.com/pb33f/libopenapi/datamodel/low/v3"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -39,184 +32,47 @@ type Responses struct {
 
 // NewResponses will create a new high-level Responses instance from a low-level one. It operates asynchronously
 // internally, as each response may be considerable in complexity.
-func NewResponses(responses *low.Responses) *Responses {
-	r := new(Responses)
-	r.low = responses
-	r.Extensions = high.ExtractExtensions(responses.Extensions)
-	if !responses.Default.IsEmpty() {
-		r.Default = NewResponse(responses.Default.Value)
-	}
-	codes := orderedmap.New[string, *Response]()
-
-	translateFunc := func(pair orderedmap.Pair[lowbase.KeyReference[string], lowbase.ValueReference[*low.Response]]) (asyncResult[*Response], error) {
-		return asyncResult[*Response]{
-			key:    pair.Key().Value,
-			result: NewResponse(pair.Value().Value),
-		}, nil
-	}
-	resultFunc := func(value asyncResult[*Response]) error {
-		codes.Set(value.key, value.result)
-		return nil
-	}
-	_ = datamodel.TranslateMapParallel[lowbase.KeyReference[string], lowbase.ValueReference[*low.Response]](responses.Codes, translateFunc, resultFunc)
-	r.Codes = codes
-	return r
-}
+func NewResponses(responses *low.Responses) *Responses { _ = "STUB: not implemented"; return nil }
 
 // FindResponseByCode is a shortcut for looking up code by an integer vs. a string
-func (r *Responses) FindResponseByCode(code int) *Response {
-	return r.Codes.GetOrZero(fmt.Sprintf("%d", code))
-}
+func (r *Responses) FindResponseByCode(code int) *Response { _ = "STUB: not implemented"; return nil }
 
 // GoLow returns the low-level Response object used to create the high-level one.
 func (r *Responses) GoLow() *low.Responses {
-	return r.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level Responses instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level Responses instance that was used to create the high-level one, with no type
 func (r *Responses) GoLowUntyped() any {
-	return r.low
+	_ = "STUB: not implemented"
+
+	// Render will return a YAML representation of the Responses object as a byte slice.
+	return *new(any)
 }
 
-// Render will return a YAML representation of the Responses object as a byte slice.
-func (r *Responses) Render() ([]byte, error) {
-	return yaml.Marshal(r)
-}
+func (r *Responses) Render() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
-func (r *Responses) RenderInline() ([]byte, error) {
-	d, _ := r.MarshalYAMLInline()
-	return yaml.Marshal(d)
-}
+func (r *Responses) RenderInline() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // MarshalYAML will create a ready to render YAML representation of the Responses object.
 func (r *Responses) MarshalYAML() (interface{}, error) {
+	_ = "STUB: not implemented"
 	// map keys correctly.
-	m := utils.CreateEmptyMapNode()
-	type responseItem struct {
-		resp  *Response
-		code  string
-		line  int
-		ext   *yaml.Node
-		style yaml.Style
-	}
-	var mapped []*responseItem
-
-	for code, resp := range r.Codes.FromOldest() {
-		ln := 9999 // default to a high value to weight new content to the bottom.
-		var style yaml.Style
-		if r.low != nil {
-			for lk := range r.low.Codes.KeysFromOldest() {
-				if lk.Value == code {
-					ln = lk.KeyNode.Line
-					style = lk.KeyNode.Style
-				}
-			}
-		}
-		mapped = append(mapped, &responseItem{resp, code, ln, nil, style})
-	}
-
-	// extract extensions
-	nb := high.NewNodeBuilder(r, r.low)
-	extNode := nb.Render()
-	if extNode != nil && extNode.Content != nil {
-		var label string
-		for u := range extNode.Content {
-			if u%2 == 0 {
-				label = extNode.Content[u].Value
-				continue
-			}
-			mapped = append(mapped, &responseItem{
-				nil, label,
-				extNode.Content[u].Line, extNode.Content[u], 0,
-			})
-		}
-	}
-
-	sort.Slice(mapped, func(i, j int) bool {
-		return mapped[i].line < mapped[j].line
-	})
-	for _, mp := range mapped {
-		if mp.resp != nil {
-			rendered, _ := mp.resp.MarshalYAML()
-
-			kn := utils.CreateStringNode(mp.code)
-			kn.Style = mp.style
-
-			m.Content = append(m.Content, kn)
-			m.Content = append(m.Content, rendered.(*yaml.Node))
-		}
-		if mp.ext != nil {
-			m.Content = append(m.Content, utils.CreateStringNode(mp.code))
-			m.Content = append(m.Content, mp.ext)
-		}
-
-	}
-	return m, nil
+	return nil, nil
 }
+
+// default to a high value to weight new content to the bottom.
+
+// extract extensions
 
 func (r *Responses) MarshalYAMLInline() (interface{}, error) {
+	_ = "STUB: not implemented"
 	// map keys correctly.
-	m := utils.CreateEmptyMapNode()
-	type responseItem struct {
-		resp  *Response
-		code  string
-		line  int
-		ext   *yaml.Node
-		style yaml.Style
-	}
-	var mapped []*responseItem
-
-	for code, resp := range r.Codes.FromOldest() {
-		ln := 9999 // default to a high value to weight new content to the bottom.
-		var style yaml.Style
-		if r.low != nil {
-			for lk := range r.low.Codes.KeysFromOldest() {
-				if lk.Value == code {
-					ln = lk.KeyNode.Line
-					style = lk.KeyNode.Style
-				}
-			}
-		}
-		mapped = append(mapped, &responseItem{resp, code, ln, nil, style})
-	}
-
-	// extract extensions
-	nb := high.NewNodeBuilder(r, r.low)
-	nb.Resolve = true
-	extNode := nb.Render()
-	if extNode != nil && extNode.Content != nil {
-		var label string
-		for u := range extNode.Content {
-			if u%2 == 0 {
-				label = extNode.Content[u].Value
-				continue
-			}
-			mapped = append(mapped, &responseItem{
-				nil, label,
-				extNode.Content[u].Line, extNode.Content[u], 0,
-			})
-		}
-	}
-
-	sort.Slice(mapped, func(i, j int) bool {
-		return mapped[i].line < mapped[j].line
-	})
-	for _, mp := range mapped {
-		if mp.resp != nil {
-			rendered, _ := mp.resp.MarshalYAMLInline()
-
-			kn := utils.CreateStringNode(mp.code)
-			kn.Style = mp.style
-
-			m.Content = append(m.Content, kn)
-			m.Content = append(m.Content, rendered.(*yaml.Node))
-
-		}
-		if mp.ext != nil {
-			m.Content = append(m.Content, utils.CreateStringNode(mp.code))
-			m.Content = append(m.Content, mp.ext)
-		}
-
-	}
-	return m, nil
+	return nil, nil
 }
+
+// default to a high value to weight new content to the bottom.
+
+// extract extensions

@@ -14,22 +14,12 @@
 package libopenapi
 
 import (
-	"errors"
-	"fmt"
-
-	lowbase "github.com/pb33f/libopenapi/datamodel/low/base"
-
 	"github.com/pb33f/libopenapi/index"
 
 	"github.com/pb33f/libopenapi/datamodel"
 	v2high "github.com/pb33f/libopenapi/datamodel/high/v2"
 	v3high "github.com/pb33f/libopenapi/datamodel/high/v3"
-	v2low "github.com/pb33f/libopenapi/datamodel/low/v2"
-	v3low "github.com/pb33f/libopenapi/datamodel/low/v3"
-	"github.com/pb33f/libopenapi/utils"
-	what_changed "github.com/pb33f/libopenapi/what-changed"
 	"github.com/pb33f/libopenapi/what-changed/model"
-	"go.yaml.in/yaml/v4"
 )
 
 // Document Represents an OpenAPI specification that can then be rendered into a model or serialized back into
@@ -140,237 +130,77 @@ type DocumentModel[T v2high.Swagger | v3high.Document] struct {
 // will allow you to control if file or remote references are allowed. In particular the `AllowFileReferences` and `AllowRemoteReferences`
 // properties.
 func NewDocument(specByteArray []byte) (Document, error) {
-	return NewDocumentWithTypeCheck(specByteArray, false)
+	_ = "STUB: not implemented"
+	return *new(Document), nil
 }
 
 func NewDocumentWithTypeCheck(specByteArray []byte, bypassCheck bool) (Document, error) {
-	info, err := datamodel.ExtractSpecInfoWithDocumentCheck(specByteArray, bypassCheck)
-	if err != nil {
-		return nil, err
-	}
-	d := new(document)
-	d.version = info.Version
-	d.info = info
-	return d, nil
+	_ = "STUB: not implemented"
+	return *new(Document), nil
 }
 
 // NewDocumentWithConfiguration is the same as NewDocument, except it's a convenience function that calls NewDocument
 // under the hood and then calls SetConfiguration() on the returned Document.
 func NewDocumentWithConfiguration(specByteArray []byte, configuration *datamodel.DocumentConfiguration) (Document, error) {
-	var info *datamodel.SpecInfo
-	var err error
-
-	if configuration != nil {
-		info, err = datamodel.ExtractSpecInfoWithConfig(specByteArray, configuration)
-	} else {
-		info, err = datamodel.ExtractSpecInfoWithDocumentCheck(specByteArray, false)
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	d := new(document)
-	d.version = info.Version
-	d.info = info
-	d.config = configuration
-	return d, nil
+	_ = "STUB: not implemented"
+	return *new(Document), nil
 }
 
-func (d *document) Release() {
-	if d == nil {
-		return
-	}
-	if d.info != nil {
-		d.info.Release()
-		d.info = nil
-	}
-	// This method intentionally does not call SpecIndex.Release(). Low-level
-	// model objects (Schema, PathItem, etc.) retain their own references to the
-	// SpecIndex and require its config and root node for hashing and comparison
-	// operations that may run after a Document is released. Callers that own the
-	// full lifecycle should call SpecIndex.Release() separately once all model
-	// consumers are finished.
-	d.rolodex = nil
-	d.config = nil
-	d.highOpenAPI3Model = nil
-	d.highSwaggerModel = nil
-}
+func (d *document) Release() { _ = "STUB: not implemented"; return }
 
-func (d *document) GetRolodex() *index.Rolodex {
-	return d.rolodex
-}
+// This method intentionally does not call SpecIndex.Release(). Low-level
+// model objects (Schema, PathItem, etc.) retain their own references to the
+// SpecIndex and require its config and root node for hashing and comparison
+// operations that may run after a Document is released. Callers that own the
+// full lifecycle should call SpecIndex.Release() separately once all model
+// consumers are finished.
 
-func (d *document) GetVersion() string {
-	return d.version
-}
+func (d *document) GetRolodex() *index.Rolodex { _ = "STUB: not implemented"; return nil }
 
-func (d *document) GetSpecInfo() *datamodel.SpecInfo {
-	return d.info
-}
+func (d *document) GetVersion() string { _ = "STUB: not implemented"; return "" }
+
+func (d *document) GetSpecInfo() *datamodel.SpecInfo { _ = "STUB: not implemented"; return nil }
 
 func (d *document) GetConfiguration() *datamodel.DocumentConfiguration {
-	return d.config
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (d *document) SetConfiguration(configuration *datamodel.DocumentConfiguration) {
-	d.config = configuration
+	_ = "STUB: not implemented"
+	return
 }
 
-func (d *document) Serialize() ([]byte, error) {
-	if d.info == nil {
-		return nil, fmt.Errorf("unable to serialize, document has not yet been initialized")
-	}
-	if d.info.SpecFileType == datamodel.YAMLFileType {
-		return yaml.Marshal(d.info.RootNode)
-	} else {
-		yamlData, _ := yaml.Marshal(d.info.RootNode)
-		return utils.ConvertYAMLtoJSON(yamlData)
-	}
-}
+func (d *document) Serialize() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 func (d *document) RenderAndReload() ([]byte, Document, *DocumentModel[v3high.Document], error) {
-	newBytes, rerr := d.Render()
-	if rerr != nil {
-		return nil, nil, nil, rerr
-	}
-
-	newDoc, err := NewDocumentWithConfiguration(newBytes, d.config)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	// build the model.
-	m, buildErrs := newDoc.BuildV3Model()
-	if buildErrs != nil {
-		return newBytes, newDoc, m, buildErrs
-	}
-	// this document is now dead, long live the new document!
-	return newBytes, newDoc, m, nil
+	_ = "STUB: not implemented"
+	return nil, *new(Document), nil, nil
 }
 
-func (d *document) Render() ([]byte, error) {
-	if d.highOpenAPI3Model == nil {
-		// check for Swagger model first, to give a more helpful error message.
-		if d.highSwaggerModel != nil {
-			return nil, errors.New("this method only supports OpenAPI 3 documents, not Swagger")
-		}
-		return nil, errors.New("unable to render, no openapi model has been built for the document")
-	}
-	if d.info == nil {
-		return nil, errors.New("unable to render, no specification has been loaded")
-	}
+// build the model.
 
-	var newBytes []byte
-	var jsonErr error
-	if d.info.SpecFileType == datamodel.JSONFileType {
-		jsonIndent := "  "
-		i := d.info.OriginalIndentation
-		if i > 2 {
-			for l := 0; l < i-2; l++ {
-				jsonIndent += " "
-			}
-		}
-		newBytes, jsonErr = d.highOpenAPI3Model.Model.RenderJSON(jsonIndent)
-	}
-	if d.info.SpecFileType == datamodel.YAMLFileType {
-		newBytes = d.highOpenAPI3Model.Model.RenderWithIndention(d.info.OriginalIndentation)
-	}
-	return newBytes, jsonErr
-}
+// this document is now dead, long live the new document!
+
+func (d *document) Render() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
+
+// check for Swagger model first, to give a more helpful error message.
 
 func (d *document) BuildV2Model() (*DocumentModel[v2high.Swagger], error) {
-	if d.highSwaggerModel != nil {
-		return d.highSwaggerModel, nil
-	}
-	var errs []error
-	if d.info == nil {
-		return nil, fmt.Errorf("unable to build swagger document, no specification has been loaded")
-	}
-	if d.info.SpecFormat != datamodel.OAS2 {
-		return nil, fmt.Errorf("unable to build swagger document, "+
-			"supplied spec is a different version (%v). Try 'BuildV3Model()'", d.info.SpecFormat)
-	}
-
-	var lowDoc *v2low.Swagger
-	if d.config == nil {
-		d.config = datamodel.NewDocumentConfiguration()
-	}
-
-	var docErr error
-	lowDoc, docErr = v2low.CreateDocumentFromConfig(d.info, d.config)
-	d.rolodex = lowDoc.Rolodex
-
-	if docErr != nil {
-		errs = append(errs, utils.UnwrapErrors(docErr)...)
-	}
-
-	// Do not short-circuit on circular reference errors, so the client
-	// has the option of ignoring them.
-	for _, err := range errs {
-		var refErr *index.ResolvingError
-		if errors.As(err, &refErr) {
-			if refErr.CircularReference == nil {
-				return nil, errors.Join(errs...)
-			}
-		}
-	}
-	highDoc := v2high.NewSwaggerDocument(lowDoc)
-
-	d.highSwaggerModel = &DocumentModel[v2high.Swagger]{
-		Model: *highDoc,
-		Index: lowDoc.Index,
-	}
-	lowbase.SchemaQuickHashMap.Clear()
-	return d.highSwaggerModel, errors.Join(errs...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// Do not short-circuit on circular reference errors, so the client
+// has the option of ignoring them.
 
 func (d *document) BuildV3Model() (*DocumentModel[v3high.Document], error) {
-	if d.highOpenAPI3Model != nil {
-		return d.highOpenAPI3Model, nil
-	}
-	var errs []error
-	if d.info == nil {
-		return nil, fmt.Errorf("unable to build document, no specification has been loaded")
-	}
-	if d.info.SpecFormat != datamodel.OAS3 && d.info.SpecFormat != datamodel.OAS31 && d.info.SpecFormat != datamodel.OAS32 {
-		return nil, fmt.Errorf("unable to build openapi document, "+
-			"supplied spec is a different version (%v). Try 'BuildV2Model()'", d.info.SpecFormat)
-	}
-
-	var lowDoc *v3low.Document
-	if d.config == nil {
-		d.config = datamodel.NewDocumentConfiguration()
-	}
-
-	var docErr error
-	lowDoc, docErr = v3low.CreateDocumentFromConfig(d.info, d.config)
-	d.rolodex = lowDoc.Rolodex
-
-	if docErr != nil {
-		errs = append(errs, utils.UnwrapErrors(docErr)...)
-	}
-
-	// Do not short-circuit on circular reference errors, so the client
-	// has the option of ignoring them.
-	for _, err := range utils.UnwrapErrors(docErr) {
-		var refErr *index.ResolvingError
-		if errors.As(err, &refErr) {
-			if refErr.CircularReference == nil {
-				return nil, errors.Join(errs...)
-			}
-		}
-	}
-
-	highDoc := v3high.NewDocument(lowDoc)
-	highDoc.Rolodex = lowDoc.Index.GetRolodex()
-
-	d.highOpenAPI3Model = &DocumentModel[v3high.Document]{
-		Model: *highDoc,
-		Index: lowDoc.Index,
-	}
-	lowbase.SchemaQuickHashMap.Clear()
-	return d.highOpenAPI3Model, errors.Join(errs...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// Do not short-circuit on circular reference errors, so the client
+// has the option of ignoring them.
 
 // CompareDocuments will accept a left and right Document implementing struct, build a model for the correct
 // version and then compare model documents for changes.
@@ -379,34 +209,6 @@ func (d *document) BuildV3Model() (*DocumentModel[v3high.Document], error) {
 // model.DocumentChanges. If there are any changes found however between either Document, then a pointer to
 // model.DocumentChanges is returned containing every single change, broken down, model by model.
 func CompareDocuments(original, updated Document) (*model.DocumentChanges, error) {
-	var errs []error
-	if original.GetSpecInfo().SpecType == utils.OpenApi3 && updated.GetSpecInfo().SpecType == utils.OpenApi3 {
-		v3ModelLeft, oErrs := original.BuildV3Model()
-		if oErrs != nil {
-			errs = append(errs, oErrs)
-		}
-		v3ModelRight, uErrs := updated.BuildV3Model()
-		if uErrs != nil {
-			errs = append(errs, uErrs)
-		}
-		if v3ModelLeft != nil && v3ModelRight != nil {
-			return what_changed.CompareOpenAPIDocuments(v3ModelLeft.Model.GoLow(), v3ModelRight.Model.GoLow()),
-				errors.Join(errs...)
-		} else {
-			return nil, errors.Join(errs...)
-		}
-	}
-	if original.GetSpecInfo().SpecType == utils.OpenApi2 && updated.GetSpecInfo().SpecType == utils.OpenApi2 {
-		v2ModelLeft, oErrs := original.BuildV2Model()
-		if oErrs != nil {
-			errs = append(errs, oErrs)
-		}
-		v2ModelRight, uErrs := updated.BuildV2Model()
-		if uErrs != nil {
-			errs = append(errs, uErrs)
-		}
-		return what_changed.CompareSwaggerDocuments(v2ModelLeft.Model.GoLow(), v2ModelRight.Model.GoLow()),
-			errors.Join(errs...)
-	}
-	return nil, fmt.Errorf("unable to compare documents, one or both documents are not of the same version")
+	_ = "STUB: not implemented"
+	return nil, nil
 }

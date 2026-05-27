@@ -102,19 +102,6 @@ type UnionIR struct {
 	FromMultiType bool
 }
 
-func newObjectIR(name string) *SchemaIR {
-	return &SchemaIR{
-		Name:       name,
-		Kind:       KindObject,
-		Required:   make(map[string]struct{}),
-		Properties: orderedmap.New[string, *SchemaIR](),
-	}
-}
+func newObjectIR(name string) *SchemaIR { _ = "STUB: not implemented"; return nil }
 
-func isRequired(ir *SchemaIR, name string) bool {
-	if ir == nil || ir.Required == nil {
-		return false
-	}
-	_, ok := ir.Required[name]
-	return ok
-}
+func isRequired(ir *SchemaIR, name string) bool { _ = "STUB: not implemented"; return false }

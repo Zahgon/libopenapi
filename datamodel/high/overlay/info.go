@@ -4,7 +4,6 @@
 package overlay
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/overlay"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -21,51 +20,29 @@ type Info struct {
 }
 
 // NewInfo creates a new high-level Info instance from a low-level one.
-func NewInfo(info *low.Info) *Info {
-	i := new(Info)
-	i.low = info
-	if !info.Title.IsEmpty() {
-		i.Title = info.Title.Value
-	}
-	if !info.Version.IsEmpty() {
-		i.Version = info.Version.Value
-	}
-	if !info.Description.IsEmpty() {
-		i.Description = info.Description.Value
-	}
-	i.Extensions = high.ExtractExtensions(info.Extensions)
-	return i
-}
+func NewInfo(info *low.Info) *Info { _ = "STUB: not implemented"; return nil }
 
 // GoLow returns the low-level Info instance used to create the high-level one.
 func (i *Info) GoLow() *low.Info {
-	return i.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped returns the low-level Info instance with no type.
+	return nil
 }
 
-// GoLowUntyped returns the low-level Info instance with no type.
 func (i *Info) GoLowUntyped() any {
-	return i.low
+	_ = "STUB: not implemented"
+
+	// Render returns a YAML representation of the Info object as a byte slice.
+	return *new(any)
 }
 
-// Render returns a YAML representation of the Info object as a byte slice.
 func (i *Info) Render() ([]byte, error) {
-	return yaml.Marshal(i)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML creates a ready to render YAML representation of the Info object.
+		nil
 }
 
-// MarshalYAML creates a ready to render YAML representation of the Info object.
-func (i *Info) MarshalYAML() (any, error) {
-	m := orderedmap.New[string, any]()
-	if i.Title != "" {
-		m.Set("title", i.Title)
-	}
-	if i.Version != "" {
-		m.Set("version", i.Version)
-	}
-	if i.Description != "" {
-		m.Set("description", i.Description)
-	}
-	for pair := i.Extensions.First(); pair != nil; pair = pair.Next() {
-		m.Set(pair.Key(), pair.Value())
-	}
-	return m, nil
-}
+func (i *Info) MarshalYAML() (any, error) { _ = "STUB: not implemented"; return *new(any), nil }

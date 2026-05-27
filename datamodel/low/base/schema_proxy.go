@@ -5,17 +5,12 @@ package base
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"hash/maphash"
-	"log/slog"
 	"sync"
 	"sync/atomic"
 
 	"github.com/pb33f/libopenapi/datamodel"
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -80,88 +75,37 @@ type SchemaProxy struct {
 // Calling Build() after Schema() has already been invoked will update internal state (kn, vn, idx, ctx)
 // but will NOT re-trigger schema building due to sync.Once semantics.
 func (sp *SchemaProxy) Build(ctx context.Context, key, value *yaml.Node, idx *index.SpecIndex) error {
-	sp.kn = key
-	sp.idx = idx
+	_ = "STUB: not implemented"
+	return nil
 
 	// transform sibling refs to allOf structure if enabled and applicable
 	// this ensures sp.vn contains the pre-transformed YAML as the source of truth
-	transformedValue, wasTransformed := transformSiblingRefNode(value, idx)
-	if wasTransformed {
-		sp.TransformedRef = value // store original node that had the ref
-	}
-
-	sp.vn = transformedValue
-	sp.ctx = applySchemaIdScope(ctx, value, idx)
-
-	// handle reference detection
-	if !wasTransformed {
-		// for non-transformed schemas, handle reference normally
-		if rf, _, r := utils.IsNodeRefValue(transformedValue); rf {
-			sp.SetReference(r, transformedValue)
-		}
-	}
-	// for transformed schemas, don't set reference since it's now an allOf structure
-	// the reference is embedded within the allOf, but the schema itself is not a pure reference
-	sp.nodeStore = sync.Map{}
-	sp.nodeMap = low.NodeMap{Nodes: &sp.nodeStore}
-	sp.NodeMap = &sp.nodeMap
-	return nil
 }
 
+// store original node that had the ref
+
+// handle reference detection
+
+// for non-transformed schemas, handle reference normally
+
+// for transformed schemas, don't set reference since it's now an allOf structure
+// the reference is embedded within the allOf, but the schema itself is not a pure reference
+
 func transformSiblingRefNode(value *yaml.Node, idx *index.SpecIndex) (*yaml.Node, bool) {
-	if idx == nil || idx.GetConfig() == nil || !idx.GetConfig().TransformSiblingRefs {
-		return value, false
-	}
-	transformer := NewSiblingRefTransformer(idx)
-	if !transformer.ShouldTransform(value) {
-		return value, false
-	}
-	transformed, _ := transformer.TransformSiblingRef(value)
-	return transformed, true
+	_ = "STUB: not implemented"
+	return nil, false
 }
 
 // prepareForResolvedBuild initializes proxy state when the caller has already resolved any reference metadata.
 // This avoids re-running the full Build ref-detection path for child-schema helpers that already did that work.
 func (sp *SchemaProxy) prepareForResolvedBuild(ctx context.Context, key, value, scopeNode *yaml.Node, idx *index.SpecIndex, refLocation string, refNode, transformed *yaml.Node) {
-	sp.kn = key
-	sp.idx = idx
-	sp.vn = value
-	sp.ctx = applySchemaIdScope(ctx, scopeNode, idx)
-	sp.Reference = low.Reference{}
-	sp.TransformedRef = transformed
-	if refLocation != "" {
-		sp.SetReference(refLocation, refNode)
-	}
-	sp.nodeStore = sync.Map{}
-	sp.nodeMap = low.NodeMap{Nodes: &sp.nodeStore}
-	sp.NodeMap = &sp.nodeMap
+	_ = "STUB: not implemented"
+	return
 }
 
 func applySchemaIdScope(ctx context.Context, node *yaml.Node, idx *index.SpecIndex) context.Context {
-	if node == nil {
-		return ctx
-	}
-	scope := index.GetSchemaIdScope(ctx)
-	idValue := index.FindSchemaIdInNode(node)
-	if idValue == "" {
-		return ctx
-	}
-	if scope == nil {
-		base := ""
-		if idx != nil {
-			base = idx.GetSpecAbsolutePath()
-		}
-		scope = index.NewSchemaIdScope(base)
-		ctx = index.WithSchemaIdScope(ctx, scope)
-	}
-	parentBase := scope.BaseUri
-	resolved, err := index.ResolveSchemaId(idValue, parentBase)
-	if err != nil || resolved == "" {
-		resolved = idValue
-	}
-	updated := scope.Copy()
-	updated.PushId(resolved)
-	return index.WithSchemaIdScope(ctx, updated)
+	_ = "STUB: not implemented"
+	return *new(context.Context)
 }
 
 // Schema will first check if this SchemaProxy has already rendered the schema, and return the pre-rendered version
@@ -175,196 +119,83 @@ func applySchemaIdScope(ctx context.Context, node *yaml.Node, idx *index.SpecInd
 //
 // If anything goes wrong during the build, then nothing is returned and the error that occurred can
 // be retrieved by using GetBuildError()
-func (sp *SchemaProxy) Schema() *Schema {
-	sp.schemaOnce.Do(func() {
-		cfg := sp.getSpecConfig()
+func (sp *SchemaProxy) Schema() *Schema { _ = "STUB: not implemented"; return nil }
 
-		// if this proxy represents an unresolved external ref, return nil without error
-		if sp.IsReference() && cfg != nil &&
-			cfg.SkipExternalRefResolution && utils.IsExternalRef(sp.GetReference()) {
-			return
-		}
+// if this proxy represents an unresolved external ref, return nil without error
 
-		// handle property merging for references with sibling properties
-		buildNode := sp.vn
-		if cfg != nil {
-			if docConfig := sp.getDocumentConfig(); docConfig != nil && docConfig.MergeReferencedProperties {
-				if mergedNode := sp.attemptPropertyMerging(buildNode, docConfig); mergedNode != nil {
-					buildNode = mergedNode
-				}
-			}
-		}
+// handle property merging for references with sibling properties
 
-		schema := new(Schema)
-		utils.CheckForMergeNodes(buildNode)
-		err := schema.Build(sp.ctx, buildNode, sp.idx)
-		if err != nil {
-			sp.buildError = err
-			return
-		}
-		schema.ParentProxy = sp // https://github.com/pb33f/libopenapi/issues/29
+// https://github.com/pb33f/libopenapi/issues/29
 
-		// Store rendered FIRST — must happen before NodeMap copy.
-		// If AddNode() runs during the Range window, it sees rendered != nil
-		// and writes directly to the schema instead of NodeMap (where it would be missed).
-		sp.rendered.Store(schema)
+// Store rendered FIRST — must happen before NodeMap copy.
+// If AddNode() runs during the Range window, it sees rendered != nil
+// and writes directly to the schema instead of NodeMap (where it would be missed).
 
-		// Copy accumulated nodes to the built schema
-		if sp.NodeMap != nil {
-			sp.NodeMap.Nodes.Range(func(key, value any) bool {
-				schema.AddNode(key.(int), value.(*yaml.Node))
-				return true
-			})
-		}
-	})
-	return sp.rendered.Load()
-}
+// Copy accumulated nodes to the built schema
 
 // GetBuildError returns the build error that was set when Schema() was called. If Schema() has not been run, or
 // there were no errors during build, then nil will be returned.
 //
 // Thread safety: GetBuildError() is safe to call concurrently only after Schema() has been called at least once
 // on this proxy (from any goroutine). All standard code paths (Hash(), high-level Schema()) call Schema() first.
-func (sp *SchemaProxy) GetBuildError() error {
-	return sp.buildError
-}
+func (sp *SchemaProxy) GetBuildError() error { _ = "STUB: not implemented"; return nil }
 
 func (sp *SchemaProxy) GetSchemaReferenceLocation() *index.NodeOrigin {
-	if sp.idx != nil {
-		origin := sp.idx.FindNodeOrigin(sp.vn)
-		if origin != nil {
-			return origin
-		}
-		if sp.idx.GetRolodex() != nil {
-			origin = sp.idx.GetRolodex().FindNodeOrigin(sp.vn)
-			return origin
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // GetKeyNode will return the yaml.Node pointer that is a key for value node.
 func (sp *SchemaProxy) GetKeyNode() *yaml.Node {
-	return sp.kn
+	_ = "STUB: not implemented"
+
+	// GetContext will return the context.Context object that was passed to the SchemaProxy during build.
+	return nil
 }
 
-// GetContext will return the context.Context object that was passed to the SchemaProxy during build.
 func (sp *SchemaProxy) GetContext() context.Context {
-	return sp.ctx
+	_ = "STUB: not implemented"
+
+	// GetValueNode will return the yaml.Node pointer used by the proxy to generate the Schema.
+	return *new(context.Context)
 }
 
-// GetValueNode will return the yaml.Node pointer used by the proxy to generate the Schema.
 func (sp *SchemaProxy) GetValueNode() *yaml.Node {
-	return sp.vn
+	_ = "STUB: not implemented"
+
+	// Hash will return a consistent Hash of the SchemaProxy object (it will resolve it)
+	return nil
 }
 
-// Hash will return a consistent Hash of the SchemaProxy object (it will resolve it)
-func (sp *SchemaProxy) Hash() uint64 {
-	sp.hashMu.Lock()
-	if sp.cachedHash != nil {
-		h := *sp.cachedHash
-		sp.hashMu.Unlock()
-		return h
-	}
-	gen := sp.hashGen
-	sp.hashMu.Unlock()
+func (sp *SchemaProxy) Hash() uint64 { _ = "STUB: not implemented"; return 0 }
 
-	hash := sp.computeHash()
-
-	// store only if not invalidated during computation
-	sp.hashMu.Lock()
-	if sp.hashGen == gen {
-		sp.cachedHash = &hash
-	}
-	sp.hashMu.Unlock()
-	return hash
-}
+// store only if not invalidated during computation
 
 // computeHash contains the actual hash computation logic, called outside the hash lock.
 func (sp *SchemaProxy) computeHash() uint64 {
+	_ = "STUB: not implemented"
 	// for unresolved references, hash the ref string without resolving the target schema
-	sch := sp.rendered.Load()
-
-	if sch != nil {
-		if !sp.IsReference() {
-			return sch.Hash()
-		}
-		return sp.hashReference()
-	}
-
-	if !sp.IsReference() {
-		sch = sp.Schema()
-		if sch != nil {
-			useQuickHash := sp.getSpecConfig() != nil && sp.getSpecConfig().UseSchemaQuickHash
-			if !useQuickHash || !CheckSchemaProxyForCircularRefs(sp) {
-				return sch.Hash()
-			}
-		} else {
-			// build failed — log warning
-			var logger *slog.Logger
-			if sp.idx != nil && sp.idx.GetLogger() != nil {
-				logger = sp.idx.GetLogger()
-			}
-			if logger != nil {
-				hashError := fmt.Errorf("circular reference detected: %s", sp.GetReference())
-				bErr := errors.Join(sp.GetBuildError(), hashError)
-				if bErr != nil {
-					logger.Warn("SchemaProxy.Hash() unable to complete hash: ", "error", bErr.Error())
-				}
-			}
-		}
-		return 0
-	}
-
-	// unresolved reference
-	cfg := sp.getSpecConfig()
-	if cfg != nil && cfg.UseSchemaQuickHash {
-		if !CheckSchemaProxyForCircularRefs(sp) {
-			sch = sp.Schema()
-			if sch != nil {
-				return sch.QuickHash()
-			}
-		} else {
-			return sp.hashReference()
-		}
-	}
-	return sp.hashReference()
+	return 0
 }
+
+// build failed — log warning
+
+// unresolved reference
 
 // hashReference hashes the $ref string value without resolving the target.
-func (sp *SchemaProxy) hashReference() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		h.WriteString(sp.GetReference())
-		return h.Sum64()
-	})
-}
+func (sp *SchemaProxy) hashReference() uint64 { _ = "STUB: not implemented"; return 0 }
 
 // getSpecConfig returns the SpecIndexConfig if available, or nil.
 func (sp *SchemaProxy) getSpecConfig() *index.SpecIndexConfig {
-	if sp.idx != nil && sp.idx.GetConfig() != nil {
-		return sp.idx.GetConfig()
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // AddNode stores nodes in the underlying schema if rendered, otherwise holds in the proxy until build.
-func (sp *SchemaProxy) AddNode(key int, node *yaml.Node) {
-	sp.hashMu.Lock()
-	sp.cachedHash = nil
-	sp.hashGen++
-	sp.hashMu.Unlock()
-
-	if sch := sp.rendered.Load(); sch != nil {
-		sch.AddNode(key, node)
-	} else {
-		sp.Nodes.Store(key, node)
-	}
-}
+func (sp *SchemaProxy) AddNode(key int, node *yaml.Node) { _ = "STUB: not implemented"; return }
 
 // GetIndex will return the index.SpecIndex pointer that was passed to the SchemaProxy during build.
-func (sp *SchemaProxy) GetIndex() *index.SpecIndex {
-	return sp.idx
-}
+func (sp *SchemaProxy) GetIndex() *index.SpecIndex { _ = "STUB: not implemented"; return nil }
 
 type HasIndex interface {
 	GetIndex() *index.SpecIndex
@@ -372,61 +203,26 @@ type HasIndex interface {
 
 // getDocumentConfig retrieves the document configuration from the index
 func (sp *SchemaProxy) getDocumentConfig() *datamodel.DocumentConfiguration {
-	if sp.idx == nil || sp.idx.GetRolodex() == nil {
-		return nil
-	}
-	rolodex := sp.idx.GetRolodex()
-	if config := rolodex.GetConfig(); config != nil {
-		return config.ToDocumentConfiguration()
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // attemptPropertyMerging attempts to merge properties for references with siblings
 func (sp *SchemaProxy) attemptPropertyMerging(node *yaml.Node, config *datamodel.DocumentConfiguration) *yaml.Node {
-	if !config.MergeReferencedProperties || !utils.IsNodeMap(node) {
-		return nil
-	}
-
-	// extract ref value and sibling properties
-	var refValue string
-	siblings := make(map[string]*yaml.Node)
-
-	for i := 0; i < len(node.Content); i += 2 {
-		if i+1 < len(node.Content) {
-			if node.Content[i].Value == "$ref" {
-				refValue = node.Content[i+1].Value
-			} else {
-				siblings[node.Content[i].Value] = node.Content[i+1]
-			}
-		}
-	}
-
-	if refValue == "" || len(siblings) == 0 {
-		return nil // no merging needed
-	}
-
-	referencedComponent := sp.idx.FindComponentInRoot(sp.ctx, refValue)
-	if referencedComponent == nil || referencedComponent.Node == nil {
-		return nil // cannot resolve reference
-	}
-
-	// create property merger and merge
-	merger := NewPropertyMerger(config.PropertyMergeStrategy)
-
-	// create a local node with just the sibling properties
-	localNode := &yaml.Node{Kind: yaml.MappingNode}
-	for key, value := range siblings {
-		keyNode := &yaml.Node{Kind: yaml.ScalarNode, Value: key}
-		localNode.Content = append(localNode.Content, keyNode, value)
-	}
-
-	// merge local properties with referenced schema
-	merged, err := merger.MergeProperties(localNode, referencedComponent.Node)
-	if err != nil {
-		// if merging fails, return original node to preserve existing behavior
-		return nil
-	}
-
-	return merged
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// extract ref value and sibling properties
+
+// no merging needed
+
+// cannot resolve reference
+
+// create property merger and merge
+
+// create a local node with just the sibling properties
+
+// merge local properties with referenced schema
+
+// if merging fails, return original node to preserve existing behavior

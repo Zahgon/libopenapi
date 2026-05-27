@@ -5,7 +5,6 @@ package overlay
 
 import (
 	"errors"
-	"fmt"
 
 	highoverlay "github.com/pb33f/libopenapi/datamodel/high/overlay"
 )
@@ -17,9 +16,7 @@ type Warning struct {
 	Message string
 }
 
-func (w *Warning) String() string {
-	return fmt.Sprintf("overlay warning: target '%s': %s", w.Target, w.Message)
-}
+func (w *Warning) String() string { _ = "STUB: not implemented"; return "" }
 
 // OverlayError represents an error that occurred during an overlay application.
 type OverlayError struct {
@@ -27,18 +24,15 @@ type OverlayError struct {
 	Cause  error
 }
 
-func (e *OverlayError) Error() string {
-	if e.Action != nil {
-		return fmt.Sprintf("overlay error at target '%s': %v", e.Action.Target, e.Cause)
-	}
-	return fmt.Sprintf("overlay error: %v", e.Cause)
-}
+func (e *OverlayError) Error() string { _ = "STUB: not implemented"; return "" }
 
 func (e *OverlayError) Unwrap() error {
-	return e.Cause
+	_ = "STUB: not implemented"
+
+	// Sentinel errors for overlay operations.
+	return nil
 }
 
-// Sentinel errors for overlay operations.
 var (
 	// Parsing errors
 	ErrInvalidOverlay      = errors.New("invalid overlay document")

@@ -4,9 +4,7 @@
 package v3
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	"github.com/pb33f/libopenapi/datamodel/high/base"
-	"github.com/pb33f/libopenapi/datamodel/low"
 	lowv3 "github.com/pb33f/libopenapi/datamodel/low/v3"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -35,89 +33,33 @@ type Operation struct {
 }
 
 // NewOperation will create a new Operation instance from a low-level one.
-func NewOperation(operation *lowv3.Operation) *Operation {
-	o := new(Operation)
-	o.low = operation
-	var tags []string
-	if !operation.Tags.IsEmpty() {
-		for i := range operation.Tags.Value {
-			tags = append(tags, operation.Tags.Value[i].Value)
-		}
-	}
-	o.Tags = tags
-	o.Summary = operation.Summary.Value
-	if !operation.Deprecated.IsEmpty() {
-		o.Deprecated = &operation.Deprecated.Value
-	}
-	o.Description = operation.Description.Value
-	if !operation.ExternalDocs.IsEmpty() {
-		o.ExternalDocs = base.NewExternalDoc(operation.ExternalDocs.Value)
-	}
-	o.OperationId = operation.OperationId.Value
-	if !operation.Parameters.IsEmpty() {
-		params := make([]*Parameter, len(operation.Parameters.Value))
-		for i := range operation.Parameters.Value {
-			params[i] = NewParameter(operation.Parameters.Value[i].Value)
-		}
-		o.Parameters = params
-	}
-	if !operation.RequestBody.IsEmpty() {
-		o.RequestBody = NewRequestBody(operation.RequestBody.Value)
-	}
-	if !operation.Responses.IsEmpty() {
-		o.Responses = NewResponses(operation.Responses.Value)
-	}
-	if !operation.Security.IsEmpty() {
-		var sec []*base.SecurityRequirement
-		for s := range operation.Security.Value {
-			sec = append(sec, base.NewSecurityRequirement(operation.Security.Value[s].Value))
-		}
-		if len(sec) > 0 {
-			o.Security = sec
-		} else {
-			o.Security = []*base.SecurityRequirement{} // security is defined, but empty.
-		}
-	}
-	var servers []*Server
-	for i := range operation.Servers.Value {
-		servers = append(servers, NewServer(operation.Servers.Value[i].Value))
-	}
-	o.Servers = servers
-	o.Extensions = high.ExtractExtensions(operation.Extensions)
-	if !operation.Callbacks.IsEmpty() {
-		o.Callbacks = low.FromReferenceMapWithFunc(operation.Callbacks.Value, NewCallback)
-	}
-	return o
-}
+func NewOperation(operation *lowv3.Operation) *Operation { _ = "STUB: not implemented"; return nil }
+
+// security is defined, but empty.
 
 // GoLow will return the low-level Operation instance that was used to create the high-level one.
 func (o *Operation) GoLow() *lowv3.Operation {
-	return o.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level Discriminator instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level Discriminator instance that was used to create the high-level one, with no type
 func (o *Operation) GoLowUntyped() any {
-	return o.low
+	_ = "STUB: not implemented"
+
+	// Render will return a YAML representation of the Operation object as a byte slice.
+	return *new(any)
 }
 
-// Render will return a YAML representation of the Operation object as a byte slice.
-func (o *Operation) Render() ([]byte, error) {
-	return yaml.Marshal(o)
-}
+func (o *Operation) Render() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
-func (o *Operation) RenderInline() ([]byte, error) {
-	d, _ := o.MarshalYAMLInline()
-	return yaml.Marshal(d)
-}
+func (o *Operation) RenderInline() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // MarshalYAML will create a ready to render YAML representation of the Operation object.
-func (o *Operation) MarshalYAML() (interface{}, error) {
-	nb := high.NewNodeBuilder(o, o.low)
-	return nb.Render(), nil
-}
+func (o *Operation) MarshalYAML() (interface{}, error) { _ = "STUB: not implemented"; return nil, nil }
 
 func (o *Operation) MarshalYAMLInline() (interface{}, error) {
-	nb := high.NewNodeBuilder(o, o.low)
-	nb.Resolve = true
-	return nb.Render(), nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

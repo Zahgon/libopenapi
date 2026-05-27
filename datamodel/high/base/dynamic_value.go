@@ -3,13 +3,6 @@
 
 package base
 
-import (
-	"reflect"
-
-	"github.com/pb33f/libopenapi/datamodel/high"
-	"go.yaml.in/yaml/v4"
-)
-
 // DynamicValue is used to hold multiple possible types for a schema property. There are two values, a left
 // value (A) and a right value (B). The A and B values represent different types that a property can have,
 // not necessarily different OpenAPI versions.
@@ -31,92 +24,43 @@ type DynamicValue[A any, B any] struct {
 
 // IsA will return true if the 'A' or left value is set.
 func (d *DynamicValue[A, B]) IsA() bool {
-	return d.N == 0
+	_ = "STUB: not implemented"
+
+	// IsB will return true if the 'B' or right value is set.
+	return false
 }
 
-// IsB will return true if the 'B' or right value is set.
-func (d *DynamicValue[A, B]) IsB() bool {
-	return d.N == 1
-}
+func (d *DynamicValue[A, B]) IsB() bool { _ = "STUB: not implemented"; return false }
 
-func (d *DynamicValue[A, B]) Render() ([]byte, error) {
-	d.inline = false
-	return yaml.Marshal(d)
-}
+func (d *DynamicValue[A, B]) Render() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 func (d *DynamicValue[A, B]) RenderInline() ([]byte, error) {
-	d.inline = true
-	return yaml.Marshal(d)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // MarshalYAML will create a ready to render YAML representation of the DynamicValue object.
 func (d *DynamicValue[A, B]) MarshalYAML() (interface{}, error) {
+	_ = "STUB: not implemented"
 	// this is a custom renderer, we can't use the NodeBuilder out of the gate.
-	var n yaml.Node
-	var err error
-	var value any
-
-	if d.IsA() {
-		value = d.A
-	}
-	if d.IsB() {
-		value = d.B
-	}
-	to := reflect.TypeOf(value)
-	switch to.Kind() {
-	case reflect.Ptr:
-		if d.inline {
-			// prefer context-aware method when context is available
-			if d.renderCtx != nil {
-				if r, ok := value.(high.RenderableInlineWithContext); ok {
-					return r.MarshalYAMLInlineWithContext(d.renderCtx)
-				}
-			}
-			// fall back to context-less method
-			if r, ok := value.(high.RenderableInline); ok {
-				return r.MarshalYAMLInline()
-			} else {
-				_ = n.Encode(value)
-			}
-		} else {
-			if r, ok := value.(high.Renderable); ok {
-				return r.MarshalYAML()
-			} else {
-				_ = n.Encode(value)
-			}
-		}
-	case reflect.Bool:
-		_ = n.Encode(value.(bool))
-	case reflect.Int:
-		_ = n.Encode(value.(int))
-	case reflect.String:
-		_ = n.Encode(value.(string))
-	case reflect.Int64:
-		_ = n.Encode(value.(int64))
-	case reflect.Float64:
-		_ = n.Encode(value.(float64))
-	case reflect.Float32:
-		_ = n.Encode(value.(float32))
-	case reflect.Int32:
-		_ = n.Encode(value.(int32))
-
-	}
-	return &n, err
+	return nil, nil
 }
+
+// prefer context-aware method when context is available
+
+// fall back to context-less method
 
 // MarshalYAMLInline will create a ready to render YAML representation of the DynamicValue object. The
 // references will be inlined instead of kept as references.
 func (d *DynamicValue[A, B]) MarshalYAMLInline() (interface{}, error) {
-	d.inline = true
-	d.renderCtx = nil
-	return d.MarshalYAML()
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // MarshalYAMLInlineWithContext will create a ready to render YAML representation of the DynamicValue object.
 // The references will be inlined and the provided context will be passed through to nested schemas.
 // The ctx parameter should be *InlineRenderContext but is typed as any to avoid import cycles.
 func (d *DynamicValue[A, B]) MarshalYAMLInlineWithContext(ctx any) (interface{}, error) {
-	d.inline = true
-	d.renderCtx = ctx
-	return d.MarshalYAML()
+	_ = "STUB: not implemented"
+	return nil, nil
 }

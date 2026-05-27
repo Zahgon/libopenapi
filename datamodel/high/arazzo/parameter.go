@@ -4,7 +4,6 @@
 package arazzo
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/arazzo"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -23,64 +22,32 @@ type Parameter struct {
 }
 
 // IsReusable returns true if this parameter is a Reusable Object (has a reference field).
-func (p *Parameter) IsReusable() bool {
-	return p.Reference != ""
-}
+func (p *Parameter) IsReusable() bool { _ = "STUB: not implemented"; return false }
 
 // NewParameter creates a new high-level Parameter instance from a low-level one.
-func NewParameter(param *low.Parameter) *Parameter {
-	p := new(Parameter)
-	p.low = param
-	if !param.Name.IsEmpty() {
-		p.Name = param.Name.Value
-	}
-	if !param.In.IsEmpty() {
-		p.In = param.In.Value
-	}
-	if !param.Value.IsEmpty() {
-		p.Value = param.Value.Value
-	}
-	if !param.ComponentRef.IsEmpty() {
-		p.Reference = param.ComponentRef.Value
-	}
-	p.Extensions = high.ExtractExtensions(param.Extensions)
-	return p
-}
+func NewParameter(param *low.Parameter) *Parameter { _ = "STUB: not implemented"; return nil }
 
 // GoLow returns the low-level Parameter instance used to create the high-level one.
 func (p *Parameter) GoLow() *low.Parameter {
-	return p.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped returns the low-level Parameter instance with no type.
+	return nil
 }
 
-// GoLowUntyped returns the low-level Parameter instance with no type.
 func (p *Parameter) GoLowUntyped() any {
-	return p.low
+	_ = "STUB: not implemented"
+
+	// Render returns a YAML representation of the Parameter object as a byte slice.
+	return *new(any)
 }
 
-// Render returns a YAML representation of the Parameter object as a byte slice.
 func (p *Parameter) Render() ([]byte, error) {
-	return yaml.Marshal(p)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML creates a ready to render YAML representation of the Parameter object.
+		nil
 }
 
-// MarshalYAML creates a ready to render YAML representation of the Parameter object.
-func (p *Parameter) MarshalYAML() (any, error) {
-	m := orderedmap.New[string, any]()
-	if p.Reference != "" {
-		m.Set(low.ReferenceLabel, p.Reference)
-		if p.Value != nil {
-			m.Set(low.ValueLabel, p.Value)
-		}
-		return m, nil
-	}
-	if p.Name != "" {
-		m.Set(low.NameLabel, p.Name)
-	}
-	if p.In != "" {
-		m.Set(low.InLabel, p.In)
-	}
-	if p.Value != nil {
-		m.Set(low.ValueLabel, p.Value)
-	}
-	marshalExtensions(m, p.Extensions)
-	return m, nil
-}
+func (p *Parameter) MarshalYAML() (any, error) { _ = "STUB: not implemented"; return *new(any), nil }

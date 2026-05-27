@@ -4,7 +4,6 @@
 package base
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/base"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -23,31 +22,18 @@ type Contact struct {
 }
 
 // NewContact will create a new Contact instance using a low-level Contact
-func NewContact(contact *low.Contact) *Contact {
-	c := new(Contact)
-	c.low = contact
-	c.URL = contact.URL.Value
-	c.Name = contact.Name.Value
-	c.Email = contact.Email.Value
-	c.Extensions = high.ExtractExtensions(contact.Extensions)
-	return c
-}
+func NewContact(contact *low.Contact) *Contact { _ = "STUB: not implemented"; return nil }
 
 // GoLow returns the low level Contact object used to create the high-level one.
 func (c *Contact) GoLow() *low.Contact {
-	return c.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped will return the low-level Contact instance that was used to create the high-level one, with no type
+	return nil
 }
 
-// GoLowUntyped will return the low-level Contact instance that was used to create the high-level one, with no type
-func (c *Contact) GoLowUntyped() any {
-	return c.low
-}
+func (c *Contact) GoLowUntyped() any { _ = "STUB: not implemented"; return *new(any) }
 
-func (c *Contact) Render() ([]byte, error) {
-	return yaml.Marshal(c)
-}
+func (c *Contact) Render() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
-func (c *Contact) MarshalYAML() (interface{}, error) {
-	nb := high.NewNodeBuilder(c, c.low)
-	return nb.Render(), nil
-}
+func (c *Contact) MarshalYAML() (interface{}, error) { _ = "STUB: not implemented"; return nil, nil }

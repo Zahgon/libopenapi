@@ -4,7 +4,6 @@
 package v2
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/low"
 	lowv2 "github.com/pb33f/libopenapi/datamodel/low/v2"
 	"github.com/pb33f/libopenapi/orderedmap"
 )
@@ -19,14 +18,7 @@ type Scopes struct {
 }
 
 // NewScopes creates a new high-level instance of Scopes from a low-level one.
-func NewScopes(scopes *lowv2.Scopes) *Scopes {
-	s := new(Scopes)
-	s.low = scopes
-	s.Values = low.FromReferenceMap(scopes.Values)
-	return s
-}
+func NewScopes(scopes *lowv2.Scopes) *Scopes { _ = "STUB: not implemented"; return nil }
 
 // GoLow returns the low-level instance of Scopes used to create the high-level one.
-func (s *Scopes) GoLow() *lowv2.Scopes {
-	return s.low
-}
+func (s *Scopes) GoLow() *lowv2.Scopes { _ = "STUB: not implemented"; return nil }

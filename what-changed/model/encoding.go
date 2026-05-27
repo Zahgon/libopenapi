@@ -14,73 +14,18 @@ type EncodingChanges struct {
 }
 
 // GetAllChanges returns a slice of all changes made between Encoding objects
-func (e *EncodingChanges) GetAllChanges() []*Change {
-	if e == nil {
-		return nil
-	}
-	var changes []*Change
-	changes = append(changes, e.Changes...)
-	for k := range e.HeaderChanges {
-		changes = append(changes, e.HeaderChanges[k].GetAllChanges()...)
-	}
-	return changes
-}
+func (e *EncodingChanges) GetAllChanges() []*Change { _ = "STUB: not implemented"; return nil }
 
 // TotalChanges returns the total number of changes made between two Encoding objects
-func (e *EncodingChanges) TotalChanges() int {
-	if e == nil {
-		return 0
-	}
-	c := e.PropertyChanges.TotalChanges()
-	if e.HeaderChanges != nil {
-		for i := range e.HeaderChanges {
-			c += e.HeaderChanges[i].TotalChanges()
-		}
-	}
-	return c
-}
+func (e *EncodingChanges) TotalChanges() int { _ = "STUB: not implemented"; return 0 }
 
 // TotalBreakingChanges returns the number of changes made between two Encoding objects that were breaking.
-func (e *EncodingChanges) TotalBreakingChanges() int {
-	c := e.PropertyChanges.TotalBreakingChanges()
-	if e.HeaderChanges != nil {
-		for i := range e.HeaderChanges {
-			c += e.HeaderChanges[i].TotalBreakingChanges()
-		}
-	}
-	return c
-}
+func (e *EncodingChanges) TotalBreakingChanges() int { _ = "STUB: not implemented"; return 0 }
 
 // CompareEncoding returns a pointer to *EncodingChanges that contain all changes made between a left and right
 // set of Encoding objects.
-func CompareEncoding(l, r *v3.Encoding) *EncodingChanges {
-	var changes []*Change
-	props := make([]*PropertyCheck, 0, 4)
+func CompareEncoding(l, r *v3.Encoding) *EncodingChanges { _ = "STUB: not implemented"; return nil }
 
-	props = append(props,
-		NewPropertyCheck(CompEncoding, PropContentType,
-			l.ContentType.ValueNode, r.ContentType.ValueNode,
-			v3.ContentTypeLabel, &changes, l, r),
-		NewPropertyCheck(CompEncoding, PropStyle,
-			l.Style.ValueNode, r.Style.ValueNode,
-			v3.StyleLabel, &changes, l, r),
-		NewPropertyCheck(CompEncoding, PropExplode,
-			l.Explode.ValueNode, r.Explode.ValueNode,
-			v3.ExplodeLabel, &changes, l, r),
-		NewPropertyCheck(CompEncoding, PropAllowReserved,
-			l.AllowReserved.ValueNode, r.AllowReserved.ValueNode,
-			v3.AllowReservedLabel, &changes, l, r),
-	)
+// check everything.
 
-	// check everything.
-	CheckProperties(props)
-	ec := new(EncodingChanges)
-
-	// headers
-	ec.HeaderChanges = CheckMapForChanges(l.Headers.Value, r.Headers.Value, &changes, v3.HeadersLabel, CompareHeadersV3)
-	ec.PropertyChanges = NewPropertyChanges(changes)
-	if ec.TotalChanges() <= 0 {
-		return nil
-	}
-	return ec
-}
+// headers

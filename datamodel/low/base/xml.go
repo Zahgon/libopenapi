@@ -5,13 +5,11 @@ package base
 
 import (
 	"context"
-	"hash/maphash"
 	"sync"
 
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/index"
 	"github.com/pb33f/libopenapi/orderedmap"
-	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -43,74 +41,30 @@ type XML struct {
 
 // Build will extract extensions from the XML instance.
 func (x *XML) Build(root *yaml.Node, idx *index.SpecIndex) error {
-	x.reference = low.Reference{}
-	x.Reference = &x.reference
-	x.nodeStore = sync.Map{}
-	x.Nodes = &x.nodeStore
-	x.index = idx
-	if root == nil {
-		x.RootNode = nil
-		x.Extensions = nil
-		return nil
-	}
-	root = utils.NodeAlias(root)
-	utils.CheckForMergeNodes(root)
-	x.RootNode = root
-	if len(root.Content) > 0 {
-		x.NodeMap.ExtractNodes(root, false)
-	} else {
-		x.AddNode(root.Line, root)
-	}
-	x.Extensions = low.ExtractExtensions(root)
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // GetExtensions returns all Tag extensions and satisfies the low.HasExtensions interface.
 func (x *XML) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return x.Extensions
+	_ = "STUB: not implemented"
+	return nil
+
+	// GetRootNode returns the root yaml node of the Tag object
 }
 
-// GetRootNode returns the root yaml node of the Tag object
 func (x *XML) GetRootNode() *yaml.Node {
-	return x.RootNode
+	_ = "STUB: not implemented"
+
+	// GetIndex returns the index of the XML object
+	return nil
 }
 
-// GetIndex returns the index of the XML object
 func (x *XML) GetIndex() *index.SpecIndex {
-	return x.index
+	_ = "STUB: not implemented"
+
+	// Hash generates a hash of the XML object using properties
+	return nil
 }
 
-// Hash generates a hash of the XML object using properties
-func (x *XML) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		if !x.Name.IsEmpty() {
-			h.WriteString(x.Name.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !x.Namespace.IsEmpty() {
-			h.WriteString(x.Namespace.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !x.Prefix.IsEmpty() {
-			h.WriteString(x.Prefix.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !x.Attribute.IsEmpty() {
-			low.HashBool(h, x.Attribute.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !x.NodeType.IsEmpty() {
-			h.WriteString(x.NodeType.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !x.Wrapped.IsEmpty() {
-			low.HashBool(h, x.Wrapped.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		for _, ext := range low.HashExtensions(x.Extensions) {
-			h.WriteString(ext)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		return h.Sum64()
-	})
-}
+func (x *XML) Hash() uint64 { _ = "STUB: not implemented"; return 0 }

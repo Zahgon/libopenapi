@@ -1,9 +1,6 @@
 package v3
 
 import (
-	"hash/maphash"
-	"sort"
-
 	"github.com/pb33f/libopenapi/datamodel/low"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -29,43 +26,26 @@ type ServerVariable struct {
 
 // GetRootNode returns the root yaml node of the ServerVariable object.
 func (s *ServerVariable) GetRootNode() *yaml.Node {
-	return s.RootNode
+	_ = "STUB: not implemented"
+
+	// GetKeyNode returns the key yaml node of the ServerVariable object.
+	return nil
 }
 
-// GetKeyNode returns the key yaml node of the ServerVariable object.
 func (s *ServerVariable) GetKeyNode() *yaml.Node {
-	return s.RootNode
+	_ = "STUB: not implemented"
+
+	// GetExtensions returns all extensions and satisfies the low.HasExtensions interface.
+	return nil
 }
 
-// GetExtensions returns all extensions and satisfies the low.HasExtensions interface.
 func (s *ServerVariable) GetExtensions() *orderedmap.Map[low.KeyReference[string], low.ValueReference[*yaml.Node]] {
-	return s.Extensions
+	_ = "STUB: not implemented"
+	return nil
+
+	// Hash will return a consistent Hash of the ServerVariable object
 }
 
-// Hash will return a consistent Hash of the ServerVariable object
-func (s *ServerVariable) Hash() uint64 {
-	return low.WithHasher(func(h *maphash.Hash) uint64 {
-		// Pre-allocate and sort enum values
-		if len(s.Enum) > 0 {
-			keys := make([]string, len(s.Enum))
-			for i := range s.Enum {
-				keys[i] = s.Enum[i].Value
-			}
-			sort.Strings(keys)
-			for _, key := range keys {
-				h.WriteString(key)
-				h.WriteByte(low.HASH_PIPE)
-			}
-		}
+func (s *ServerVariable) Hash() uint64 { _ = "STUB: not implemented"; return 0 }
 
-		if !s.Default.IsEmpty() {
-			h.WriteString(s.Default.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		if !s.Description.IsEmpty() {
-			h.WriteString(s.Description.Value)
-			h.WriteByte(low.HASH_PIPE)
-		}
-		return h.Sum64()
-	})
-}
+// Pre-allocate and sort enum values

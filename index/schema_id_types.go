@@ -22,12 +22,7 @@ type SchemaIdEntry struct {
 
 // GetKey returns the registry key for this entry.
 // Uses ResolvedUri if available, otherwise falls back to Id.
-func (e *SchemaIdEntry) GetKey() string {
-	if e.ResolvedUri != "" {
-		return e.ResolvedUri
-	}
-	return e.Id
-}
+func (e *SchemaIdEntry) GetKey() string { _ = "STUB: not implemented"; return "" }
 
 // SchemaIdScope tracks the resolution context during tree walking.
 // Used to maintain the base URI hierarchy when extracting $id values.
@@ -37,37 +32,15 @@ type SchemaIdScope struct {
 }
 
 // NewSchemaIdScope initializes scope tracking for base URI resolution during schema tree traversal.
-func NewSchemaIdScope(baseUri string) *SchemaIdScope {
-	return &SchemaIdScope{
-		BaseUri: baseUri,
-		Chain:   make([]string, 0),
-	}
-}
+func NewSchemaIdScope(baseUri string) *SchemaIdScope { _ = "STUB: not implemented"; return nil }
 
 // PushId updates the base URI context when entering a schema with $id.
 // The new $id becomes the base for resolving relative references in child schemas.
-func (s *SchemaIdScope) PushId(id string) {
-	s.Chain = append(s.Chain, id)
-	s.BaseUri = id
-}
+func (s *SchemaIdScope) PushId(id string) { _ = "STUB: not implemented"; return }
 
 // PopId restores the previous base URI when exiting a schema scope.
-func (s *SchemaIdScope) PopId() {
-	if len(s.Chain) > 0 {
-		s.Chain = s.Chain[:len(s.Chain)-1]
-		if len(s.Chain) > 0 {
-			s.BaseUri = s.Chain[len(s.Chain)-1]
-		}
-	}
-}
+func (s *SchemaIdScope) PopId() { _ = "STUB: not implemented"; return }
 
 // Copy creates an independent scope for exploring alternative branches without
 // affecting the parent scope's state (used in anyOf/oneOf/allOf traversal).
-func (s *SchemaIdScope) Copy() *SchemaIdScope {
-	chainCopy := make([]string, len(s.Chain))
-	copy(chainCopy, s.Chain)
-	return &SchemaIdScope{
-		BaseUri: s.BaseUri,
-		Chain:   chainCopy,
-	}
-}
+func (s *SchemaIdScope) Copy() *SchemaIdScope { _ = "STUB: not implemented"; return nil }

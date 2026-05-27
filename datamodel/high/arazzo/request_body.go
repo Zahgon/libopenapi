@@ -4,7 +4,6 @@
 package arazzo
 
 import (
-	"github.com/pb33f/libopenapi/datamodel/high"
 	low "github.com/pb33f/libopenapi/datamodel/low/arazzo"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"go.yaml.in/yaml/v4"
@@ -21,49 +20,29 @@ type RequestBody struct {
 }
 
 // NewRequestBody creates a new high-level RequestBody instance from a low-level one.
-func NewRequestBody(rb *low.RequestBody) *RequestBody {
-	r := new(RequestBody)
-	r.low = rb
-	if !rb.ContentType.IsEmpty() {
-		r.ContentType = rb.ContentType.Value
-	}
-	if !rb.Payload.IsEmpty() {
-		r.Payload = rb.Payload.Value
-	}
-	if !rb.Replacements.IsEmpty() {
-		r.Replacements = buildSlice(rb.Replacements.Value, NewPayloadReplacement)
-	}
-	r.Extensions = high.ExtractExtensions(rb.Extensions)
-	return r
-}
+func NewRequestBody(rb *low.RequestBody) *RequestBody { _ = "STUB: not implemented"; return nil }
 
 // GoLow returns the low-level RequestBody instance used to create the high-level one.
 func (r *RequestBody) GoLow() *low.RequestBody {
-	return r.low
+	_ = "STUB: not implemented"
+
+	// GoLowUntyped returns the low-level RequestBody instance with no type.
+	return nil
 }
 
-// GoLowUntyped returns the low-level RequestBody instance with no type.
 func (r *RequestBody) GoLowUntyped() any {
-	return r.low
+	_ = "STUB: not implemented"
+
+	// Render returns a YAML representation of the RequestBody object as a byte slice.
+	return *new(any)
 }
 
-// Render returns a YAML representation of the RequestBody object as a byte slice.
 func (r *RequestBody) Render() ([]byte, error) {
-	return yaml.Marshal(r)
+	_ = "STUB: not implemented"
+	return nil,
+
+		// MarshalYAML creates a ready to render YAML representation of the RequestBody object.
+		nil
 }
 
-// MarshalYAML creates a ready to render YAML representation of the RequestBody object.
-func (r *RequestBody) MarshalYAML() (any, error) {
-	m := orderedmap.New[string, any]()
-	if r.ContentType != "" {
-		m.Set(low.ContentTypeLabel, r.ContentType)
-	}
-	if r.Payload != nil {
-		m.Set(low.PayloadLabel, r.Payload)
-	}
-	if len(r.Replacements) > 0 {
-		m.Set(low.ReplacementsLabel, r.Replacements)
-	}
-	marshalExtensions(m, r.Extensions)
-	return m, nil
-}
+func (r *RequestBody) MarshalYAML() (any, error) { _ = "STUB: not implemented"; return *new(any), nil }
